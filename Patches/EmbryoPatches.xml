@@ -7,14 +7,14 @@
       <xpath>/Defs/ThingDef[defName="HumanEmbryo"]</xpath>
       <value>
         <comps>
-          <li Class="CompProperties_Clone" />
+          <li Class="Dark.Cloning.CompProperties_Clone" />
         </comps>
       </value>
     </nomatch>
     <match Class="PatchOperationAdd">
       <xpath>/Defs/ThingDef[defName="HumanEmbryo"]/comps</xpath>
       <value>
-        <li Class="CompProperties_Clone" />
+        <li Class="Dark.Cloning.CompProperties_Clone" />
       </value>
     </match>
   </Operation>

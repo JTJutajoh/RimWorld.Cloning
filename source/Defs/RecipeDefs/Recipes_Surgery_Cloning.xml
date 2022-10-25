@@ -6,7 +6,7 @@
     <label>extract embryo for cloning</label>
     <description>Extract an entire xenotype as an embryo into a storage capsule. It can then be implanted into a mother to start a pregnancy or a growth vat.</description>
     <jobString>extracting xenogenes from TargetA.</jobString>
-    <workerClass>Recipe_ExtractClone</workerClass>
+    <workerClass>Dark.Cloning.Recipe_ExtractClone</workerClass>
     <addsHediff>XenogermReplicating</addsHediff>
     <surgerySuccessChanceFactor>5</surgerySuccessChanceFactor>
     <allowedForQuestLodgers>false</allowedForQuestLodgers>

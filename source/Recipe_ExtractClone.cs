@@ -2,7 +2,7 @@
 using Verse;
 using RimWorld;
 
-namespace RimWorld
+namespace Dark.Cloning
 {
 	/// <summary>
 	/// Modified version of vanilla Recipe_ExtractOvum class, removing restrictions and changing what Thing drops on success.
@@ -63,14 +63,9 @@ namespace RimWorld
 
 		private void StartXenogermReplicatingHediff(Pawn pawn)
         {
-			Log.Warning("Making hediff");
-			Hediff hediff = HediffMaker.MakeHediff(HediffDefOf.XenogermReplicating, pawn, null);
-			hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
-			Log.Warning("Getting the Disappears comp and setting its duration");
+			Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
+
 			hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = sicknessDuration; //TODO: Move this to settings or something.
-			//Log.Warning("Adding hediff to pawn");
-			//pawn.health.AddHediff(hediff, null, null, null);
-			Log.Warning("Done.");
         }
 
 		/// <summary>

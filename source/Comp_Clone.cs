@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Verse;
 using RimWorld;
 
-namespace RimWorld
+namespace Dark.Cloning
 {
     class Comp_Clone : ThingComp
     {

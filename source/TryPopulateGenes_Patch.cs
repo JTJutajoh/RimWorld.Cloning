@@ -2,7 +2,7 @@
 using Verse;
 using RimWorld;
 
-namespace RimWorld
+namespace Dark.Cloning
 {
     [HarmonyPatch(typeof(HumanEmbryo), nameof(HumanEmbryo.TryPopulateGenes))]
     class TryPopulateGenes_Patch
