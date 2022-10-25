@@ -7,7 +7,7 @@
     <ProjectGuid>{63E5FFF0-E5A2-426B-A801-D96FC53ABE8A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cloning</RootNamespace>
+    <RootNamespace>Dark.Cloning</RootNamespace>
     <AssemblyName>Cloning</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplyBirthOutcome_Patch.cs" />
     <Compile Include="Comp_Clone.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
