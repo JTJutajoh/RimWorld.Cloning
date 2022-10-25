@@ -19,7 +19,6 @@ namespace Dark.Cloning
             Harmony harmony = new Harmony("Dark.Cloning");
 
             harmony.PatchAll();
-            Log.Message("Cloning loaded");
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

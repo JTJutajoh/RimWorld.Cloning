@@ -95,17 +95,5 @@ namespace Dark.Cloning
 			humanEmbryo.TryPopulateGenes();
 			return humanEmbryo;
 		}
-
-		/*private Thing FertilizeOvumWithSelf(HumanOvum ovum, Pawn parent)
-		{
-			Log.Message("Fertilizing ovum with first parent.");
-			//HumanOvum ovum = (HumanOvum)thing;
-			CompHasPawnSources sources = ovum.TryGetComp<CompHasPawnSources>();
-			//sources.AddSource(parent);
-			//sources.pawnSources.Add(parent);
-			//Find.WorldPawns.AddPawnSource(parent, sources);
-			//Log.Message($"Parent was {parent.ToString()}. Added {sources.pawnSources[1].ToString()}");
-			return ProduceCloneEmbryo(parent, ovum);
-		}*/
 	}
 }
