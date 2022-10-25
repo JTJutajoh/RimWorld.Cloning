@@ -15,10 +15,6 @@ namespace Dark.Cloning
         public Mod(ModContentPack content) : base(content)
         {
             GetSettings<Settings>();
-
-            Harmony harmony = new Harmony("Dark.Cloning");
-
-            harmony.PatchAll();
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
@@ -30,6 +26,17 @@ namespace Dark.Cloning
         public override string SettingsCategory()
         {
             return "Cloning_SettingsCategory".Translate();
+        }
+    }
+
+    [StaticConstructorOnStartup]
+    static class LoadHarmony
+    {
+        static LoadHarmony()
+        {
+            Harmony harmony = new Harmony("Dark.Cloning");
+
+            harmony.PatchAll();
         }
     }
 }
