@@ -9,8 +9,6 @@ namespace Dark.Cloning
 	/// </summary>
     public class Recipe_ExtractClone : Recipe_AddHediff
     {
-		int sicknessDuration = 60000 * 7; // 7 days
-
 		public override AcceptanceReport AvailableReport(Thing thing, BodyPartRecord part = null)
 		{
 			if (!Find.Storyteller.difficulty.ChildrenAllowed)
@@ -65,7 +63,7 @@ namespace Dark.Cloning
         {
 			Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
 
-			hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = sicknessDuration; //TODO: Move this to settings or something.
+			hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = Settings.cloningCooldownDays * 60000;
         }
 
 		/// <summary>
