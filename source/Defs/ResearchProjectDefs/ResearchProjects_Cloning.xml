@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ResearchProjectDef>
+    <defName>Cloning</defName>
+    <label>cloning</label>
+    <description>Extract enough genetic material from a single donor to grow a clone and mirculously transform it into a living embryo. All of the donor's endogenes will be copied to the new clone, but not their xenogenes.</description>
+    <baseCost>3000</baseCost>
+    <researchViewX>13.00</researchViewX>
+    <researchViewY>5.20</researchViewY>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>FertilityProcedures</li>
+      <li>Xenogermination</li>
+      <li>GrowthVats</li>
+    </prerequisites>
+  </ResearchProjectDef>
+  
+</Defs>

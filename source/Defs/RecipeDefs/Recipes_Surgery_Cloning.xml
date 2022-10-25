@@ -1,13 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-  <RecipeDef ParentName="FertilitySurgery">
+  <RecipeDef ParentName="SurgeryFlesh">
     <defName>ExtractClone</defName>
     <label>extract embryo for cloning</label>
-    <description>Extract an entire xenotype as an embryo into a storage capsule. It can then be implanted into a mother to start a pregnancy or a growth vat.</description>
+    <description>Extract an entire xenotype as an embryo into a storage capsule. It can then be implanted into a growth vat or a mother to start a pregnancy.</description>
     <jobString>extracting xenogenes from TargetA.</jobString>
     <workerClass>Dark.Cloning.Recipe_ExtractClone</workerClass>
     <addsHediff>XenogermReplicating</addsHediff>
+    <workAmount>500</workAmount>
+    <hideBodyPartNames>true</hideBodyPartNames>
+    <isViolation>true</isViolation>
+    <targetsBodyPart>false</targetsBodyPart>
+    <ingredients>
+      <li>
+        <filter>
+          <categories>
+            <li>Medicine</li>
+          </categories>
+        </filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <categories>
+        <li>Medicine</li>
+      </categories>
+    </fixedIngredientFilter>
+    <researchPrerequisites>
+      <li>Cloning</li>
+    </researchPrerequisites>
     <surgerySuccessChanceFactor>5</surgerySuccessChanceFactor>
     <allowedForQuestLodgers>false</allowedForQuestLodgers>
     <minAllowedAge>16</minAllowedAge>
