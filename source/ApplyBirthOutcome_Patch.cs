@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -29,25 +31,53 @@ namespace Dark.Cloning
     [HarmonyPatch(nameof(PregnancyUtility.ApplyBirthOutcome))]
     class ApplyBirthOutcome_Patch
     {
-        //static CodeInstruction anchorMethod = CodeInstruction.Call(typeof(PawnGenerator), "GeneratePawn");
-        static Type[] anchorMethodArgTypes = new Type[1] { typeof(PawnGenerationRequest) };
-        static CodeInstruction anchorMethod = CodeInstruction.Call(typeof(PawnGenerator), "GeneratePawn", anchorMethodArgTypes);
+        static MethodInfo anchorMethod = typeof(PawnGenerator).GetMethod("GeneratePawn", new Type[] { typeof(PawnGenerationRequest) });
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             Log.Message("Running patch on ApplyBirthOutcome...");
+
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
-            {
-                //TODO: Check if it matches the method call op code for the method I want
-                Log.Message($"Checking code {codes[i].ToString()}");
-                if (codes[i] == anchorMethod)
+            {                
+                if (codes[i].Calls(anchorMethod))
                 {
-                    Log.Message("Found the method call.");
+                    // First, load the additional argument(s) onto the stack
+                    yield return new CodeInstruction(OpCodes.Ldarg, 5); // Thing birtherThing
+                    yield return new CodeInstruction(OpCodes.Ldarg, 4); // Pawn geneticMother
+
+                    yield return CodeInstruction.Call(typeof(ApplyBirthOutcome_Patch), "GeneratePawn");
                 }
+
+                yield return codes[i];
+            }
+        }
+
+        static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, Pawn geneticMother)
+        {
+            Log.Message("Custom GeneratePawn running");
+            Building_GrowthVat building_GrowthVat = birtherThing as Building_GrowthVat;
+            Pawn mother = birtherThing as Pawn;
+            
+            Comp_Clone cloneComp;
+
+            if (building_GrowthVat != null)
+            {
+                Log.Message("birtherThing was a growth vat.");
+                Log.Message("Embryo: " + building_GrowthVat.selectedEmbryo.ToString());
+                cloneComp = building_GrowthVat.selectedEmbryo.TryGetComp<Comp_Clone>();
+                Log.Message($"Is this embryo a clone? {cloneComp.IsClone}");
             }
 
-            return codes.AsEnumerable();
+            else if (mother != null)
+            {
+                Log.Message("birtherThing was a human.");
+                Hediff pregnancy = PregnancyUtility.GetPregnancyHediff(mother);
+                ((Hediff_Pregnant) pregnancy).
+                Log.Message("Embryo: " + mother.selectedEmbryo.ToString());
+            }
+
+            return request;
         }
     }
 }

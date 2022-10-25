@@ -36,6 +36,8 @@ namespace Dark.Cloning
         {
             Harmony harmony = new Harmony("Dark.Cloning");
 
+            Harmony.DEBUG = false;
+
             harmony.PatchAll();
         }
     }
