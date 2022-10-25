@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <RecipeDef ParentName="FertilitySurgery">
+    <defName>ExtractClone</defName>
+    <label>extract embryo for cloning</label>
+    <description>Extract an entire xenotype as an embryo into a storage capsule. It can then be implanted into a mother to start a pregnancy or a growth vat.</description>
+    <jobString>extracting xenogenes from TargetA.</jobString>
+    <workerClass>Recipe_ExtractClone</workerClass>
+    <addsHediff>XenogermReplicating</addsHediff>
+    <surgerySuccessChanceFactor>5</surgerySuccessChanceFactor>
+    <allowedForQuestLodgers>false</allowedForQuestLodgers>
+    <minAllowedAge>16</minAllowedAge>
+    <uiIconThing>HumanOvum</uiIconThing>
+  </RecipeDef>
+
+</Defs>

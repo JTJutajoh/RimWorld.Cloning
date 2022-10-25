@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>/Defs/ThingDef[defName="HumanEmbryo"]/comps</xpath>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>/Defs/ThingDef[defName="HumanEmbryo"]</xpath>
+      <value>
+        <comps>
+          <li Class="CompProperties_Clone" />
+        </comps>
+      </value>
+    </nomatch>
+    <match Class="PatchOperationAdd">
+      <xpath>/Defs/ThingDef[defName="HumanEmbryo"]/comps</xpath>
+      <value>
+        <li Class="CompProperties_Clone" />
+      </value>
+    </match>
+  </Operation>
+  
+</Patch>
