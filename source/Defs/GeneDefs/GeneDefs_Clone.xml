@@ -6,7 +6,7 @@
     <label>clone</label>
     <labelShortAdj>clone</labelShortAdj>
     <description>Cloned individuals always possess this gene, marking them as clones.</description>
-    <iconPath>UI/Icons/Genes/Gene_KindInstinct</iconPath>
+    <iconPath>UI/Icons/Genes/Gene_Clone</iconPath>
     <displayCategory>Miscellaneous</displayCategory>
     <displayOrderInCategory>1000</displayOrderInCategory>
     <symbolPack>
