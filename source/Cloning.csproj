@@ -51,9 +51,13 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CloneMutations.cs" />
+    <Compile Include="GeneUtils.cs" />
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
     <Compile Include="CloneDefs.cs" />
     <Compile Include="EmbryoTracker.cs" />

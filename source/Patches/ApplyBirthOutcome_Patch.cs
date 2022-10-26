@@ -84,7 +84,7 @@ namespace Dark.Cloning
 
                 if (Settings.doRandomMutations)
                 {
-                    request.ForcedXenogenes = CloneMutations.GetRandomMutations();
+                    request.ForcedXenogenes = GeneUtils.GetRandomMutations();
                 }
             }
 

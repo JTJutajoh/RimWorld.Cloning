@@ -25,7 +25,7 @@ namespace Dark.Cloning
 
             CloneUtils.CopyGenesFromParent(ref clonedGenes, __instance);
 
-            CloneMutations.ApplyRandomMutations(ref clonedGenes);
+            GeneUtils.ApplyRandomMutations(ref clonedGenes);
             
             clonedGenes.SortGenes();
 

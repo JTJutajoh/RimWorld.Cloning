@@ -10,16 +10,16 @@ using UnityEngine;
 namespace Dark.Cloning
 {
     [StaticConstructorOnStartup]
-    class CloneMutations
+    class GeneUtils
     {
         public static Dictionary<string, int> defaultGenesEligible = new Dictionary<string, int>
         {
             {"Inbred", 1},
             {"Instability_Mild", 1},
             {"Instability_Major", 1},
-            {"Sterile", 1 },
-            {"Aggression_Aggressive", 1 },
-            {"Aggression_HyperAggressive",1 }
+            {"Sterile", 10},
+            {"Aggression_Aggressive", 1},
+            {"Aggression_HyperAggressive", 1}
         };
 
         private static bool genesCached = false;
@@ -32,6 +32,30 @@ namespace Dark.Cloning
                 if (!genesCached) CacheGeneDefs();
                 return allGenesCache;
             }
+        }
+
+        public static Texture2D IconFor(string gene)
+        {
+            if (!IsCached(gene)) return BaseContent.BadTex;
+
+            return allGenesCache[gene].Icon;
+        }
+
+        public static string LabelCapFor(string gene)
+        {
+            if (!IsCached(gene)) return "unknown";
+
+            return allGenesCache[gene].LabelCap;
+        }
+
+        public static bool IsCached(string gene)
+        {
+            return allGenesCache.ContainsKey(gene);
+        }
+
+        public static bool IsEligible(string gene)
+        {
+            return Settings.genesEligibleForMutation.ContainsKey(gene);
         }
 
         static void CacheGeneDefs()
@@ -48,15 +72,8 @@ namespace Dark.Cloning
         }
 
         //TODO: remove this prob
-        static CloneMutations()
+        static GeneUtils()
         {
-            List<GeneDef> allGenes = DefDatabase<GeneDef>.AllDefsListForReading;
-            Log.Message($"Preparing gene cache for Cloning. Found {allGenes.Count} GeneDefs loaded.");
-
-            foreach (GeneDef gene in allGenes)
-            {
-                allGenesCache.Add(gene.defName, gene);
-            }
         }
 
         public static void ApplyRandomMutations(ref GeneSet genes)
