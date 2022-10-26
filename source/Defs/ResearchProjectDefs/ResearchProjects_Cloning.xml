@@ -8,7 +8,7 @@
     <baseCost>3000</baseCost>
     <researchViewX>13.00</researchViewX>
     <researchViewY>5.20</researchViewY>
-    <techLevel>Industrial</techLevel>
+    <techLevel>Spacer</techLevel>
     <prerequisites>
       <li>FertilityProcedures</li>
       <li>Xenogermination</li>
