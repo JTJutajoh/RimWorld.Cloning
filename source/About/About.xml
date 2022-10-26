@@ -6,7 +6,7 @@
 	<supportedVersions>
     <li>1.4</li>
   </supportedVersions>
-  <description>Allows you to use Biotech's growth vats to grow clones asexually from one donor parent, copying their entire xenotype.
+  <description>Allows you to use Biotech's growth vats to grow clones asexually from one donor parent regardless of fertility, copying their entire xenotype.
   
 Under development, things might change and more features might get added in the future.
 
