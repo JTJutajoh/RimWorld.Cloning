@@ -9,8 +9,10 @@ using Verse;
 namespace Dark.Cloning
 {
     /// <summary>
-    /// Simple class that contains a static list of embryos that were created as clones, as their HashCodes.
-    /// Used to detect within patched methods if the embryo should gain the Clone gene, since the geneSet is protected and initialized as null.
+    /// Simple class that contains a static list of embryos that were created as clones, as their HashCodes. <br />
+    /// Used to detect within patched methods if the embryo should gain the Clone gene, since the geneSet is protected and initialized as null. <br />
+    /// This should only be relied on if you're sure that the embryo was just created on this same tick, since embryos can be destroyed (such as when
+    /// implanted in a mother) so the hash may not match later. 
     /// </summary>
     public static class EmbryoTracker
     {
