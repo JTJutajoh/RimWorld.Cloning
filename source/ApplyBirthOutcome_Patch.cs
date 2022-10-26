@@ -62,7 +62,7 @@ namespace Dark.Cloning
             if (CloneUtils.HasCloneGene(genes))
             {
                 Log.Message("Newborn is a clone, modifying its genetics.");
-                Pawn donor = geneticMother ?? father;
+                Pawn donor = geneticMother ?? father; // Including the father might be overkill, but let's just be safe
                 if (donor == null)
                 {
                     Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn (both parents were null).");
@@ -72,7 +72,17 @@ namespace Dark.Cloning
                 // Modify the request based on the found genes. 
                 request.FixedGender = donor.gender;
 
-                //TODO: Put any other clone genetic changes here.
+                if (donor.genes.UniqueXenotype)
+                {
+                    request.ForcedCustomXenotype = CloneUtils.CopyCustomXenotypeFrom(donor);
+                }
+                else
+                {
+                    if (donor.genes.Xenotype == null) Log.Error("Tried to copy non-custom xenotype from donor parent, but it was null.");
+                    else request.ForcedXenotype = donor.genes.Xenotype;
+                }
+
+                // Put any other clone genetic changes here.
             }
 
             return request;
