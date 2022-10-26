@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <GeneDef>
+    <defName>Clone</defName>
+    <label>clone</label>
+    <labelShortAdj>clone</labelShortAdj>
+    <description>Cloned individuals always possess this gene, marking them as clones.</description>
+    <iconPath>UI/Icons/Genes/Gene_KindInstinct</iconPath>
+    <displayCategory>Miscellaneous</displayCategory>
+    <displayOrderInCategory>1000</displayOrderInCategory>
+    <symbolPack>
+      <prefixSymbols>
+        <li>
+          <symbol>clone</symbol>
+        </li>
+      </prefixSymbols>
+    </symbolPack>
+  </GeneDef>
+
+</Defs>

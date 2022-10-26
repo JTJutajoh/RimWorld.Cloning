@@ -54,17 +54,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplyBirthOutcome_Patch.cs" />
+    <Compile Include="CloneDefs.cs" />
     <Compile Include="Comp_Clone.cs" />
     <Compile Include="Mod.cs" />
+    <Compile Include="PawnGenerationRequest_ctor_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe_ExtractClone.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TryPopulateGenes_Patch.cs" />
+    <Compile Include="CloneUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Defs\GeneDefs\GeneDefs_Clone.xml" />
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
     <Content Include="Patches\EmbryoPatches.xml" />
   </ItemGroup>

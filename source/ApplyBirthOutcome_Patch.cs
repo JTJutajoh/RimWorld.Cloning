@@ -9,22 +9,6 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 
-/*
- * psudocode From Bradson:
-
-foreach (code in codes)
-{
-    if (code.Calls(PawnGeneratorMethod))
-    {
-        yield return extraArgument;
-        yield return methodThatReturnsModifiedRequest(request, extraArgument);
-    }
-
-    yield return code;
-}
-
-*/
-
 namespace Dark.Cloning
 {
     /// <summary>
@@ -39,7 +23,7 @@ namespace Dark.Cloning
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            Log.Message("Running patch on ApplyBirthOutcome...");
+            Log.Message("Running patch on ApplyBirthOutcome for Cloning...");
 
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
@@ -75,20 +59,9 @@ namespace Dark.Cloning
         {
             Log.Message("GeneratePawn intercepted on pawn birth. Running patch to check if clone");
 
-            bool isClone = false;
-
-            // Look through the genes for the custom Clone gene, returning the request unchanged if not found
-            foreach (GeneDef gene in genes)
+            if (CloneUtils.HasCloneGene(genes))
             {
-                //TODO: if clone gene found
-                {
-                    isClone = true;
-                    break;
-                }
-            }
-
-            if (isClone)
-            {
+                Log.Message("Newborn is a clone, modifying its genetics.");
                 Pawn donor = geneticMother ?? father;
                 if (donor == null)
                 {

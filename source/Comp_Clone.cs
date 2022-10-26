@@ -8,7 +8,7 @@ using RimWorld;
 
 namespace Dark.Cloning
 {
-    class Comp_Clone : ThingComp
+    /*class Comp_Clone : ThingComp
     {
         public CompProperties_Clone Props => (CompProperties_Clone)this.props;
 
@@ -27,5 +27,5 @@ namespace Dark.Cloning
         {
             this.compClass = compClass;
         }
-    }
+    }*/
 }

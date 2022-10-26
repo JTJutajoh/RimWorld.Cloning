@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Patch>
 
-  <Operation Class="PatchOperationConditional">
+  <!--<Operation Class="PatchOperationConditional">
     <xpath>/Defs/ThingDef[defName="HumanEmbryo"]/comps</xpath>
     <nomatch Class="PatchOperationAdd">
       <xpath>/Defs/ThingDef[defName="HumanEmbryo"]</xpath>
@@ -17,6 +17,6 @@
         <li Class="Dark.Cloning.CompProperties_Clone" />
       </value>
     </match>
-  </Operation>
+  </Operation>-->
   
 </Patch>
