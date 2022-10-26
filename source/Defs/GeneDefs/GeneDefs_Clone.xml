@@ -5,10 +5,12 @@
     <defName>Clone</defName>
     <label>clone</label>
     <labelShortAdj>clone</labelShortAdj>
-    <description>Cloned individuals always possess this gene, marking them as clones.</description>
+    <description>Cloned individuals always possess this gene, marking them as clones. This gene by itself does nothing.</description>
     <iconPath>UI/Icons/Genes/Gene_Clone</iconPath>
     <displayCategory>Miscellaneous</displayCategory>
     <displayOrderInCategory>1000</displayOrderInCategory>
+    <biostatCpx>0</biostatCpx>
+    <biostatMet>0</biostatMet>
     <symbolPack>
       <prefixSymbols>
         <li>
