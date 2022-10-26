@@ -53,5 +53,29 @@ namespace Dark.Cloning
 
             return result;
         }
+
+        /// <summary>
+		/// Modified version of vanilla's ProduceEmbryo. Made static so it can be reused. <br />
+        /// Handles marking the produced embryo as a clone so that TryPopulateGenes() correctly adds clone genes
+		/// </summary>
+		public static Thing ProduceCloneEmbryo(Pawn donor)
+        {
+            HumanEmbryo humanEmbryo = (HumanEmbryo)ThingMaker.MakeThing(ThingDefOf.HumanEmbryo, null);
+
+            humanEmbryo.GetComp<CompHasPawnSources>().AddSource(donor);
+
+            EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
+                                              //Log.Message("Embryo added to EmbryoTracker, calling TryPopulateGenes...");
+            humanEmbryo.TryPopulateGenes();
+
+            return humanEmbryo;
+        }
+
+        public static void StartXenogermReplicatingHediff(Pawn pawn)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
+
+            hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = Settings.cloningCooldownDays * 60000;
+        }
     }
 }
