@@ -27,6 +27,10 @@ foreach (code in codes)
 
 namespace Dark.Cloning
 {
+    /// <summary>
+    /// Patch to modify the PawnGenerationRequest created for newborn pawns. 
+    /// Transpiler intercepts the call to GeneratePawn() and modifies the request to match clone genetic rules
+    /// </summary>
     [HarmonyPatch(typeof(PregnancyUtility))]
     [HarmonyPatch(nameof(PregnancyUtility.ApplyBirthOutcome))]
     class ApplyBirthOutcome_Patch
@@ -44,37 +48,58 @@ namespace Dark.Cloning
                 {
                     // First, load the additional argument(s) onto the stack
                     yield return new CodeInstruction(OpCodes.Ldarg, 5); // Thing birtherThing
+                    yield return new CodeInstruction(OpCodes.Ldarg, 3); // List<GeneDef> genes
                     yield return new CodeInstruction(OpCodes.Ldarg, 4); // Pawn geneticMother
+                    yield return new CodeInstruction(OpCodes.Ldarg, 6); // Pawn father
 
+                    // Then call my custom method instead of the original one.
                     yield return CodeInstruction.Call(typeof(ApplyBirthOutcome_Patch), "GeneratePawn");
                 }
 
+                // And resume emitting the original code (Including the original call to GeneratePawn, using my now-modified request that's on the stack)
+                // Doing it this way should ensure mod compatibility with other mods that touch pawn generation requests
                 yield return codes[i];
             }
         }
 
-        static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, Pawn geneticMother)
+        /// <summary>
+        /// Custom method that intercepts the PawnGenerationRequest and modifies it if the pawn to be generated is a clone.
+        /// </summary>
+        /// <param name="request">The original request to be modified</param>
+        /// <param name="birtherThing">The Thing that gave birth to this pawn. Either the growth vat or the mother.</param>
+        /// <param name="genes">List of all genes the embryo was previously given, either by vanilla code for this mod's custom patch</param>
+        /// <param name="geneticMother">The mother</param>
+        /// <param name="father">The father, which might always be null. But it is included here just in case.</param>
+        /// <returns>The modified PawnGenerationRequest, ready to be pushed back onto the stack and sent to GeneratePawn</returns>
+        static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, List<GeneDef> genes, Pawn geneticMother, Pawn father)
         {
-            Log.Message("Custom GeneratePawn running");
-            Building_GrowthVat building_GrowthVat = birtherThing as Building_GrowthVat;
-            Pawn mother = birtherThing as Pawn;
-            
-            Comp_Clone cloneComp;
+            Log.Message("GeneratePawn intercepted on pawn birth. Running patch to check if clone");
 
-            if (building_GrowthVat != null)
+            bool isClone = false;
+
+            // Look through the genes for the custom Clone gene, returning the request unchanged if not found
+            foreach (GeneDef gene in genes)
             {
-                Log.Message("birtherThing was a growth vat.");
-                Log.Message("Embryo: " + building_GrowthVat.selectedEmbryo.ToString());
-                cloneComp = building_GrowthVat.selectedEmbryo.TryGetComp<Comp_Clone>();
-                Log.Message($"Is this embryo a clone? {cloneComp.IsClone}");
+                //TODO: if clone gene found
+                {
+                    isClone = true;
+                    break;
+                }
             }
 
-            else if (mother != null)
+            if (isClone)
             {
-                Log.Message("birtherThing was a human.");
-                Hediff pregnancy = PregnancyUtility.GetPregnancyHediff(mother);
-                ((Hediff_Pregnant) pregnancy).
-                Log.Message("Embryo: " + mother.selectedEmbryo.ToString());
+                Pawn donor = geneticMother ?? father;
+                if (donor == null)
+                {
+                    Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn (both parents were null).");
+                    return request;
+                }
+
+                // Modify the request based on the found genes. 
+                request.FixedGender = donor.gender;
+
+                //TODO: Put any other clone genetic changes here.
             }
 
             return request;
