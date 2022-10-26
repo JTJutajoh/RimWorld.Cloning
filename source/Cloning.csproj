@@ -56,6 +56,7 @@
     <Compile Include="ApplyBirthOutcome_Patch.cs" />
     <Compile Include="CloneDefs.cs" />
     <Compile Include="Comp_Clone.cs" />
+    <Compile Include="EmbryoTracker.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="PawnGenerationRequest_ctor_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

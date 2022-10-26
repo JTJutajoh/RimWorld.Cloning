@@ -88,19 +88,8 @@ namespace Dark.Cloning
 			}
 			comp.AddSource(father);
 
-			// See below note (Right before this method gets called a second time)
-			// Call this once to create a non-null geneSet for the humanEmbryo so that we can add the Clone gene to it.
-			humanEmbryo.TryPopulateGenes();
-
-			// Actually set the new embryo to be marked as a clone so the patch can pick it up and intercept how its genes are chosen.
-			Log.Message("Attempting to add the Clone gene to the extracted embryo");
-			humanEmbryo.GeneSet.AddGene(CloneDefs.Clone);
-
-			//!! This is a really shitty solution but it should actually work:
-			// TryPopulateGenes has to be run once in order for AddGene() to work (geneSet is null until it runs, and is private) but the patch that detects the Clone gene
-			//is for TryPopulateGenes, so when it runs the second time the vanilla version detects a non-null geneSet and returns early, then my patch takes over and detects
-			//the Clone gene that was added after the first run.
-			// Again, this is a really bad way to do this but it might be the best way that doesn't involve accessing private fields externally or subclassing HumanEmbryo
+			EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
+			//Log.Message("Embryo added to EmbryoTracker, calling TryPopulateGenes...");
 			humanEmbryo.TryPopulateGenes();
 
 			return humanEmbryo;
