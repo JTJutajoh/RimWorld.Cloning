@@ -2,8 +2,12 @@
 
 <LanguageData>
   <Cloning_SettingsCategory>Cloning</Cloning_SettingsCategory>
-  <Cloning_Cooldown_Description>By default, extracting a clone embryo causes gene sickness just like extracting or implanting genes normally would. Use these options to either disable that functionality (And make clones as fast as you can afford them), or adjust the duration of the sickness.</Cloning_Cooldown_Description>
+  <Cloning_Cooldown_Description>If enabled, extracting a clone embryo causes gene sickness just like extracting or implanting genes normally would.</Cloning_Cooldown_Description>
   <Cloning_Settings_CloningCooldown>Extraction causes gene sickness</Cloning_Settings_CloningCooldown>
   <Cloning_Settings_CooldownDays>Sickness duration</Cloning_Settings_CooldownDays>
   <Cloning_Settings_CooldownDays_Tooltip>Measured in days. 1 Year is 60 days. Default</Cloning_Settings_CooldownDays_Tooltip>
+  <Cloning_Mutations_Description>If enabled, clones have a random chance of gaining a random (usually negative) gene, representing undesired mutations, up to a maximum number. This is meant to help balance how powerful it is to be able to clone freely.</Cloning_Mutations_Description>
+  <Cloning_Settings_DoMutations>Enable random mutations</Cloning_Settings_DoMutations>
+  <Cloning_Settings_MutationChance>Mutation Chance</Cloning_Settings_MutationChance>
+  <Cloning_Settings_MaxMutations>Maximum number of mutations</Cloning_Settings_MaxMutations>
 </LanguageData>
