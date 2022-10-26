@@ -23,7 +23,7 @@ namespace Dark.Cloning
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            Log.Message("Running patch on ApplyBirthOutcome for Cloning...");
+            Log.Message("Cloning Patching...");
 
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
@@ -82,7 +82,10 @@ namespace Dark.Cloning
                     else request.ForcedXenotype = donor.genes.Xenotype;
                 }
 
-                // Put any other clone genetic changes here.
+                if (Settings.doRandomMutations)
+                {
+                    request.ForcedXenogenes = CloneMutations.GetRandomMutations();
+                }
             }
 
             return request;

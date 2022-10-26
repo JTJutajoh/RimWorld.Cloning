@@ -24,6 +24,8 @@ namespace Dark.Cloning
             clonedGenes.AddGene(CloneDefs.Clone);
 
             CloneUtils.CopyGenesFromParent(ref clonedGenes, __instance);
+
+            CloneMutations.ApplyRandomMutations(ref clonedGenes);
             
             clonedGenes.SortGenes();
 
