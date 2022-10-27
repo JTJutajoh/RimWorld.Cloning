@@ -123,10 +123,8 @@ namespace Dark.Cloning
                 //defName = Settings.genesEligibleForMutation.RandomElementByWeight(x => x.Value).Key;
                 defName = options.RandomElementByWeight(x => x.Value).Key;
 
-                Log.Message($"Chose gene {defName}. Searching for the def in the cache");
                 if (AllGenesCache.ContainsKey(defName))
                 {
-                    Log.Message("Found gene in the cache.");
                     return AllGenesCache[defName];
                 }
 

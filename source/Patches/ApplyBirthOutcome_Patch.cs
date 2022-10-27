@@ -57,11 +57,8 @@ namespace Dark.Cloning
         /// <returns>The modified PawnGenerationRequest, ready to be pushed back onto the stack and sent to GeneratePawn</returns>
         static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, List<GeneDef> genes, Pawn geneticMother, Pawn father)
         {
-            Log.Message("GeneratePawn intercepted on pawn birth. Running patch to check if clone");
-
             if (CloneUtils.HasCloneGene(genes))
             {
-                Log.Message("Newborn is a clone, modifying its genetics.");
                 Pawn donor = geneticMother ?? father; // Including the father might be overkill, but let's just be safe
                 if (donor == null)
                 {
@@ -84,8 +81,19 @@ namespace Dark.Cloning
 
                 if (Settings.doRandomMutations)
                 {
-                    if (Settings.addMutationsAsXenogenes) request.ForcedXenogenes = GeneUtils.GetRandomMutations();
-                    else request.ForcedEndogenes = GeneUtils.GetRandomMutations();
+                    List<GeneDef> mutations = GeneUtils.GetRandomMutations();
+                    if (mutations.Count > 0)
+                    {
+                        string letterContents = "Cloning_Letter_MutationText".Translate();
+                        foreach (GeneDef mutation in mutations)
+                        {
+                            letterContents = letterContents + "\n -" + mutation.LabelCap;
+                        }
+                        Letter letter = LetterMaker.MakeLetter("Cloning_Letter_MutationLabel".Translate(), letterContents, LetterDefOf.NeutralEvent);
+                        Find.LetterStack.ReceiveLetter(letter);
+                    }
+                    if (Settings.addMutationsAsXenogenes) request.ForcedXenogenes = mutations;
+                    else request.ForcedEndogenes = mutations;
                 }
             }
 

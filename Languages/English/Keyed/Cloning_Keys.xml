@@ -20,5 +20,7 @@ When a clone pawn is born, there will be [number of mutations] dice rolls each a
   <Cloning_Settings_SelectAll>All</Cloning_Settings_SelectAll>
   <Cloning_Settings_SelectNone>None</Cloning_Settings_SelectNone>
   <Cloning_Settings_Reset>Default</Cloning_Settings_Reset>
+  <Cloning_Letter_MutationLabel>Clone Mutation</Cloning_Letter_MutationLabel>
+  <Cloning_Letter_MutationText>A clone embryo has finished gestating and gained these genetic mutations:</Cloning_Letter_MutationText>
   
 </LanguageData>
