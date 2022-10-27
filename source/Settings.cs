@@ -154,79 +154,6 @@ namespace Dark.Cloning
                         Rect sliderLabelRect = new Rect(buttonRect.x, buttonRect.y + rowHeight, buttonRect.width, 24f);
                         Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
                     }
-
-                    continue;
-                    #region ListVersion
-                    /*
-                    Rect rowRect = scrollList.GetRect(50f);
-
-                    // Draw an alternating background for each row
-                    Color rowColor;
-                    if (useColorA) rowColor = rowColorA;
-                    else rowColor = rowColorB;
-                    useColorA = !useColorA;
-                    Widgets.DrawBoxSolid(rowRect, rowColor);
-
-                    // Draw the icon of the gene
-                    Texture2D geneIcon = GeneUtils.IconFor(gene);
-                    Rect iconRect = new Rect();
-                    iconRect.xMin = rowRect.xMin;
-                    iconRect.yMin = rowRect.yMin;
-                    iconRect.xMax = rowRect.xMin + 50f;
-                    iconRect.yMax = rowRect.yMax;
-                    Widgets.DrawTexturePart(iconRect, new Rect(0, 0, 1, 1), geneIcon);
-
-                    // Offset the vertical position of rowRect so that the following elements get shifted down
-                    rowRect.y += 16f;
-
-                    // Draw the name of the gene
-                    Rect labelRect = rowRect.LeftPart(0.5f);
-                    labelRect.xMin += 64f;
-                    Widgets.Label(labelRect, GeneUtils.LabelCapFor(gene));
-
-                    if (GeneUtils.IsEligible(gene))
-                    {
-                        // Draw the weight slider
-                        Rect sliderRect = rowRect.RightPart(0.5f);
-                        sliderRect.xMax -= 30f;
-                        sliderRect.y += 10f;
-                        genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
-                        //genesEligibleForMutation[gene.Key] = Mathf.RoundToInt(scrollList.Slider(genesEligibleForMutation[gene.Key], 0,10));
-
-                        // Draw the label for the slider
-                        string sliderLabel = "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene];
-
-                        Rect sliderLabelRect = new Rect();
-                        sliderLabelRect.yMin = rowRect.yMin - 8f;
-                        sliderLabelRect.yMax = rowRect.yMax - 8f;
-                        sliderLabelRect.xMin = rowRect.xMax - 110f;
-                        sliderLabelRect.xMax = rowRect.xMax - 30f;
-                        Widgets.Label(sliderLabelRect, sliderLabel);
-                    }
-
-                    // Draw the X button to remove from the list
-                    bool enabled = GeneUtils.IsEligible(gene);
-                    Texture2D xTex = Widgets.GetCheckboxTexture(enabled);
-                    Rect xRect = new Rect();
-                    float size = 20f;
-                    xRect.yMin = rowRect.yMin - 2f;
-                    xRect.xMax = rowRect.xMax - 2f;
-
-                    xRect.xMin = xRect.xMax - size;
-                    xRect.yMax = xRect.yMin + size;
-                    if (Widgets.ButtonImage(xRect, xTex))
-                    {
-                        if (enabled)
-                        {
-                            genesEligibleForMutation.Remove(gene);
-                        }
-                        else
-                        {
-                            genesEligibleForMutation.Add(gene, 1);
-                        }
-                    }
-                    */
-                    #endregion ListVersion
                 }
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
@@ -417,7 +344,6 @@ namespace Dark.Cloning
             Vector2 rectSize = new Vector2(width, this.rowHeight);
 
             newRow = this.IncrementYIfWillExceedMaxWidth(rectSize.x);
-            if (newRow) Log.Message($"newRow (internal) {newRow}");
 
             Rect rect = new Rect(this.LeftX(rectSize.x), this.curY, rectSize.x, rectSize.y);
             this.IncrementPosition(rect.width + this.gap);
