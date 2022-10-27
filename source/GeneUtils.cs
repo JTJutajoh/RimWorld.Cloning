@@ -34,28 +34,48 @@ namespace Dark.Cloning
             }
         }
 
+        public static GeneDef GeneNamed(string gene)
+        {
+            return AllGenesCache[gene];
+        }
+
         public static Texture2D IconFor(string gene)
         {
             if (!IsCached(gene)) return BaseContent.BadTex;
 
-            return allGenesCache[gene].Icon;
+            return AllGenesCache[gene].Icon;
         }
 
         public static string LabelCapFor(string gene)
         {
             if (!IsCached(gene)) return "unknown";
 
-            return allGenesCache[gene].LabelCap;
+            return AllGenesCache[gene].LabelCap;
         }
 
         public static bool IsCached(string gene)
         {
-            return allGenesCache.ContainsKey(gene);
+            return AllGenesCache.ContainsKey(gene);
         }
 
         public static bool IsEligible(string gene)
         {
             return Settings.genesEligibleForMutation.ContainsKey(gene);
+        }
+
+        public static void SetEligible(string gene, bool newEligible)
+        {
+            // First return early if the desired state is already the current state
+            bool isEligible = IsEligible(gene);
+            if (( newEligible && isEligible ) || ( !newEligible && !isEligible )) return;
+            if (newEligible)
+            {
+                Settings.genesEligibleForMutation.Add(gene, 1);
+            }
+            else
+            {
+                Settings.genesEligibleForMutation.Remove(gene);
+            }
         }
 
         static void CacheGeneDefs()
