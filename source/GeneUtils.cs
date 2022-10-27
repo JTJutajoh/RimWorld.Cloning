@@ -12,7 +12,7 @@ namespace Dark.Cloning
     [StaticConstructorOnStartup]
     class GeneUtils
     {
-        public static Dictionary<string, int> defaultGenesEligible = new Dictionary<string, int>
+        public static readonly Dictionary<string, int> defaultGenesEligible = new Dictionary<string, int>
         {
             {"Inbred", 4},
             {"Instability_Mild", 8},
@@ -82,7 +82,7 @@ namespace Dark.Cloning
             {
                 Settings.genesEligibleForMutation.Add(gene, 1);
             }
-            else
+            else if (isEligible)
             {
                 Settings.genesEligibleForMutation.Remove(gene);
             }

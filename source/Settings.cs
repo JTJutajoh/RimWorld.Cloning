@@ -77,18 +77,51 @@ namespace Dark.Cloning
                 //scrollRect = scrollRect.RightPart(0.6f);
                 scrollRect.yMax -= 50f;
 
-                // Draw the button to add new genes
+                // Draw the header
                 float listHeaderSize = 20f;
                 Rect listHeaderRect = new Rect();
                 listHeaderRect.xMax = scrollRect.xMax;
                 listHeaderRect.yMin = scrollRect.yMin - listHeaderSize;
                 listHeaderRect.yMax = listHeaderRect.yMin + listHeaderSize;
                 //listHeaderRect.xMin -= scrollRect.xMin + 32f;
-                Widgets.Label(listHeaderRect, "Cloning_Settings_GeneListHeader".Translate());
+                Widgets.Label(listHeaderRect, $"({Settings.genesEligibleForMutation.Count})" + "Cloning_Settings_GeneListHeader".Translate() + ":");
+
+                // Draw buttons for manipulating the whole list at once.
+                float selectButtonWidth = 60f;
+                float selectButtonHeight = 24f;
+                Rect selectButtonRect = new Rect(scrollRect.xMax-selectButtonWidth,scrollRect.yMin- selectButtonHeight, selectButtonWidth, selectButtonHeight);
+
+                if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_SelectNone".Translate()))
+                {
+                    Settings.genesEligibleForMutation.Clear();
+                }
+                selectButtonRect.position = new Vector2(selectButtonRect.x - ( selectButtonWidth + 6f ), selectButtonRect.y);
+                if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_SelectAll".Translate()))
+                {
+                    foreach (GeneDef geneDef in GeneUtils.AllGenesCache.Values)
+                    {
+                        if (geneDef.defName == CloneDefs.Clone.defName) continue;
+                        GeneUtils.SetEligible(geneDef.defName, true);
+                    }
+                }
+                selectButtonRect.position = new Vector2(selectButtonRect.x - ( selectButtonWidth + 6f ), selectButtonRect.y);
+                if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_Reset".Translate()))
+                {
+                    Settings.genesEligibleForMutation.Clear();
+                    foreach (string geneDefault in GeneUtils.defaultGenesEligible.Keys)
+                    {
+                        Settings.genesEligibleForMutation.Add(geneDefault, GeneUtils.defaultGenesEligible[geneDefault]);
+                    }
+                    //Settings.genesEligibleForMutation = GeneUtils.defaultGenesEligible;
+                }
+
 
                 // Draw the background for the sroll box
                 Widgets.DrawBoxSolid(scrollRect, new Color(0.7f, 0.7f, 0.7f, 0.3f));
-                scrollRect = scrollRect.ContractedBy(8f); // Whatever you do, DO NOT SET THIS TO 2f!!!!!! For god knows what reason, that causes it to fail at rendering everything!
+
+                // Whatever you do, DO NOT SET THIS TO 2f!!!!!! For god knows what reason, that causes it to fail at rendering everything!
+                // FOR THE LOVE OF GOD don't do it. And DON'T try to figure out why, just leave it be. Live your life in blissful ignorance.
+                scrollRect = scrollRect.ContractedBy(8f); 
 
 
                 UIUtility.MakeAndBeginScrollView(scrollRect, scrollHeight, ref scrollPos, out Listing_Standard scrollList);
@@ -143,12 +176,6 @@ namespace Dark.Cloning
                     Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
                     Widgets.DrawTexturePart(checkboxRect, new Rect(0,0,1,1), Widgets.GetCheckboxTexture(eligible));
 
-                    // Handle clicking on this gene, by flipflopping its eligibility status
-                    if (Widgets.ButtonInvisible(buttonRect))
-                    {
-                        GeneUtils.SetEligible(gene, !eligible);
-                    }
-
                     // Draw the weight slider and its label
                     if (eligible)
                     {
@@ -157,8 +184,15 @@ namespace Dark.Cloning
                         genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
 
                         // Draw the label for the slider
-                        Rect sliderLabelRect = new Rect(buttonRect.x, buttonRect.y + rowHeight, buttonRect.width, 24f);
+                        Rect sliderLabelRect = new Rect(buttonRect.x+4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
                         Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
+                    }
+
+                    // Lastly, handle clicking on this gene, by flipflopping its eligibility status
+                    if (Widgets.ButtonInvisible(buttonRect))
+                    {
+                        GeneUtils.SetEligible(gene, !eligible);
+                        eligible = !eligible;
                     }
                 }
 
