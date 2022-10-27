@@ -18,6 +18,7 @@ namespace Dark.Cloning
         public static bool doRandomMutations = true;
         public static float randomMutationChance = 0.3f;
         public static int maxMutations = 3;
+        public static bool addMutationsAsXenogenes = false;
 
         public static Dictionary<string, int> genesEligibleForMutation = GeneUtils.defaultGenesEligible;
 
@@ -33,9 +34,9 @@ namespace Dark.Cloning
             listingStandard.Begin(inRect);
 
             #region Cooldown Settings
+            listingStandard.ColumnWidth = (inRect.width / 2) * 0.97f;
             listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown, "Cloning_Cooldown_Description".Translate());
             listingStandard.Label("Cloning_Cooldown_Description".Translate());
-            UIUtility.DoIndent(listingStandard);
             if (Settings.cloningCooldown)
             {
                 Settings.cloningCooldownDays = (int)listingStandard.SliderLabeled(
@@ -46,15 +47,13 @@ namespace Dark.Cloning
                     tooltip: "Cloning_Settings_CooldownDays_Tooltip".Translate() + ": " + defaultCooldownDays
                 );
             }
-            UIUtility.DoOutdent(listingStandard);
             #endregion Cooldown Settings
 
-            listingStandard.GapLine();
+            listingStandard.NewColumn();
 
             #region Mutation Settings
             listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref Settings.doRandomMutations);
             listingStandard.Label("Cloning_Mutations_Description".Translate());
-            UIUtility.DoIndent(listingStandard);
             if (Settings.doRandomMutations)
             {
                 Settings.randomMutationChance = listingStandard.SliderLabeled(
@@ -66,9 +65,10 @@ namespace Dark.Cloning
                 Settings.maxMutations = Mathf.RoundToInt(listingStandard.SliderLabeled(
                     "Cloning_Settings_MaxMutations".Translate() + $": {Settings.maxMutations}",
                     Settings.maxMutations,
-                    0f,
-                    10f
+                    1f,
+                    Settings.genesEligibleForMutation.Count
                 ));
+                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(),ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
 
                 // Begin scrollview for gene mutation settings
                 Rect scrollRect;
@@ -196,8 +196,6 @@ namespace Dark.Cloning
                 }
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
-
-                UIUtility.DoOutdent(listingStandard);
             }
             #endregion Mutation Settings
 
@@ -211,6 +209,7 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref doRandomMutations, "doRandomMutations", true);
             Scribe_Values.Look(ref randomMutationChance, "randomMutationChance", 0.3f);
             Scribe_Values.Look(ref maxMutations, "maxMutations", 3);
+            Scribe_Values.Look(ref addMutationsAsXenogenes, "addMutationsAsXenogenes", false);
             Scribe_Collections.Look(ref genesEligibleForMutation, "genesEligibleForMutation", LookMode.Value);
 
             // Check if the dictionary loaded was empty, and load the default instead

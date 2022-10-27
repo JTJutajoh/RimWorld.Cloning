@@ -10,8 +10,10 @@
 When a clone pawn is born, there will be [number of mutations] dice rolls each at [mutation chance] to add a mutation, chosen randomly from the weighted list of eligible mutations.</Cloning_Mutations_Description>
   <Cloning_Settings_DoMutations>Enable random mutations</Cloning_Settings_DoMutations>
   <Cloning_Settings_MutationChance>Mutation Chance</Cloning_Settings_MutationChance>
-  <Cloning_Settings_MaxMutations>Maximum number of mutations</Cloning_Settings_MaxMutations>
+  <Cloning_Settings_MaxMutations>Maximum mutations</Cloning_Settings_MaxMutations>
   <Cloning_Settings_MutationGeneWeight>Weight</Cloning_Settings_MutationGeneWeight>
+  <Cloning_Settings_MutationsXenogenes>Mutations are xenogenes</Cloning_Settings_MutationsXenogenes>
+  <Cloning_Settings_MutationsXenogenes_Tooltip>If enabled, mutations are added as xenogenes, meaning they are not inherited if the clone has a child.</Cloning_Settings_MutationsXenogenes_Tooltip>
   <Cloning_Settings_GeneListHeader>Genes eligible to be added by mutations</Cloning_Settings_GeneListHeader>
   <Enabled>Enabled</Enabled>
   <Disabled>Disabled</Disabled>
