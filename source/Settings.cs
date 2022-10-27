@@ -92,13 +92,8 @@ namespace Dark.Cloning
 
 
                 UIUtility.MakeAndBeginScrollView(scrollRect, scrollHeight, ref scrollPos, out Listing_Standard scrollList);
-                scrollRect.xMax -= 12f; // Account for the scrollbar on the right side
-                //scrollRect.xMin += 24f;
-
-                Color rowColorA = new Color(0.2f, 0.2f, 0.2f);
-                Color rowColorB = new Color(0.35f, 0.35f, 0.35f);
-                bool useColorA = true;
-
+                scrollRect.xMax -= 24f; // Account for the scrollbar on the right side
+                scrollRect.xMin -= 12f;
 
                 float rowHeight = 86f;
                 float geneWidth = 72f;
@@ -131,13 +126,33 @@ namespace Dark.Cloning
                     {
                         Widgets.DrawHighlight(buttonRect);
                     }
-                    Rect checkboxRect = new Rect();
+                    else
+                    {
+                        // Disabled (Dark overlay)
+                        Widgets.DrawRectFast(buttonRect, new Color(0f, 0f, 0f, 0.3f));
+                    }
+
+                    // Draw a checkbox in the corner
+                    float checkboxSize = 16f;
+                    Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
                     Widgets.DrawTexturePart(checkboxRect, new Rect(0,0,1,1), Widgets.GetCheckboxTexture(eligible));
 
                     // Handle clicking on this gene, by flipflopping its eligibility status
                     if (Widgets.ButtonInvisible(buttonRect))
                     {
                         GeneUtils.SetEligible(gene, !eligible);
+                    }
+
+                    // Draw the weight slider and its label
+                    if (eligible)
+                    {
+                        // Draw the weight slider
+                        Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
+                        genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
+
+                        // Draw the label for the slider
+                        Rect sliderLabelRect = new Rect(buttonRect.x, buttonRect.y + rowHeight, buttonRect.width, 24f);
+                        Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
                     }
 
                     continue;
