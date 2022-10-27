@@ -35,7 +35,7 @@ namespace Dark.Cloning
             #region Cooldown Settings
             listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown, "Cloning_Cooldown_Description".Translate());
             listingStandard.Label("Cloning_Cooldown_Description".Translate());
-            DoIndent(listingStandard);
+            UIUtility.DoIndent(listingStandard);
             if (Settings.cloningCooldown)
             {
                 Settings.cloningCooldownDays = (int)listingStandard.SliderLabeled(
@@ -46,7 +46,7 @@ namespace Dark.Cloning
                     tooltip: "Cloning_Settings_CooldownDays_Tooltip".Translate() + ": " + defaultCooldownDays
                 );
             }
-            DoOutdent(listingStandard);
+            UIUtility.DoOutdent(listingStandard);
             #endregion Cooldown Settings
 
             listingStandard.GapLine();
@@ -54,7 +54,7 @@ namespace Dark.Cloning
             #region Mutation Settings
             listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref Settings.doRandomMutations);
             listingStandard.Label("Cloning_Mutations_Description".Translate());
-            DoIndent(listingStandard);
+            UIUtility.DoIndent(listingStandard);
             if (Settings.doRandomMutations)
             {
                 Settings.randomMutationChance = listingStandard.SliderLabeled(
@@ -110,6 +110,12 @@ namespace Dark.Cloning
                         continue;
                     }
 
+                    if (gene == CloneDefs.Clone.defName)
+                    {
+                        // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
+                        continue;
+                    }
+
                     // Draw one gene
                     Rect buttonRect = row.GetRect(geneWidth, out bool newRow);
                     if (newRow) scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Needed so that the scrollview listing_standard knows the correct height
@@ -158,21 +164,11 @@ namespace Dark.Cloning
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
 
-                DoOutdent(listingStandard);
+                UIUtility.DoOutdent(listingStandard);
             }
             #endregion Mutation Settings
 
             listingStandard.End();
-        }
-        private void DoIndent(Listing_Standard listing, float amount = 12f)
-        {
-            listing.ColumnWidth -= amount;
-            listing.Indent(amount);
-        }
-        private void DoOutdent(Listing_Standard listing, float amount = 12f)
-        {
-            listing.ColumnWidth += amount;
-            listing.Outdent(amount);
         }
 
         public override void ExposeData()
@@ -199,8 +195,23 @@ namespace Dark.Cloning
     }
 
     #region UI Utilities
+    /// <summary>
+    /// Utilities for UI, some of these are copied from sources online and are marked as such in comments.
+    /// </summary>
     public static class UIUtility
     {
+        public static void DoIndent(Listing_Standard listing, float amount = 12f)
+        {
+            listing.ColumnWidth -= amount;
+            listing.Indent(amount);
+        }
+        public static void DoOutdent(Listing_Standard listing, float amount = 12f)
+        {
+            listing.ColumnWidth += amount;
+            listing.Outdent(amount);
+        }
+
+        #region NC ScrollView
         public const float DefaultSliderWidth = 16f;   // will be subtracted from width for inner windows in scroll views
 
         // Copied from https://gitlab.com/nightcorp/nightmarecore/-/blob/master/Source/Utilities/UIUtility.cs#L29
@@ -239,12 +250,14 @@ namespace Dark.Cloning
             list.End();
             Widgets.EndScrollView();
         }
-
+        #endregion NC ScrollView
     }
 
     /// <summary>
     /// Based on Verse.WidgetRow, but rewritten to be more general,
-    /// only returning Rects and not actually drawing anything itself.
+    /// only returning Rects and not actually drawing anything itself. <br />
+    /// Encapsulated class that could be used in other mods to draw a wrapping grid of anything using Rects. <br />
+    /// Designed to be used like Listing_Standard.GetRect(), but horizontally instead.
     /// </summary>
     public class RectRow
     {

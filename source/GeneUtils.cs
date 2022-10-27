@@ -91,11 +91,6 @@ namespace Dark.Cloning
             genesCached = true;
         }
 
-        //TODO: remove this prob
-        static GeneUtils()
-        {
-        }
-
         public static void ApplyRandomMutations(ref GeneSet genes)
         {
 
