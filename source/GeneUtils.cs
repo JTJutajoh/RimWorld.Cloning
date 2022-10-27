@@ -106,7 +106,7 @@ namespace Dark.Cloning
 
         }
 
-        public static GeneDef PickRandomMutation()
+        private static GeneDef PickRandomMutation(Dictionary<string,int> options)
         {
             string defName = "";
 
@@ -120,7 +120,8 @@ namespace Dark.Cloning
                     break;
                 }
 
-                defName = Settings.genesEligibleForMutation.RandomElementByWeight(x => x.Value).Key;
+                //defName = Settings.genesEligibleForMutation.RandomElementByWeight(x => x.Value).Key;
+                defName = options.RandomElementByWeight(x => x.Value).Key;
 
                 Log.Message($"Chose gene {defName}. Searching for the def in the cache");
                 if (AllGenesCache.ContainsKey(defName))
@@ -139,17 +140,39 @@ namespace Dark.Cloning
         {
             List<GeneDef> genes = new List<GeneDef>();
 
+            Dictionary<string, int> geneOptions = Settings.genesEligibleForMutation;
+
             for (int i = 0; i < Settings.maxMutations; i++)
             {
+                if (geneOptions.Count <= 0) break; // There are no options, either because the user didn't set any or because we exhausted them
                 if (Verse.Rand.Chance(Settings.randomMutationChance))
                 {
-                    GeneDef mutation = PickRandomMutation();
+                    GeneDef mutation = PickRandomMutation(geneOptions);
                     if (mutation == null)
                     {
                         Log.Error("Mutation GeneDef was null");
                         continue;
                     }
                     genes.Add(mutation);
+                    geneOptions.Remove(mutation.defName);
+                    // Iterate over the list looking for options that would interfere with the chosen gene, and remove them from the options
+                    // First make a copy so we can modify it
+                    Dictionary<string, int> tmpDict = new Dictionary<string, int>();
+                    foreach (KeyValuePair<string, int> item in geneOptions)
+                    {
+                        tmpDict.Add(item.Key, item.Value);
+                    }
+
+                    foreach (string option in geneOptions.Keys)
+                    {
+                        GeneDef optionDef = AllGenesCache[option];
+                        // If these genes override each other in either direction
+                        if (optionDef.Overrides(mutation,false, false) || mutation.Overrides(optionDef, false, false))
+                        {
+                            tmpDict.Remove(option);
+                        }
+                    }
+                    geneOptions = tmpDict;
                 }
             }
 
