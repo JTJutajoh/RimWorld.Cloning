@@ -14,12 +14,22 @@ namespace Dark.Cloning
     {
         public static Dictionary<string, int> defaultGenesEligible = new Dictionary<string, int>
         {
-            {"Inbred", 1},
-            {"Instability_Mild", 1},
-            {"Instability_Major", 1},
+            {"Inbred", 4},
+            {"Instability_Mild", 8},
+            {"Instability_Major", 4},
             {"Sterile", 10},
-            {"Aggression_Aggressive", 1},
-            {"Aggression_HyperAggressive", 1}
+            {"Aggression_Aggressive", 4},
+            {"Aggression_HyperAggressive", 3},
+            {"Learning_Slow", 3},
+            {"Nearsighted", 5},
+            {"WoundHealing_Slow", 1},
+            {"Immunity_Weak", 2},
+            {"PsychicAbility_Deaf", 1},
+            {"PsychicAbility_Dull", 2},
+            {"Mood_Depressive", 1},
+            {"Mood_Pessimist", 2},
+            {"Delicate", 3},
+            {"Pain_Extra", 2}
         };
 
         private static bool genesCached = false;
