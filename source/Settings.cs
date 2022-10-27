@@ -112,7 +112,6 @@ namespace Dark.Cloning
                     {
                         Settings.genesEligibleForMutation.Add(geneDefault, GeneUtils.defaultGenesEligible[geneDefault]);
                     }
-                    //Settings.genesEligibleForMutation = GeneUtils.defaultGenesEligible;
                 }
 
 
