@@ -12,13 +12,13 @@ namespace Dark.Cloning
     class Settings : ModSettings
     {
         public static bool cloningCooldown = true;
-        public static int cloningCooldownDays = 10;
-        private const int defaultCooldownDays = 10;
 
         public static bool doRandomMutations = true;
         public static float randomMutationChance = 0.3f;
         public static int maxMutations = 3;
         public static bool addMutationsAsXenogenes = false;
+        static readonly IntRange defaultCloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
+        public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7,14);
 
         public static Dictionary<string, int> genesEligibleForMutation = GeneUtils.defaultGenesEligible;
 
@@ -34,24 +34,21 @@ namespace Dark.Cloning
             listingStandard.Begin(inRect);
 
             #region Cooldown Settings
+
             listingStandard.ColumnWidth = (inRect.width / 2) * 0.97f;
             listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown, "Cloning_Cooldown_Description".Translate());
-            listingStandard.Label("Cloning_Cooldown_Description".Translate());
             if (Settings.cloningCooldown)
             {
-                Settings.cloningCooldownDays = (int)listingStandard.SliderLabeled(
-                    "Cloning_Settings_CooldownDays".Translate() + ": " + Settings.cloningCooldownDays + " Days",
-                    Settings.cloningCooldownDays,
-                    0,
-                    240,
-                    tooltip: "Cloning_Settings_CooldownDays_Tooltip".Translate() + ": " + defaultCooldownDays
-                );
+                listingStandard.Label("Cloning_Settings_CooldownDays".Translate());
+                listingStandard.IntRange(ref CloneExtractorRegrowingDurationDaysRange, 0, 60);
             }
+
             #endregion Cooldown Settings
 
             listingStandard.NewColumn();
 
             #region Mutation Settings
+
             listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref Settings.doRandomMutations);
             listingStandard.Label("Cloning_Mutations_Description".Translate());
             if (Settings.doRandomMutations)
@@ -197,6 +194,7 @@ namespace Dark.Cloning
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
             }
+
             #endregion Mutation Settings
 
             listingStandard.End();
@@ -205,7 +203,7 @@ namespace Dark.Cloning
         public override void ExposeData()
         {
             Scribe_Values.Look(ref cloningCooldown, "cloningCooldown", true);
-            Scribe_Values.Look(ref cloningCooldownDays, "cloningCooldownDays", defaultCooldownDays);
+            Scribe_Values.Look(ref CloneExtractorRegrowingDurationDaysRange, "CloneExtractorRegrowingDurationDaysRange", defaultCloneExtractorRegrowingDurationDaysRange);
             Scribe_Values.Look(ref doRandomMutations, "doRandomMutations", true);
             Scribe_Values.Look(ref randomMutationChance, "randomMutationChance", 0.3f);
             Scribe_Values.Look(ref maxMutations, "maxMutations", 3);

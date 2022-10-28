@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Building_CloneExtractor.cs" />
     <Compile Include="GeneUtils.cs" />
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
     <Compile Include="CloneDefs.cs" />

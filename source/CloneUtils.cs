@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 using HarmonyLib;
+using UnityEngine;
 
 namespace Dark.Cloning
 {
@@ -75,7 +76,7 @@ namespace Dark.Cloning
         {
             Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
 
-            hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = Settings.cloningCooldownDays * 60000;
+            hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange);
         }
     }
 }
