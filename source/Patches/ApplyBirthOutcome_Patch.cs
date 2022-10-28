@@ -12,15 +12,30 @@ using Verse;
 namespace Dark.Cloning
 {
     /// <summary>
-    /// Patch to modify the PawnGenerationRequest created for newborn pawns. 
-    /// Transpiler intercepts the call to GeneratePawn() and modifies the request to match clone genetic rules
+    /// Patch to modify the PawnGenerationRequest created for newborn pawns.<br />
+    /// Transpiler intercepts the call to GeneratePawn() and modifies the request to match clone genetic rules,
+    /// before passing it back to the vanilla function to handle the rest. <br /><br />
+    /// Postfix runs after the actual Pawn has been generated based on that PawnGenerationRequest and modifies the Pawn instance to ensure
+    /// that it copies everything from the parent correctly.
     /// </summary>
     [HarmonyPatch(typeof(PregnancyUtility))]
     [HarmonyPatch(nameof(PregnancyUtility.ApplyBirthOutcome))]
     class ApplyBirthOutcome_Patch
     {
+        /// <summary>
+        /// The method used by <see cref="Transpiler(IEnumerable{CodeInstruction})"/> to intercept the PawnGenerationRequest and modify it. <br />
+        /// Right hand side gets the MethodInfo of the PawnGenerator method GeneratePawn overload that takes a PawnGenerationRequest argument. <br />
+        /// When this method is called, the most recently-added thing to the stack will be the PawnGenerationRequest argument, which we want to modify.
+        /// </summary>
         static MethodInfo anchorMethod = typeof(PawnGenerator).GetMethod("GeneratePawn", new Type[] { typeof(PawnGenerationRequest) });
 
+        /// <summary>
+        /// Transpiler that intercepts the PawnGenerationRequest right after it is created and before it is used by GeneratePawn. <br />
+        /// Loads a few extra arguments onto the stack, and then calls
+        /// <see cref="GeneratePawn(PawnGenerationRequest, Thing, List{GeneDef}, Pawn, Pawn)"/>, which takes those extra arguments
+        /// and uses them to modify the request, returning it (Which pushes it back onto the stack, modified). The vanilla GeneratePawn
+        /// is then called using the newly-modified version on the stack and generates the pawn.
+        /// </summary>
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             Log.Message("Cloning Patching...");
@@ -79,25 +94,65 @@ namespace Dark.Cloning
                     else request.ForcedXenotype = donor.genes.Xenotype;
                 }
 
-                if (Settings.doRandomMutations)
-                {
-                    List<GeneDef> mutations = GeneUtils.GetRandomMutations();
-                    if (mutations.Count > 0)
-                    {
-                        string letterContents = "Cloning_Letter_MutationText".Translate();
-                        foreach (GeneDef mutation in mutations)
-                        {
-                            letterContents = letterContents + "\n -" + mutation.LabelCap;
-                        }
-                        Letter letter = LetterMaker.MakeLetter("Cloning_Letter_MutationLabel".Translate(), letterContents, LetterDefOf.NeutralEvent);
-                        Find.LetterStack.ReceiveLetter(letter);
-                    }
-                    if (Settings.addMutationsAsXenogenes) request.ForcedXenogenes = mutations;
-                    else request.ForcedEndogenes = mutations;
-                }
+                TryAddMutations(request);
             }
 
             return request;
+        }
+
+        /// <summary>
+        /// Conditionally adds a random set of mutation genes to the given request, according to Settings.
+        /// </summary>
+        /// <returns>Modified version of the given PawnGenerationRequest with mutation genes added</returns>
+        static PawnGenerationRequest TryAddMutations(PawnGenerationRequest request)
+        {
+            if (Settings.doRandomMutations && Settings.genesEligibleForMutation.Count > 0)
+            {
+                List<GeneDef> mutations = GeneUtils.GetRandomMutations();
+                if (mutations.Count > 0)
+                {
+                    string letterContents = "Cloning_Letter_MutationText".Translate();
+                    foreach (GeneDef mutation in mutations)
+                    {
+                        letterContents = letterContents + "\n -" + mutation.LabelCap;
+                    }
+                    Letter letter = LetterMaker.MakeLetter("Cloning_Letter_MutationLabel".Translate(), letterContents, LetterDefOf.NeutralEvent);
+                    Find.LetterStack.ReceiveLetter(letter);
+                }
+                if (Settings.addMutationsAsXenogenes) request.ForcedXenogenes = mutations;
+                else request.ForcedEndogenes = mutations;
+            }
+            return request;
+        }
+
+        /// <summary>
+        /// Postfix patch that runs after the actual Pawn instance has been generated, responsible for modifying the newborn pawn
+        /// to ensure it matches the parent.
+        /// </summary>
+        static void Postfix(ref Thing __result, Pawn geneticMother, Pawn father)
+        {
+            /* After the vanilla method has run, go over things to make SURE that the newly-generated pawn copied over all of its genes from the donor
+            Here are some probably relevant lines from the vanilla function:
+
+            XenotypeDef xenotype;
+            if (PregnancyUtility.TryGetInheritedXenotype(geneticMother, father, out xenotype))
+                pawn1.genes?.SetXenotypeDirect(xenotype);
+            else if (PregnancyUtility.ShouldByHybrid(geneticMother, father))
+            {
+                pawn1.genes.hybrid = true;
+                pawn1.genes.xenotypeName = (string) "Hybrid".Translate();
+            }
+            ...
+            if (pawn1.RaceProps.IsFlesh)
+            {
+            if (geneticMother != null)
+                pawn1.relations.AddDirectRelation(PawnRelationDefOf.Parent, geneticMother);
+            if (father != null)
+                pawn1.relations.AddDirectRelation(PawnRelationDefOf.Parent, father);
+            if (birtherPawn != null && birtherPawn != geneticMother)
+                pawn1.relations.AddDirectRelation(PawnRelationDefOf.ParentBirth, birtherPawn);
+            }
+            */
         }
     }
 }
