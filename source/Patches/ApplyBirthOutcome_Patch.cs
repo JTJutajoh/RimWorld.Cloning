@@ -153,6 +153,9 @@ namespace Dark.Cloning
                 pawn1.relations.AddDirectRelation(PawnRelationDefOf.ParentBirth, birtherPawn);
             }
             */
+            //TODO: Ensure that newborn clones copy body type and hair color genes from donor
+            //TODO: Ensure that newborn clones inherit the same body type and hair style from donor, regardless of genes. Probably needs a different patch for when they reach adulthood.
+
         }
     }
 }
