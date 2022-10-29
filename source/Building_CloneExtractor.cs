@@ -25,7 +25,7 @@ namespace Dark.Cloning
         [Unsaved(false)]
         private Effecter progressBar;
         private const int TicksToExtract = 30000;
-        private float WorkingPowerUsageFactor = 4f;
+        private float WorkingPowerUsageFactor = 6f;
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
         private Pawn ContainedPawn => this.innerContainer.Count <= 0 ? (Pawn)null : (Pawn)this.innerContainer[0];
@@ -66,7 +66,7 @@ namespace Dark.Cloning
 
         public PawnPosture HeldPawnPosture => PawnPosture.LayingOnGroundFaceUp;
 
-        public override Vector3 PawnDrawOffset => IntVec3.West.RotatedBy(this.Rotation).ToVector3() / (float)this.def.size.x;
+        public override Vector3 PawnDrawOffset => Vector3.zero;// IntVec3.West.RotatedBy(this.Rotation).ToVector3() / (float)this.def.size.x;
 
         public override void PostPostMake()
         {

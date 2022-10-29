@@ -17,15 +17,15 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <drawSize>(3, 2)</drawSize>
       <shadowData>
-        <volume>(1.7, 0.8, 1.7)</volume>
+        <volume>(2.2, 0.8, 1.7)</volume>
       </shadowData>
     </graphicData>
     <size>(3, 2)</size>
     <hasInteractionCell>true</hasInteractionCell>
-    <interactionCellOffset>(1, 0, 2)</interactionCellOffset>
+    <interactionCellOffset>(0, 0, 2)</interactionCellOffset>
     <defaultPlacingRot>South</defaultPlacingRot>
     <designationCategory>Biotech</designationCategory>
-    <uiOrder>2100</uiOrder>
+    <uiOrder>2101</uiOrder>
     <researchPrerequisites>
       <li>Cloning</li>
     </researchPrerequisites>
@@ -36,19 +36,21 @@
     </building>
     <statBases>
       <MaxHitPoints>350</MaxHitPoints>
-      <WorkToBuild>9000</WorkToBuild>
-      <Mass>85</Mass>
+      <WorkToBuild>11000</WorkToBuild>
+      <Mass>115</Mass>
       <Flammability>0.5</Flammability>
     </statBases>
     <costList>
-      <Steel>200</Steel>
-      <ComponentIndustrial>8</ComponentIndustrial>
+      <Steel>500</Steel>
+      <Plasteel>80</Plasteel>
+      <ComponentIndustrial>12</ComponentIndustrial>
+      <ComponentSpacer>4</ComponentSpacer>
     </costList>
-    <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+    <constructionSkillPrerequisite>8</constructionSkillPrerequisite>
     <comps>
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
-        <basePowerConsumption>50</basePowerConsumption>
+        <basePowerConsumption>100</basePowerConsumption>
       </li>
       <li Class="CompProperties_Flickable"/>
     </comps>
