@@ -4,6 +4,8 @@ using RimWorld;
 
 namespace Dark.Cloning
 {
+	/*
+	//TODO: Remove clone surgery
 	/// <summary>
 	/// Modified version of vanilla Recipe_ExtractOvum class, removing restrictions and marking the resulting embryo as a clone.
 	/// </summary>
@@ -21,18 +23,10 @@ namespace Dark.Cloning
 			{
 				return false;
 			}
-			/*if (pawn.health.hediffSet.HasHediff(HediffDefOf.PregnantHuman, false))
-			{
-				return "CannotPregnant".Translate();
-			}*/
 			if (pawn.ageTracker.AgeBiologicalYears < this.recipe.minAllowedAge)
 			{
 				return "CannotMustBeAge".Translate(this.recipe.minAllowedAge);
 			}
-			/*if (pawn.Sterile(false))
-			{
-				return "CannotSterile".Translate();
-			}*/
 			if (pawn.health.hediffSet.HasHediff(HediffDefOf.OvumExtracted, false))
 			{
 				return "SurgeryDisableReasonOvumExtracted".Translate();
@@ -62,5 +56,5 @@ namespace Dark.Cloning
 				Log.Error("Could not drop embryo near " + pawn.Position);
 			}
 		}
-	}
+	}*/
 }
