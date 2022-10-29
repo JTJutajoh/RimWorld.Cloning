@@ -2,7 +2,6 @@
 
 <LanguageData>
   <Cloning_SettingsCategory>Cloning</Cloning_SettingsCategory>
-  <Cloning_Cooldown_Description>If enabled, extracting a clone embryo causes gene sickness just like extracting or implanting genes normally would.</Cloning_Cooldown_Description>
   <Cloning_Settings_CloningCooldown>Extraction causes gene sickness</Cloning_Settings_CloningCooldown>
   <Cloning_Settings_CooldownDays>Sickness duration in days</Cloning_Settings_CooldownDays>
   <Cloning_Mutations_Description>If enabled, clones have a random chance of gaining a random (usually negative) gene, representing undesired mutations, up to a maximum number. This is meant to help balance how powerful it is to be able to clone freely.

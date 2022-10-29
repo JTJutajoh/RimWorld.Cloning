@@ -67,6 +67,7 @@
     <Compile Include="CloneDefs.cs" />
     <Compile Include="EmbryoTracker.cs" />
     <Compile Include="Mod.cs" />
+    <Compile Include="Patches\Notify_LifeStageStarted_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe_ExtractClone.cs" />
     <Compile Include="Settings.cs" />

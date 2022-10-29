@@ -25,6 +25,10 @@ namespace Dark.Cloning
         {
             return HasCloneGene(embryo.GeneSet);
         }
+        public static bool HasCloneGene(Pawn pawn)
+        {
+            return pawn.genes.HasGene(CloneDefs.Clone);
+        }
 
         public static void CopyGenesFromParent(ref GeneSet genes, HumanEmbryo embryo)
         {
