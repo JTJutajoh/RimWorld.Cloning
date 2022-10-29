@@ -12,6 +12,7 @@ namespace Dark.Cloning
     class Settings : ModSettings
     {
         public static bool cloningCooldown = true;
+        public static bool inheritHair = true;
 
         public static bool doRandomMutations = true;
         public static float randomMutationChance = 0.3f;
@@ -44,6 +45,8 @@ namespace Dark.Cloning
             }
 
             #endregion Cooldown Settings
+
+            listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref Settings.inheritHair);
 
             listingStandard.NewColumn();
 
@@ -203,6 +206,7 @@ namespace Dark.Cloning
         public override void ExposeData()
         {
             Scribe_Values.Look(ref cloningCooldown, "cloningCooldown", true);
+            Scribe_Values.Look(ref inheritHair, "inheritHair", true);
             Scribe_Values.Look(ref CloneExtractorRegrowingDurationDaysRange, "CloneExtractorRegrowingDurationDaysRange", defaultCloneExtractorRegrowingDurationDaysRange);
             Scribe_Values.Look(ref doRandomMutations, "doRandomMutations", true);
             Scribe_Values.Look(ref randomMutationChance, "randomMutationChance", 0.3f);
