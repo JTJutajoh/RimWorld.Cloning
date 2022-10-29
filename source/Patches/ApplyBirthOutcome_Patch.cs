@@ -94,34 +94,9 @@ namespace Dark.Cloning
                     else request.ForcedXenotype = donor.genes.Xenotype;
                 }
 
-                TryAddMutations(request);
+                GeneUtils.TryAddMutationsToRequest(ref request);
             }
 
-            return request;
-        }
-
-        /// <summary>
-        /// Conditionally adds a random set of mutation genes to the given request, according to Settings.
-        /// </summary>
-        /// <returns>Modified version of the given PawnGenerationRequest with mutation genes added</returns>
-        static PawnGenerationRequest TryAddMutations(PawnGenerationRequest request)
-        {
-            if (Settings.doRandomMutations && Settings.genesEligibleForMutation.Count > 0)
-            {
-                List<GeneDef> mutations = GeneUtils.GetRandomMutations();
-                if (mutations.Count > 0)
-                {
-                    string letterContents = "Cloning_Letter_MutationText".Translate();
-                    foreach (GeneDef mutation in mutations)
-                    {
-                        letterContents = letterContents + "\n -" + mutation.LabelCap;
-                    }
-                    Letter letter = LetterMaker.MakeLetter("Cloning_Letter_MutationLabel".Translate(), letterContents, LetterDefOf.NeutralEvent);
-                    Find.LetterStack.ReceiveLetter(letter);
-                }
-                if (Settings.addMutationsAsXenogenes) request.ForcedXenogenes = mutations;
-                else request.ForcedEndogenes = mutations;
-            }
             return request;
         }
 
