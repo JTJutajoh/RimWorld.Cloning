@@ -13,14 +13,14 @@
     <drawerType>MapMeshAndRealTime</drawerType>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <texPath>Things/Building/Misc/GeneExtractor/GeneExtractor</texPath>
+      <texPath>Things/Building/Misc/CloneExtractor/CloneExtractor</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
-      <drawSize>(2, 2)</drawSize>
+      <drawSize>(3, 2)</drawSize>
       <shadowData>
         <volume>(1.7, 0.8, 1.7)</volume>
       </shadowData>
     </graphicData>
-    <size>(2, 2)</size>
+    <size>(3, 2)</size>
     <hasInteractionCell>true</hasInteractionCell>
     <interactionCellOffset>(1, 0, 2)</interactionCellOffset>
     <defaultPlacingRot>South</defaultPlacingRot>
