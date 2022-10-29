@@ -36,8 +36,12 @@ namespace Dark.Cloning.Patches
                     return;
                 }
                 pawn.story.bodyType = donor.story.bodyType;
-                if (Settings.inheritHair) pawn.story.hairDef = donor.story.hairDef;
-                pawn.Drawer.renderer.graphics.SetAllGraphicsDirty();
+                /*if (Settings.inheritHair)
+                {
+                    pawn.story.hairDef = donor.story.hairDef;
+                    pawn.style.beardDef = donor.style.beardDef;
+                }*/
+                pawn.style.Notify_StyleItemChanged();
             }
         }
     }

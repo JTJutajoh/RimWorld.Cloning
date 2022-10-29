@@ -82,6 +82,7 @@ namespace Dark.Cloning
                 }
 
                 // Modify the request based on the found genes. 
+                // Copy basics from the donor
                 request.FixedGender = donor.gender;
 
                 if (donor.genes.UniqueXenotype)
@@ -128,9 +129,24 @@ namespace Dark.Cloning
                 pawn1.relations.AddDirectRelation(PawnRelationDefOf.ParentBirth, birtherPawn);
             }
             */
-            //TODO: Ensure that newborn clones copy body type and hair color genes from donor
-            //TODO: Ensure that newborn clones inherit the same body type and hair style from donor, regardless of genes. Probably needs a different patch for when they reach adulthood.
-
+            Pawn pawn = (Pawn)__result;
+            if (pawn == null)
+            {
+                // If the clone was stillborn.
+                return;
+            }
+            // Copy basic things from the parent.
+            Pawn donor = geneticMother != null ? geneticMother : father;
+            if (donor != null) // Shouldn't ever happen but let's just be safe
+            {
+                pawn.story.headType = donor.story.headType;
+                if (Settings.inheritHair)
+                {
+                    pawn.story.hairDef = donor.story.hairDef;
+                    pawn.style.beardDef = donor.style.beardDef;
+                }
+                pawn.style.Notify_StyleItemChanged();
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Dark.Cloning
     [HarmonyPatch(typeof(HumanEmbryo), nameof(HumanEmbryo.TryPopulateGenes))]
     class TryPopulateGenes_Patch
     {
-        static void Postfix(ref GeneSet ___geneSet, HumanEmbryo __instance)
+        static void Prefix(ref GeneSet ___geneSet, HumanEmbryo __instance)
         {
             if (!EmbryoTracker.Contains(__instance)) return; // This embryo was not marked as a clone, don't run the rest of the patch.
 

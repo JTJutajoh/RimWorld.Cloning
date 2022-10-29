@@ -112,6 +112,8 @@ namespace Dark.Cloning
         /// <returns>Modified version of the given PawnGenerationRequest with mutation genes added</returns>
         public static PawnGenerationRequest TryAddMutationsToRequest(ref PawnGenerationRequest request)
         {
+            List<GeneDef> originalEndoGenes = request.ForcedEndogenes;
+            List<GeneDef> originalXenoGenes = request.ForcedXenogenes;
             if (Settings.doRandomMutations && Settings.genesEligibleForMutation.Count > 0)
             {
                 List<GeneDef> mutations = GeneUtils.GetRandomMutations();
@@ -125,8 +127,26 @@ namespace Dark.Cloning
                     Letter letter = LetterMaker.MakeLetter("Cloning_Letter_MutationLabel".Translate(), letterContents, LetterDefOf.NeutralEvent);
                     Find.LetterStack.ReceiveLetter(letter);
                 }
-                if (Settings.addMutationsAsXenogenes) request.ForcedXenogenes = mutations;
-                else request.ForcedEndogenes = mutations;
+                if (Settings.addMutationsAsXenogenes)
+                {
+                    foreach (GeneDef gene in mutations)
+                    {
+                        if (!request.ForcedXenogenes.Contains(gene))
+                        {
+                            request.ForcedXenogenes.Add(gene);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (GeneDef gene in mutations)
+                    {
+                        if (!request.ForcedEndogenes.Contains(gene))
+                        {
+                            request.ForcedEndogenes.Add(gene);
+                        }
+                    }
+                }
             }
             return request;
         }
