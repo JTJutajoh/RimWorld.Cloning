@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
+  <!--
   <RecipeDef ParentName="SurgeryFlesh">
     <defName>ExtractClone</defName>
     <label>extract embryo for cloning</label>
@@ -35,5 +36,6 @@
     <minAllowedAge>16</minAllowedAge>
     <uiIconThing>HumanOvum</uiIconThing>
   </RecipeDef>
+  -->
 
 </Defs>
