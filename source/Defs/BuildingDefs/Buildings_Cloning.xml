@@ -46,7 +46,7 @@
       <ComponentIndustrial>12</ComponentIndustrial>
       <ComponentSpacer>4</ComponentSpacer>
     </costList>
-    <constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
     <comps>
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
