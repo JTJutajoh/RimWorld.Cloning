@@ -30,6 +30,7 @@ namespace Dark.Cloning
             clonedGenes.SortGenes();
 
             ___geneSet = clonedGenes;
+            // The vanilla method that runs after this will just do nothing because it first checks if the geneSet field is null, and only runs if so.
         }
     }
 }

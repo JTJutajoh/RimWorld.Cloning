@@ -76,6 +76,7 @@ namespace Dark.Cloning
             return humanEmbryo;
         }
 
+        //TODO: Remove this probably
         public static void StartXenogermReplicatingHediff(Pawn pawn)
         {
             Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
