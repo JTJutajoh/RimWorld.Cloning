@@ -16,7 +16,8 @@ namespace Dark.Cloning
 
         public static bool doRandomMutations = true;
         public static float randomMutationChance = 0.3f;
-        public static int maxMutations = 3;
+        static readonly IntRange defaultNumMutations = new IntRange(1, 3);
+        public static IntRange numMutations = new IntRange(1, 3);
         public static bool addMutationsAsXenogenes = false;
         public static bool cloneXenogenes = false;
         public static bool cloneArchiteGenes = false;
@@ -69,12 +70,10 @@ namespace Dark.Cloning
                     0f,
                     1f
                 );
-                Settings.maxMutations = Mathf.RoundToInt(listingStandard.SliderLabeled(
-                    "Cloning_Settings_MaxMutations".Translate() + $": {Settings.maxMutations}",
-                    Settings.maxMutations,
-                    1f,
-                    Settings.genesEligibleForMutation.Count
-                ));
+                listingStandard.Label("Cloning_Settings_MaxMutations".Translate());
+                listingStandard.IntRange(ref numMutations, 1, Settings.genesEligibleForMutation.Count);
+                if (numMutations.max > Settings.genesEligibleForMutation.Count) numMutations.max = Settings.genesEligibleForMutation.Count;
+
                 listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(),ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
 
                 // Begin scrollview for gene mutation settings
@@ -217,7 +216,7 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref CloneExtractorRegrowingDurationDaysRange, "CloneExtractorRegrowingDurationDaysRange", defaultCloneExtractorRegrowingDurationDaysRange);
             Scribe_Values.Look(ref doRandomMutations, "doRandomMutations", true);
             Scribe_Values.Look(ref randomMutationChance, "randomMutationChance", 0.3f);
-            Scribe_Values.Look(ref maxMutations, "maxMutations", 3);
+            Scribe_Values.Look(ref numMutations, "numMutations", defaultNumMutations);
             Scribe_Values.Look(ref addMutationsAsXenogenes, "addMutationsAsXenogenes", false);
             Scribe_Values.Look(ref cloneXenogenes, "cloneXenogenes", false);
             Scribe_Values.Look(ref cloneArchiteGenes, "cloneArchiteGenes", false);
