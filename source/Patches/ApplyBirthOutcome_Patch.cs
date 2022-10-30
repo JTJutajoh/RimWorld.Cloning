@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using UnityEngine;
 
 namespace Dark.Cloning
 {
@@ -123,6 +124,8 @@ namespace Dark.Cloning
                 }
                 pawn.style.Notify_StyleItemChanged();
             }
+
+            if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
         }
     }
 }
