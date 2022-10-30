@@ -84,6 +84,7 @@ namespace Dark.Cloning
                 // Modify the request based on the found genes. 
                 // Copy basics from the donor
                 request.FixedGender = donor.gender;
+                request.CanGeneratePawnRelations = false;
 
                 if (donor.genes.UniqueXenotype)
                 {
