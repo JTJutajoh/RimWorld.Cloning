@@ -113,6 +113,8 @@ namespace Dark.Cloning
             if (donor != null) // Shouldn't ever happen but let's just be safe
             {
                 pawn.story.headType = donor.story.headType;
+                pawn.story.skinColorOverride = donor.story.skinColorOverride;
+                pawn.story.furDef = donor.story.furDef;
                 if (Settings.inheritHair)
                 {
                     pawn.story.hairDef = donor.story.hairDef;
