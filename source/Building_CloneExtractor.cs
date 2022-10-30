@@ -165,7 +165,7 @@ namespace Dark.Cloning
                 return;
             Pawn containedPawn = this.ContainedPawn;
             HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
-            GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+            if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
             IntVec3 intVec3 = this.def.hasInteractionCell ? this.InteractionCell : this.Position;
             this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
             if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
