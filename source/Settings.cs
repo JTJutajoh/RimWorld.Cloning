@@ -18,6 +18,8 @@ namespace Dark.Cloning
         public static float randomMutationChance = 0.3f;
         public static int maxMutations = 3;
         public static bool addMutationsAsXenogenes = false;
+        public static bool cloneXenogenes = false;
+        public static bool cloneArchiteGenes = false;
         static readonly IntRange defaultCloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
         public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7,14);
 
@@ -34,9 +36,16 @@ namespace Dark.Cloning
 
             listingStandard.Begin(inRect);
 
-            #region Cooldown Settings
-
             listingStandard.ColumnWidth = (inRect.width / 2) * 0.97f;
+
+            listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref Settings.inheritHair);
+            listingStandard.CheckboxLabeled("Cloning_Settings_CloneXenogenes".Translate(), ref Settings.cloneXenogenes, "Cloning_Settings_CloneXenogenes_Tooltip".Translate());
+            if (Settings.cloneXenogenes) listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref Settings.cloneArchiteGenes);
+            else listingStandard.Gap(Text.CalcHeight("Cloning_Settings_CloneXenogenes".Translate(), listingStandard.ColumnWidth));
+
+            #region Cooldown Settings
+            listingStandard.Gap();
+
             listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown, "Cloning_Cooldown_Description".Translate());
             if (Settings.cloningCooldown)
             {
@@ -45,8 +54,6 @@ namespace Dark.Cloning
             }
 
             #endregion Cooldown Settings
-
-            listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref Settings.inheritHair);
 
             listingStandard.NewColumn();
 
@@ -212,6 +219,8 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref randomMutationChance, "randomMutationChance", 0.3f);
             Scribe_Values.Look(ref maxMutations, "maxMutations", 3);
             Scribe_Values.Look(ref addMutationsAsXenogenes, "addMutationsAsXenogenes", false);
+            Scribe_Values.Look(ref cloneXenogenes, "cloneXenogenes", false);
+            Scribe_Values.Look(ref cloneArchiteGenes, "cloneArchiteGenes", false);
             Scribe_Collections.Look(ref genesEligibleForMutation, "genesEligibleForMutation", LookMode.Value);
 
             // Check if the dictionary loaded was empty, and load the default instead

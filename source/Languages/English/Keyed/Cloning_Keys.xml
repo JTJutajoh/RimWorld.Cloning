@@ -12,6 +12,9 @@ When a clone pawn is born, there will be [number of mutations] dice rolls each a
   <Cloning_Settings_MaxMutations>Maximum mutations</Cloning_Settings_MaxMutations>
   <Cloning_Settings_MutationGeneWeight>Weight</Cloning_Settings_MutationGeneWeight>
   <Cloning_Settings_MutationsXenogenes>Mutations are xenogenes</Cloning_Settings_MutationsXenogenes>
+  <Cloning_Settings_CloneXenogenes>Clones inherit xenogenes</Cloning_Settings_CloneXenogenes>
+  <Cloning_Settings_CloneXenogenes_Tooltip>If enabled, clones will also inherit the donor pawn's entire xenogene set.</Cloning_Settings_CloneXenogenes_Tooltip>
+  <Cloning_Settings_CloneArchiteGenes>Clones inherit archite genes</Cloning_Settings_CloneArchiteGenes>
   <Cloning_Settings_MutationsXenogenes_Tooltip>If enabled, mutations are added as xenogenes, meaning they are not inherited if the clone has a child.</Cloning_Settings_MutationsXenogenes_Tooltip>
   <Cloning_Settings_GeneListHeader>Genes eligible to be added by mutations</Cloning_Settings_GeneListHeader>
   <Enabled>Enabled</Enabled>
