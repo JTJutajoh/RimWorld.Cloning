@@ -107,34 +107,7 @@ namespace Dark.Cloning
         /// </summary>
         static void Postfix(ref Thing __result, Pawn geneticMother, Pawn father)
         {
-            /* After the vanilla method has run, go over things to make SURE that the newly-generated pawn copied over all of its genes from the donor
-            Here are some probably relevant lines from the vanilla function:
-
-            XenotypeDef xenotype;
-            if (PregnancyUtility.TryGetInheritedXenotype(geneticMother, father, out xenotype))
-                pawn1.genes?.SetXenotypeDirect(xenotype);
-            else if (PregnancyUtility.ShouldByHybrid(geneticMother, father))
-            {
-                pawn1.genes.hybrid = true;
-                pawn1.genes.xenotypeName = (string) "Hybrid".Translate();
-            }
-            ...
-            if (pawn1.RaceProps.IsFlesh)
-            {
-            if (geneticMother != null)
-                pawn1.relations.AddDirectRelation(PawnRelationDefOf.Parent, geneticMother);
-            if (father != null)
-                pawn1.relations.AddDirectRelation(PawnRelationDefOf.Parent, father);
-            if (birtherPawn != null && birtherPawn != geneticMother)
-                pawn1.relations.AddDirectRelation(PawnRelationDefOf.ParentBirth, birtherPawn);
-            }
-            */
-            Pawn pawn = (Pawn)__result;
-            if (pawn == null)
-            {
-                // If the clone was stillborn.
-                return;
-            }
+            if (!( __result is Pawn pawn )) return; // If the clone was stillborn.
             // Copy basic things from the parent.
             Pawn donor = geneticMother != null ? geneticMother : father;
             if (donor != null) // Shouldn't ever happen but let's just be safe
