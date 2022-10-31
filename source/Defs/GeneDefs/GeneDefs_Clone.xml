@@ -11,6 +11,7 @@
     <displayOrderInCategory>1000</displayOrderInCategory>
     <biostatCpx>0</biostatCpx>
     <biostatMet>0</biostatMet>
+    <canGenerateInGeneSet>false</canGenerateInGeneSet>
     <symbolPack>
       <prefixSymbols>
         <li>
