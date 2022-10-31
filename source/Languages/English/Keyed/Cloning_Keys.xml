@@ -2,6 +2,8 @@
 
 <LanguageData>
   <Cloning_SettingsCategory>Cloning</Cloning_SettingsCategory>
+  <Cloning_Settings_Tab_Main>Main Settings</Cloning_Settings_Tab_Main>
+  <Cloning_Settings_Tab_Mutations>Mutations Settings</Cloning_Settings_Tab_Mutations>
   <Cloning_Settings_CloningCooldown>Extraction causes gene sickness</Cloning_Settings_CloningCooldown>
   <Cloning_Settings_InheritHair>Clones inherit hairstyles</Cloning_Settings_InheritHair>
   <Cloning_Settings_CooldownDays>Sickness duration in days</Cloning_Settings_CooldownDays>

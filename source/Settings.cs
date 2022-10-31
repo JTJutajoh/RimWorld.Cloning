@@ -27,27 +27,54 @@ namespace Dark.Cloning
         public static Dictionary<string, int> genesEligibleForMutation = GeneUtils.defaultGenesEligible;
 
 
+        // Internal UI values
         float scrollHeight = 9999f;
         Vector2 scrollPos;
-
+        float tabHeight = 32f;
+        public enum SettingsTab
+        {
+            Main,
+            Mutations
+        }
+        SettingsTab currentTab;
 
         public void DoWindowContents(Rect inRect)
         {
-            Listing_Standard listingStandard = new Listing_Standard();
+            List<KeyValuePair<SettingsTab, string>> tabsList = new List<KeyValuePair<SettingsTab, string>> {
+                new KeyValuePair<SettingsTab, string>(SettingsTab.Main, "Cloning_Settings_Tab_Main".Translate() ),
+                new KeyValuePair<SettingsTab, string>(SettingsTab.Mutations, "Cloning_Settings_Tab_Mutations".Translate())
+            };
+            UIUtility.DoTabs<SettingsTab>(inRect, ref currentTab, tabsList, tabHeight);
 
+            switch (currentTab)
+            {
+                case SettingsTab.Main:
+                    DoMainTab(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
+                    break;
+                case SettingsTab.Mutations:
+                    DoMutationsTab(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void DoMainTab(Rect inRect)
+        {
+            Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.ColumnWidth = (inRect.width / 2) * 0.97f;
-
+            listingStandard.ColumnWidth = inRect.width / 2f * 0.98f;
             listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref Settings.inheritHair);
             listingStandard.CheckboxLabeled("Cloning_Settings_CloneXenogenes".Translate(), ref Settings.cloneXenogenes, "Cloning_Settings_CloneXenogenes_Tooltip".Translate());
             if (Settings.cloneXenogenes) listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref Settings.cloneArchiteGenes);
             else listingStandard.Gap(Text.CalcHeight("Cloning_Settings_CloneXenogenes".Translate(), listingStandard.ColumnWidth));
 
-            #region Cooldown Settings
-            listingStandard.Gap();
+            listingStandard.NewColumn();
 
-            listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown, "Cloning_Cooldown_Description".Translate());
+            #region Cooldown Settings
+
+            listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown);
             if (Settings.cloningCooldown)
             {
                 listingStandard.Label("Cloning_Settings_CooldownDays".Translate());
@@ -55,10 +82,16 @@ namespace Dark.Cloning
             }
 
             #endregion Cooldown Settings
+            listingStandard.End();
+        }
 
-            listingStandard.NewColumn();
+        void DoMutationsTab(Rect inRect)
+        {
+            float yMin = inRect.yMin;
+            Listing_Standard listingStandard = new Listing_Standard();
+            listingStandard.Begin(inRect);
 
-            #region Mutation Settings
+            listingStandard.ColumnWidth = inRect.width / 2f * 0.95f;
 
             listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref Settings.doRandomMutations);
             listingStandard.Label("Cloning_Mutations_Description".Translate());
@@ -71,31 +104,36 @@ namespace Dark.Cloning
                     1f
                 );
                 listingStandard.Label("Cloning_Settings_MaxMutations".Translate());
-                listingStandard.IntRange(ref numMutations, 1, Settings.genesEligibleForMutation.Count);
-                if (numMutations.max > Settings.genesEligibleForMutation.Count) numMutations.max = Settings.genesEligibleForMutation.Count;
+                listingStandard.IntRange(ref Settings.numMutations, 0, Settings.genesEligibleForMutation.Count);
+                if (Settings.numMutations.max > Settings.genesEligibleForMutation.Count) Settings.numMutations.max = Settings.genesEligibleForMutation.Count;
+                if (Settings.numMutations.min > Settings.genesEligibleForMutation.Count) Settings.numMutations.min = Settings.genesEligibleForMutation.Count;
+                if (Settings.numMutations.max == 0) Settings.numMutations.max = Settings.numMutations.min;
 
-                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(),ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
+                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(), ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
+
+                #region Mutations Gene list
+                float tmp = listingStandard.ColumnWidth;
+
+                // Do a vertical gap between the columns
+                listingStandard.NewColumn();
+                listingStandard.ColumnWidth = 12f;
+
+                listingStandard.NewColumn();
+                listingStandard.ColumnWidth = tmp;
 
                 // Begin scrollview for gene mutation settings
-                Rect scrollRect;
-
-                scrollRect = inRect.BottomPart(0.6f);
-                //scrollRect = scrollRect.RightPart(0.6f);
-                scrollRect.yMax -= 50f;
+                Rect scrollRect = inRect.RightPartPixels(listingStandard.ColumnWidth);
+                scrollRect.yMin = 50f;
+                scrollRect.yMax = inRect.height;
+                //scrollRect.yMax -= 50f;
 
                 // Draw the header
-                float listHeaderSize = 20f;
-                Rect listHeaderRect = new Rect();
-                listHeaderRect.xMax = scrollRect.xMax;
-                listHeaderRect.yMin = scrollRect.yMin - listHeaderSize;
-                listHeaderRect.yMax = listHeaderRect.yMin + listHeaderSize;
-                //listHeaderRect.xMin -= scrollRect.xMin + 32f;
-                Widgets.Label(listHeaderRect, $"({Settings.genesEligibleForMutation.Count})" + "Cloning_Settings_GeneListHeader".Translate() + ":");
+                listingStandard.Label($"[{Settings.genesEligibleForMutation.Count}] " + "Cloning_Settings_GeneListHeader".Translate() + ":");
 
                 // Draw buttons for manipulating the whole list at once.
                 float selectButtonWidth = 60f;
                 float selectButtonHeight = 24f;
-                Rect selectButtonRect = new Rect(scrollRect.xMax-selectButtonWidth,scrollRect.yMin- selectButtonHeight, selectButtonWidth, selectButtonHeight);
+                Rect selectButtonRect = new Rect(scrollRect.xMax - selectButtonWidth, scrollRect.yMin - selectButtonHeight, selectButtonWidth, selectButtonHeight);
 
                 if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_SelectNone".Translate()))
                 {
@@ -124,18 +162,12 @@ namespace Dark.Cloning
                 // Draw the background for the sroll box
                 Widgets.DrawBoxSolid(scrollRect, new Color(0.7f, 0.7f, 0.7f, 0.3f));
 
-                // Whatever you do, DO NOT SET THIS TO 2f!!!!!! For god knows what reason, that causes it to fail at rendering everything!
-                // FOR THE LOVE OF GOD don't do it. And DON'T try to figure out why, just leave it be. Live your life in blissful ignorance.
-                scrollRect = scrollRect.ContractedBy(8f); 
-
 
                 UIUtility.MakeAndBeginScrollView(scrollRect, scrollHeight, ref scrollPos, out Listing_Standard scrollList);
-                scrollRect.xMax -= 24f; // Account for the scrollbar on the right side
-                scrollRect.xMin -= 12f;
 
                 float rowHeight = 86f;
                 float geneWidth = 72f;
-                RectRow row = new RectRow(scrollRect.xMin, 0, rowHeight, UIDirection.RightThenDown, scrollRect.width, 4f);
+                RectRow row = new RectRow(4f, 0, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, 4f);
                 row.RowGapExtra = 36f;
 
                 List<KeyValuePair<string, int>> genesList = genesEligibleForMutation.ToList();
@@ -148,9 +180,9 @@ namespace Dark.Cloning
                         continue;
                     }
 
+                    // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
                     if (gene == CloneDefs.Clone.defName)
                     {
-                        // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
                         continue;
                     }
 
@@ -179,7 +211,7 @@ namespace Dark.Cloning
                     // Draw a checkbox in the corner
                     float checkboxSize = 16f;
                     Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
-                    Widgets.DrawTexturePart(checkboxRect, new Rect(0,0,1,1), Widgets.GetCheckboxTexture(eligible));
+                    Widgets.DrawTexturePart(checkboxRect, new Rect(0, 0, 1, 1), Widgets.GetCheckboxTexture(eligible));
 
                     // Draw the weight slider and its label
                     if (eligible)
@@ -189,7 +221,7 @@ namespace Dark.Cloning
                         genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
 
                         // Draw the label for the slider
-                        Rect sliderLabelRect = new Rect(buttonRect.x+4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
+                        Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
                         Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
                     }
 
@@ -202,10 +234,8 @@ namespace Dark.Cloning
                 }
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
+                #endregion Mutations Gene list
             }
-
-            #endregion Mutation Settings
-
             listingStandard.End();
         }
 
@@ -242,15 +272,67 @@ namespace Dark.Cloning
     /// </summary>
     public static class UIUtility
     {
-        public static void DoIndent(Listing_Standard listing, float amount = 12f)
+        static readonly Color defaultTabHighlightColor = new Color(0f, 0.5f, 0, 0.4f);
+
+        /// <summary>
+        /// Helper function to indent a Listing_Standard and adjust the column width to match
+        /// </summary>
+        public static void Indent(Listing_Standard listing, float amount = 12f)
         {
             listing.ColumnWidth -= amount;
             listing.Indent(amount);
         }
-        public static void DoOutdent(Listing_Standard listing, float amount = 12f)
+        /// <summary>
+        /// Helper function to outdent a Listing_Standard and adjust the column width to match
+        /// </summary>
+        public static void Outdent(Listing_Standard listing, float amount = 12f)
         {
             listing.ColumnWidth += amount;
             listing.Outdent(amount);
+        }
+        /// <summary>
+        /// Draws one button used for switching tabs based on an enum value
+        /// </summary>
+        /// <param name="currentTab">A ref value keeping track of which tab is current</param>
+        /// <param name="tab">The enum value that this button represents</param>
+        /// <param name="highlightColor">Optional color to overlay when this button's tab is the current tab</param>
+        public static void TabSwitchButton<TEnum>(Rect rect, string label, ref TEnum currentTab, TEnum tab, Color? highlightColor = null) where TEnum : Enum
+        {
+            Color highlight = highlightColor ?? defaultTabHighlightColor;
+            if (Widgets.ButtonText(rect, label))
+            {
+                currentTab = tab;
+            }
+            if (Convert.ToInt32(currentTab) == Convert.ToInt32(tab))
+            {
+                Widgets.DrawRectFast(rect, highlight);
+            }
+        }
+        /// <summary>
+        /// Draws a horizontal row of buttons for switching tabs
+        /// </summary>
+        /// <param name="currentTab">A ref value keeping track of which tab is current</param>
+        /// <param name="tabsList">A list of KeyValuePairs which has enum keys and strings representing the tab button's text</param>
+        /// <param name="width">Optional width for the tabs to take up. If not supplied, will take up the entire width of the listing_standard</param>
+        /// <param name="gap">Gap between tab buttons</param>
+        /// <param name="highlightColor">Optional color to overlay when this button's tab is the current tab</param>
+        public static void DoTabs<TEnum>(Rect inRect, ref TEnum currentTab, List<KeyValuePair<TEnum, string>> tabsList, float height = 24f, float gap = 8f, Color? highlightColor = null)
+            where TEnum : Enum
+        {
+            //float origColumnWidth = listingStandard.ColumnWidth;
+            //listingStandard.ColumnWidth = width ?? listingStandard.ColumnWidth;
+
+            //Rect rect = listingStandard.GetRect(height);
+            Rect rect = inRect.TopPartPixels(height);
+            float buttonWidth = ( rect.width / tabsList.Count) - ( gap * (tabsList.Count-1) );
+
+            Rect buttonRect = new Rect(rect.x, rect.y, buttonWidth, height);
+            for (int i = 0; i < tabsList.Count; i++)
+            {
+                TabSwitchButton(buttonRect, tabsList[i].Value, ref currentTab, tabsList[i].Key, highlightColor);
+                buttonRect.x += buttonWidth + gap;
+            }
+            //listingStandard.ColumnWidth = origColumnWidth;
         }
 
         #region NC ScrollView
