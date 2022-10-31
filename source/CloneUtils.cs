@@ -47,16 +47,6 @@ namespace Dark.Cloning
 
                 genes.AddGene(gene.def);
             }
-
-            if (Settings.cloneXenogenes)
-            {
-                foreach (Gene gene in parent.genes.Xenogenes)
-                {
-                    if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !Settings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
-                    
-                    genes.AddGene(gene.def);
-                }
-            }
         }
 
         public static void CopyTraitsFromParent(Pawn pawn)

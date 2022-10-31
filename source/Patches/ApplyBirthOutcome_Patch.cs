@@ -98,6 +98,23 @@ namespace Dark.Cloning
                 }
 
                 GeneUtils.TryAddMutationsToRequest(ref request);
+
+                if (Settings.cloneXenogenes && donor.genes.Xenogenes.Count > 0)
+                {
+                    if (request.ForcedXenogenes == null)
+                    {
+                        request.ForcedXenogenes = new List<GeneDef>();
+                    }
+                    foreach (Gene gene in donor.genes.Xenogenes)
+                    {
+                        if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !Settings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
+
+                        if (!request.ForcedXenogenes.Contains(gene.def))
+                        {
+                            request.ForcedXenogenes.Add(gene.def);
+                        }
+                    }
+                }
             }
 
             return request;
