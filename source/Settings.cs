@@ -338,9 +338,6 @@ namespace Dark.Cloning
     /// </summary>
     public static class UIUtility
     {
-        static readonly Color defaultTabHighlightColor = new Color(0f, 0.5f, 0, 0.4f);
-        private static readonly Texture2D TabAtlas = ContentFinder<Texture2D>.Get("UI/Widgets/TabAtlas");
-
         /// <summary>
         /// Helper function to indent a Listing_Standard and adjust the column width to match
         /// </summary>

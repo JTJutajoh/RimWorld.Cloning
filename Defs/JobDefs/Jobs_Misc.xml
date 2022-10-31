@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <JobDef>
+    <defName>ScanCorpse</defName>
+    <driverClass>Dark.Cloning.JobDriver_ScanCorpse</driverClass>
+    <reportString>scanning TargetA.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+</Defs>

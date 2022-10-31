@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef ParentName="MechSerumBase">
+    <defName>MechSerumCloner</defName>
+    <label>cloning mech serum</label>
+    <description>A one-use super-dose of mechanites tuned to collect enough genetic material from the dead to miraculously create a new clone embryo. Administered to a corpse, mechanites break down whatever remains of the body and turn it into a living embryo that can be grown into a perfect copy. Outcomes are better when the mechanites are administered to a fresher body as there is more healthy genetic material.</description>
+    <graphicData>
+      <texPath>Things/Item/Special/ClonerMechSerum</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stackLimit>10</stackLimit>
+    <statBases>
+      <MarketValue>1100</MarketValue>
+    </statBases>
+    <thingCategories>
+      <li>ItemsMisc</li>
+    </thingCategories>
+    <tradeability>Sellable</tradeability>
+    <thingSetMakerTags>
+      <li>RewardStandardMidFreq</li>
+    </thingSetMakerTags>
+    <comps>
+      <li Class="CompProperties_Usable">
+        <useJob>UseItem</useJob>
+        <useLabel>Use {0_label}</useLabel>
+        <useDuration>0</useDuration>
+        <warmupMote>Mote_ResurrectAbility</warmupMote>
+      </li>
+      <li Class="CompProperties_Targetable">
+        <compClass>CompTargetable_SingleCorpse</compClass>
+        <fleshCorpsesOnly>true</fleshCorpsesOnly>
+        <nonDessicatedCorpsesOnly>false</nonDessicatedCorpsesOnly>
+      </li>
+      <li Class="Dark.Cloning.CompProperties_TargetEffectScanCorpse">
+        <moteDef>Mote_ResurrectFlash</moteDef>
+      </li>
+    </comps>
+  </ThingDef>
+  
+</Defs>

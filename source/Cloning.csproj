@@ -62,7 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Building_CloneExtractor.cs" />
+    <Compile Include="CompTargetEffect_ScanCorpse.cs" />
     <Compile Include="GeneUtils.cs" />
+    <Compile Include="JobDriver_ScanCorpse.cs" />
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
     <Compile Include="CloneDefs.cs" />
     <Compile Include="EmbryoTracker.cs" />
@@ -79,7 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Defs\GeneDefs\GeneDefs_Clone.xml" />
+    <Content Include="Defs\JobDefs\Jobs_Misc.xml" />
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
+    <Content Include="Defs\ThingDefs_Items\Items_Exotic.xml" />
     <Content Include="To Do.txt" />
   </ItemGroup>
   <ItemGroup />
