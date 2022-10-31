@@ -15,5 +15,19 @@
       <li>GrowthVats</li>
     </prerequisites>
   </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>AdvancedCloning</defName>
+    <label>advanced cloning</label>
+    <description>Glitterworld cloning techniques that can generate a living embryo from dead genetic material and clone advanced archotech genes.</description>
+    <baseCost>5000</baseCost>
+    <researchViewX>17.00</researchViewX>
+    <researchViewY>5.20</researchViewY>
+    <techLevel>Spacer</techLevel>
+    <prerequisites>
+      <li>Cloning</li>
+      <li>Archogenetics</li>
+    </prerequisites>
+  </ResearchProjectDef>
   
 </Defs>

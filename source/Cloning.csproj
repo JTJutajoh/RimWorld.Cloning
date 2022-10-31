@@ -82,6 +82,7 @@
   <ItemGroup>
     <Content Include="Defs\GeneDefs\GeneDefs_Clone.xml" />
     <Content Include="Defs\JobDefs\Jobs_Misc.xml" />
+    <Content Include="Defs\RecipeDefs\Recipes_ClonerMechSerum.xml" />
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
     <Content Include="Defs\ThingDefs_Items\Items_Exotic.xml" />
     <Content Include="To Do.txt" />
