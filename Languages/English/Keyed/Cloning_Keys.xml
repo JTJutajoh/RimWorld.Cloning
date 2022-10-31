@@ -16,6 +16,7 @@
   <Cloning_Settings_CloneXenogenes>Clones inherit xenogenes</Cloning_Settings_CloneXenogenes>
   <Cloning_Settings_CloneXenogenes_Tooltip>If enabled, clones will also inherit the donor pawn's entire xenogene set.</Cloning_Settings_CloneXenogenes_Tooltip>
   <Cloning_Settings_CloneArchiteGenes>Clones inherit archite genes</Cloning_Settings_CloneArchiteGenes>
+  <Cloning_Settings_CloneTraits>Clone traits</Cloning_Settings_CloneTraits>
   <Cloning_Settings_MutationsXenogenes_Tooltip>If enabled, mutations are added as xenogenes, meaning they are not inherited if the clone has a child.</Cloning_Settings_MutationsXenogenes_Tooltip>
   <Cloning_Settings_GeneListHeader>Genes eligible to be added by mutations</Cloning_Settings_GeneListHeader>
   <Enabled>Enabled</Enabled>
@@ -27,5 +28,4 @@
   <Cloning_Letter_MutationText>A clone embryo has finished gestating and gained these genetic mutations:</Cloning_Letter_MutationText>
   <Cloning_CloneExtractionComplete>Clone embryo extraction complete for {PAWN_nameDef}.</Cloning_CloneExtractionComplete>
   <Cloning_ExtractingCloneFrom>Extracting clone embryo from {PAWN_nameDef}.</Cloning_ExtractingCloneFrom>
-  
 </LanguageData>

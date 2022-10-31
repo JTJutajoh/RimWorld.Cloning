@@ -14,17 +14,17 @@ namespace Dark.Cloning
     {
         public static bool cloningCooldown = true;
         public static bool inheritHair = true;
+        public static bool cloneXenogenes = false;
+        public static bool cloneArchiteGenes = false;
+        public static bool cloneTraits = false;
+        static readonly IntRange defaultCloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
+        public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7,14);
 
         public static bool doRandomMutations = true;
         public static float randomMutationChance = 0.3f;
         static readonly IntRange defaultNumMutations = new IntRange(1, 3);
         public static IntRange numMutations = new IntRange(1, 3);
         public static bool addMutationsAsXenogenes = false;
-        public static bool cloneXenogenes = false;
-        public static bool cloneArchiteGenes = false;
-        static readonly IntRange defaultCloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
-        public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7,14);
-
         public static Dictionary<string, int> genesEligibleForMutation = GeneUtils.defaultGenesEligible;
 
 
@@ -89,6 +89,7 @@ namespace Dark.Cloning
             }
             else
                 listingStandard.Gap(Text.CalcHeight("Cloning_Settings_CloneXenogenes".Translate(), listingStandard.ColumnWidth));
+            //listingStandard.CheckboxLabeled("Cloning_Settings_CloneTraits".Translate(), ref Settings.cloneTraits);
 
             listingStandard.NewColumn();
 
@@ -314,6 +315,7 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref addMutationsAsXenogenes, "addMutationsAsXenogenes", false);
             Scribe_Values.Look(ref cloneXenogenes, "cloneXenogenes", false);
             Scribe_Values.Look(ref cloneArchiteGenes, "cloneArchiteGenes", false);
+            Scribe_Values.Look(ref cloneTraits, "cloneTraits", false);
             Scribe_Collections.Look(ref genesEligibleForMutation, "genesEligibleForMutation", LookMode.Value);
 
             // Check if the dictionary loaded was empty, and load the default instead
