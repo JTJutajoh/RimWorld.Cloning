@@ -75,6 +75,7 @@ namespace Dark.Cloning
 				MoteMaker.MakeAttachedOverlay(innerPawn, thingDef, Vector3.zero);
 			}
 			Item.SplitOff(1).Destroy();
+			Corpse.Destroy();
 		}
 	}
 }
