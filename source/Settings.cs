@@ -48,10 +48,10 @@ namespace Dark.Cloning
             switch (currentTab)
             {
                 case SettingsTab.Main:
-                    DoMainTab(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
+                    DoMainTabContents(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
                     break;
                 case SettingsTab.Mutations:
-                    DoMutationsTab(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
+                    DoMutationsTabContents(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
                     break;
                 default:
                     break;
@@ -73,7 +73,7 @@ namespace Dark.Cloning
             TabDrawer.DrawTabs(inRect, tabs, inRect.width/tabs.Count);
         }
 
-        void DoMainTab(Rect inRect)
+        void DoMainTabContents(Rect inRect)
         {
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
@@ -81,8 +81,14 @@ namespace Dark.Cloning
             listingStandard.ColumnWidth = inRect.width / 2f * 0.98f;
             listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref Settings.inheritHair);
             listingStandard.CheckboxLabeled("Cloning_Settings_CloneXenogenes".Translate(), ref Settings.cloneXenogenes, "Cloning_Settings_CloneXenogenes_Tooltip".Translate());
-            if (Settings.cloneXenogenes) listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref Settings.cloneArchiteGenes);
-            else listingStandard.Gap(Text.CalcHeight("Cloning_Settings_CloneXenogenes".Translate(), listingStandard.ColumnWidth));
+            if (Settings.cloneXenogenes)
+            {
+                listingStandard.DoIndent();
+                listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref Settings.cloneArchiteGenes);
+                listingStandard.DoOutdent();
+            }
+            else
+                listingStandard.Gap(Text.CalcHeight("Cloning_Settings_CloneXenogenes".Translate(), listingStandard.ColumnWidth));
 
             listingStandard.NewColumn();
 
@@ -99,7 +105,7 @@ namespace Dark.Cloning
             listingStandard.End();
         }
 
-        void DoMutationsTab(Rect inRect)
+        void DoMutationsTabContents(Rect inRect)
         {
             float yMin = inRect.yMin;
             Listing_Standard listingStandard = new Listing_Standard();
@@ -111,6 +117,8 @@ namespace Dark.Cloning
             listingStandard.Label("Cloning_Mutations_Description".Translate());
             if (Settings.doRandomMutations)
             {
+                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(), ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
+
                 Settings.randomMutationChance = listingStandard.SliderLabeled(
                     "Cloning_Settings_MutationChance".Translate() + $": {Mathf.RoundToInt(Settings.randomMutationChance * 100)}%",
                     Settings.randomMutationChance,
@@ -122,8 +130,6 @@ namespace Dark.Cloning
                 if (Settings.numMutations.max > Settings.genesEligibleForMutation.Count) Settings.numMutations.max = Settings.genesEligibleForMutation.Count;
                 if (Settings.numMutations.min > Settings.genesEligibleForMutation.Count) Settings.numMutations.min = Settings.genesEligibleForMutation.Count;
                 if (Settings.numMutations.max == 0) Settings.numMutations.max = Settings.numMutations.min;
-
-                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(), ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
 
                 #region Mutations Gene list
                 float tmp = listingStandard.ColumnWidth;
@@ -236,6 +242,44 @@ namespace Dark.Cloning
             return categoryCollapsedStates[category];
         }
 
+        void DrawGene(string gene, Listing_Standard scrollList, RectRow row, float geneWidth, float rowHeight)
+        {
+            Rect buttonRect = row.GetRect(geneWidth, out bool newRow);
+            if (newRow) scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Needed so that the scrollview listing_standard knows the correct height
+
+            bool eligible = GeneUtils.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
+
+            // Actually draw the gene, using vanilla's built-in static method for drawing genes from a def. This comes with the benefit of having the tooltip with all the gene's info
+            GeneUIUtility.DrawGeneDef(GeneUtils.GeneNamed(gene), buttonRect, GeneType.Endogene, eligible ? "Enabled".Translate() : "Disabled".Translate(), true, false);
+
+            if (eligible)
+                Widgets.DrawHighlight(buttonRect);
+            else
+                Widgets.DrawRectFast(buttonRect, new Color(0f, 0f, 0f, 0.3f));
+
+            // Draw a checkbox in the corner
+            float checkboxSize = 16f;
+            Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
+            Widgets.DrawTexturePart(checkboxRect, new Rect(0, 0, 1, 1), Widgets.GetCheckboxTexture(eligible));
+
+            // Draw the weight slider and its label
+            if (eligible)
+            {
+                Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
+                genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
+
+                Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
+                Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
+            }
+
+            // Lastly, handle clicking on this gene, by flipflopping its eligibility status
+            if (Widgets.ButtonInvisible(buttonRect))
+            {
+                GeneUtils.SetEligible(gene, !eligible);
+                eligible = !eligible;
+            }
+        }
+
         void DrawGenes(List<string> genes, Listing_Standard scrollList, RectRow row, float geneWidth, float rowHeight)
         {
             foreach (string gene in genes)
@@ -254,50 +298,7 @@ namespace Dark.Cloning
                 }
 
                 // Draw one gene
-                Rect buttonRect = row.GetRect(geneWidth, out bool newRow);
-                if (newRow) scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Needed so that the scrollview listing_standard knows the correct height
-
-                bool eligible = GeneUtils.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
-
-                string extraTooltip = eligible ? "Enabled".Translate() : "Disabled".Translate();
-
-                // Actually draw the gene, using vanilla's built-in static method for drawing genes from a def. This comes with the benefit of having the tooltip with all the gene's info
-                GeneUIUtility.DrawGeneDef(GeneUtils.GeneNamed(gene), buttonRect, GeneType.Endogene, extraTooltip, true, false);
-
-                // Draw things to indicate if this gene is in the eligible list or not
-                if (eligible)
-                {
-                    Widgets.DrawHighlight(buttonRect);
-                }
-                else
-                {
-                    // Disabled (Dark overlay)
-                    Widgets.DrawRectFast(buttonRect, new Color(0f, 0f, 0f, 0.3f));
-                }
-
-                // Draw a checkbox in the corner
-                float checkboxSize = 16f;
-                Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
-                Widgets.DrawTexturePart(checkboxRect, new Rect(0, 0, 1, 1), Widgets.GetCheckboxTexture(eligible));
-
-                // Draw the weight slider and its label
-                if (eligible)
-                {
-                    // Draw the weight slider
-                    Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
-                    genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
-
-                    // Draw the label for the slider
-                    Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
-                    Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
-                }
-
-                // Lastly, handle clicking on this gene, by flipflopping its eligibility status
-                if (Widgets.ButtonInvisible(buttonRect))
-                {
-                    GeneUtils.SetEligible(gene, !eligible);
-                    eligible = !eligible;
-                }
+                DrawGene(gene, scrollList, row, geneWidth, rowHeight);
             }
             scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Add another offset for the last row
         }
@@ -330,11 +331,6 @@ namespace Dark.Cloning
     }
 
     #region UI Utilities
-    public class SettingsTabs<TEnum> where TEnum : Enum
-    {
-        
-    }
-
     /// <summary>
     /// Utilities for UI, some of these are copied from sources online and are marked as such in comments.
     /// </summary>
@@ -346,7 +342,7 @@ namespace Dark.Cloning
         /// <summary>
         /// Helper function to indent a Listing_Standard and adjust the column width to match
         /// </summary>
-        public static void Indent(Listing_Standard listing, float amount = 12f)
+        public static void DoIndent(this Listing_Standard listing, float amount=12f)
         {
             listing.ColumnWidth -= amount;
             listing.Indent(amount);
@@ -354,7 +350,7 @@ namespace Dark.Cloning
         /// <summary>
         /// Helper function to outdent a Listing_Standard and adjust the column width to match
         /// </summary>
-        public static void Outdent(Listing_Standard listing, float amount = 12f)
+        public static void DoOutdent(this Listing_Standard listing, float amount = 12f)
         {
             listing.ColumnWidth += amount;
             listing.Outdent(amount);
