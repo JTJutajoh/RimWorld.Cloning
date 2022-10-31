@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
+using Verse.Sound;
 using RimWorld;
 using UnityEngine;
 
@@ -30,6 +31,7 @@ namespace Dark.Cloning
         // Internal UI values
         float scrollHeight = 9999f;
         Vector2 scrollPos;
+        Dictionary<GeneCategoryDef, bool> categoryCollapsedStates = new Dictionary<GeneCategoryDef, bool>();
         float tabHeight = 32f;
         public enum SettingsTab
         {
@@ -40,11 +42,8 @@ namespace Dark.Cloning
 
         public void DoWindowContents(Rect inRect)
         {
-            List<KeyValuePair<SettingsTab, string>> tabsList = new List<KeyValuePair<SettingsTab, string>> {
-                new KeyValuePair<SettingsTab, string>(SettingsTab.Main, "Cloning_Settings_Tab_Main".Translate() ),
-                new KeyValuePair<SettingsTab, string>(SettingsTab.Mutations, "Cloning_Settings_Tab_Mutations".Translate())
-            };
-            UIUtility.DoTabs<SettingsTab>(inRect, ref currentTab, tabsList, tabHeight);
+            Rect tabsRect = new Rect(inRect.x, inRect.y + 24f, inRect.width, inRect.height);
+            DoTabs(tabsRect);
 
             switch (currentTab)
             {
@@ -57,6 +56,21 @@ namespace Dark.Cloning
                 default:
                     break;
             }
+        }
+
+        public void DoTabs(Rect inRect)
+        {
+            List<KeyValuePair<SettingsTab, string>> tabsList = new List<KeyValuePair<SettingsTab, string>> {
+                new KeyValuePair<SettingsTab, string>(SettingsTab.Main, "Cloning_Settings_Tab_Main".Translate() ),
+                new KeyValuePair<SettingsTab, string>(SettingsTab.Mutations, "Cloning_Settings_Tab_Mutations".Translate())
+            };
+            List<TabRecord> tabs = new List<TabRecord>();
+
+            foreach (KeyValuePair<SettingsTab, string> tab in tabsList)
+            {
+                tabs.Add(new TabRecord(tab.Value, delegate { currentTab = tab.Key; }, Convert.ToInt32(currentTab) == Convert.ToInt32(tab.Key)));
+            }
+            TabDrawer.DrawTabs(inRect, tabs, inRect.width/tabs.Count);
         }
 
         void DoMainTab(Rect inRect)
@@ -135,6 +149,7 @@ namespace Dark.Cloning
                 float selectButtonHeight = 24f;
                 Rect selectButtonRect = new Rect(scrollRect.xMax - selectButtonWidth, scrollRect.yMin - selectButtonHeight, selectButtonWidth, selectButtonHeight);
 
+                #region Selection Buttons
                 if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_SelectNone".Translate()))
                 {
                     Settings.genesEligibleForMutation.Clear();
@@ -157,86 +172,134 @@ namespace Dark.Cloning
                         Settings.genesEligibleForMutation.Add(geneDefault, GeneUtils.defaultGenesEligible[geneDefault]);
                     }
                 }
-
+                #endregion Selection Buttons
 
                 // Draw the background for the sroll box
                 Widgets.DrawBoxSolid(scrollRect, new Color(0.7f, 0.7f, 0.7f, 0.3f));
 
-
                 UIUtility.MakeAndBeginScrollView(scrollRect, scrollHeight, ref scrollPos, out Listing_Standard scrollList);
 
-                float rowHeight = 86f;
-                float geneWidth = 72f;
-                RectRow row = new RectRow(4f, 0, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, 4f);
-                row.RowGapExtra = 36f;
 
                 List<KeyValuePair<string, int>> genesList = genesEligibleForMutation.ToList();
-                foreach (string gene in new List<string>(GeneUtils.AllGenesCache.Keys))
+                foreach (GeneCategoryDef geneCategory in GeneUtils.AllGeneCategoriesCache.Keys)
                 {
-                    // If the current gene isn't loaded (such as if it's from another mod that isn't currently running), skip it.
-                    if (!GeneUtils.IsCached(gene))
+                    float rowHeight = 86f;
+                    float geneWidth = 72f;
+
+                    Rect collapseBarRect = scrollList.GetRect(Text.LineHeight);
+                    Widgets.DrawRectFast(collapseBarRect, new Color(0, 0, 0, 0.2f));
+                    Rect labelRect = new Rect(collapseBarRect.x + 16f, collapseBarRect.y, collapseBarRect.width, collapseBarRect.height);
+                    Widgets.Label(labelRect, geneCategory.LabelCap);
+
+                    Rect rect2 = new Rect(0f, collapseBarRect.y, collapseBarRect.width, Text.LineHeight);
+                    Rect position = new Rect(rect2.x, rect2.y + ( rect2.height - 18f ) / 2f, 18f, 18f);
+                    GUI.DrawTexture(position, IsCategoryCollapsed(geneCategory) ? TexButton.Reveal : TexButton.Collapse);
+                    if (Widgets.ButtonInvisible(collapseBarRect))
                     {
-                        Log.Warning($"Could not find def for gene {gene}. Is it from a mod that is no longer loaded?");
-                        continue;
+                        categoryCollapsedStates[geneCategory] = !IsCategoryCollapsed(geneCategory);
+                        if (categoryCollapsedStates[geneCategory])
+                        {
+                            SoundDefOf.TabClose.PlayOneShotOnCamera();
+                        }
+                        else
+                        {
+                            SoundDefOf.TabOpen.PlayOneShotOnCamera();
+                        }
+                    }
+                    if (Mouse.IsOver(collapseBarRect))
+                    {
+                        Widgets.DrawHighlight(collapseBarRect);
                     }
 
-                    // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
-                    if (gene == CloneDefs.Clone.defName)
-                    {
-                        continue;
-                    }
 
-                    // Draw one gene
-                    Rect buttonRect = row.GetRect(geneWidth, out bool newRow);
-                    if (newRow) scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Needed so that the scrollview listing_standard knows the correct height
+                    RectRow row = new RectRow(4f, collapseBarRect.yMax, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, 4f);
+                    row.RowGapExtra = 36f;
 
-                    bool eligible = GeneUtils.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
-
-                    string extraTooltip = eligible ? "Enabled".Translate() : "Disabled".Translate();
-
-                    // Actually draw the gene, using vanilla's built-in static method for drawing genes from a def. This comes with the benefit of having the tooltip with all the gene's info
-                    GeneUIUtility.DrawGeneDef(GeneUtils.GeneNamed(gene), buttonRect, GeneType.Endogene, extraTooltip, true, false);
-
-                    // Draw things to indicate if this gene is in the eligible list or not
-                    if (eligible)
-                    {
-                        Widgets.DrawHighlight(buttonRect);
-                    }
+                    if (!IsCategoryCollapsed(geneCategory))
+                        DrawGenes(GeneUtils.AllGeneCategoriesCache[geneCategory], scrollList, row, geneWidth, rowHeight);
                     else
-                    {
-                        // Disabled (Dark overlay)
-                        Widgets.DrawRectFast(buttonRect, new Color(0f, 0f, 0f, 0.3f));
-                    }
-
-                    // Draw a checkbox in the corner
-                    float checkboxSize = 16f;
-                    Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
-                    Widgets.DrawTexturePart(checkboxRect, new Rect(0, 0, 1, 1), Widgets.GetCheckboxTexture(eligible));
-
-                    // Draw the weight slider and its label
-                    if (eligible)
-                    {
-                        // Draw the weight slider
-                        Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
-                        genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
-
-                        // Draw the label for the slider
-                        Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
-                        Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
-                    }
-
-                    // Lastly, handle clicking on this gene, by flipflopping its eligibility status
-                    if (Widgets.ButtonInvisible(buttonRect))
-                    {
-                        GeneUtils.SetEligible(gene, !eligible);
-                        eligible = !eligible;
-                    }
+                        scrollList.GapLine(4f);
                 }
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
                 #endregion Mutations Gene list
             }
             listingStandard.End();
+        }
+
+        bool IsCategoryCollapsed(GeneCategoryDef category)
+        {
+            if (!categoryCollapsedStates.ContainsKey(category))
+            {
+                categoryCollapsedStates.Add(category, true);
+            }
+            return categoryCollapsedStates[category];
+        }
+
+        void DrawGenes(List<string> genes, Listing_Standard scrollList, RectRow row, float geneWidth, float rowHeight)
+        {
+            foreach (string gene in genes)
+            {
+                // If the current gene isn't loaded (such as if it's from another mod that isn't currently running), skip it.
+                if (!GeneUtils.IsCached(gene))
+                {
+                    Log.Warning($"Could not find def for gene {gene}. Is it from a mod that is no longer loaded?");
+                    continue;
+                }
+
+                // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
+                if (gene == CloneDefs.Clone.defName)
+                {
+                    continue;
+                }
+
+                // Draw one gene
+                Rect buttonRect = row.GetRect(geneWidth, out bool newRow);
+                if (newRow) scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Needed so that the scrollview listing_standard knows the correct height
+
+                bool eligible = GeneUtils.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
+
+                string extraTooltip = eligible ? "Enabled".Translate() : "Disabled".Translate();
+
+                // Actually draw the gene, using vanilla's built-in static method for drawing genes from a def. This comes with the benefit of having the tooltip with all the gene's info
+                GeneUIUtility.DrawGeneDef(GeneUtils.GeneNamed(gene), buttonRect, GeneType.Endogene, extraTooltip, true, false);
+
+                // Draw things to indicate if this gene is in the eligible list or not
+                if (eligible)
+                {
+                    Widgets.DrawHighlight(buttonRect);
+                }
+                else
+                {
+                    // Disabled (Dark overlay)
+                    Widgets.DrawRectFast(buttonRect, new Color(0f, 0f, 0f, 0.3f));
+                }
+
+                // Draw a checkbox in the corner
+                float checkboxSize = 16f;
+                Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
+                Widgets.DrawTexturePart(checkboxRect, new Rect(0, 0, 1, 1), Widgets.GetCheckboxTexture(eligible));
+
+                // Draw the weight slider and its label
+                if (eligible)
+                {
+                    // Draw the weight slider
+                    Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
+                    genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
+
+                    // Draw the label for the slider
+                    Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
+                    Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
+                }
+
+                // Lastly, handle clicking on this gene, by flipflopping its eligibility status
+                if (Widgets.ButtonInvisible(buttonRect))
+                {
+                    GeneUtils.SetEligible(gene, !eligible);
+                    eligible = !eligible;
+                }
+            }
+            scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Add another offset for the last row
         }
 
         public override void ExposeData()
@@ -267,12 +330,18 @@ namespace Dark.Cloning
     }
 
     #region UI Utilities
+    public class SettingsTabs<TEnum> where TEnum : Enum
+    {
+        
+    }
+
     /// <summary>
     /// Utilities for UI, some of these are copied from sources online and are marked as such in comments.
     /// </summary>
     public static class UIUtility
     {
         static readonly Color defaultTabHighlightColor = new Color(0f, 0.5f, 0, 0.4f);
+        private static readonly Texture2D TabAtlas = ContentFinder<Texture2D>.Get("UI/Widgets/TabAtlas");
 
         /// <summary>
         /// Helper function to indent a Listing_Standard and adjust the column width to match
@@ -298,15 +367,10 @@ namespace Dark.Cloning
         /// <param name="highlightColor">Optional color to overlay when this button's tab is the current tab</param>
         public static void TabSwitchButton<TEnum>(Rect rect, string label, ref TEnum currentTab, TEnum tab, Color? highlightColor = null) where TEnum : Enum
         {
-            Color highlight = highlightColor ?? defaultTabHighlightColor;
-            if (Widgets.ButtonText(rect, label))
-            {
-                currentTab = tab;
-            }
-            if (Convert.ToInt32(currentTab) == Convert.ToInt32(tab))
-            {
-                Widgets.DrawRectFast(rect, highlight);
-            }
+            bool clicked = false;
+            TabRecord tabRecord = new TabRecord(label, () => { clicked = true; }, Convert.ToInt32(currentTab) == Convert.ToInt32(tab));
+            tabRecord.Draw(rect);
+            if (clicked) currentTab = tab;
         }
         /// <summary>
         /// Draws a horizontal row of buttons for switching tabs
@@ -319,6 +383,17 @@ namespace Dark.Cloning
         public static void DoTabs<TEnum>(Rect inRect, ref TEnum currentTab, List<KeyValuePair<TEnum, string>> tabsList, float height = 24f, float gap = 8f, Color? highlightColor = null)
             where TEnum : Enum
         {
+            List<TabRecord> tabs = new List<TabRecord>();
+            TEnum curTab = currentTab;
+            //for (int i = 0; i < tabsList.Count; i++)
+            foreach (KeyValuePair<TEnum, string> tab in tabsList)
+            {
+                tabs.Add(new TabRecord(tab.Value, delegate { curTab = tab.Key; }, Convert.ToInt32(currentTab) == Convert.ToInt32(tab.Key)));
+            }
+            currentTab = curTab;
+            TabDrawer.DrawTabs(inRect, tabs, 420f);
+            return;
+
             //float origColumnWidth = listingStandard.ColumnWidth;
             //listingStandard.ColumnWidth = width ?? listingStandard.ColumnWidth;
 
