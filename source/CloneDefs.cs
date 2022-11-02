@@ -13,6 +13,7 @@ namespace Dark.Cloning
     {
         public static GeneDef Clone;
         public static JobDef ScanCorpse;
+        public static ThingDef CloneExtractor;
 
         static CloneDefs()
         {

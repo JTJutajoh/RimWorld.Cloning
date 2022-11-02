@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <WorkGiverDef>
+    <defName>CarryToCloneExtractor</defName>
+    <label>carry to building</label>
+    <giverClass>Dark.Cloning.WorkGiver_CarryToCloneExtractor</giverClass>
+    <workType>Hauling</workType>
+    <verb>extract clone</verb>
+    <gerund>extracting clone from</gerund>
+    <priorityInType>90</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <canBeDoneByMechs>false</canBeDoneByMechs>
+  </WorkGiverDef>
+
+</Defs>

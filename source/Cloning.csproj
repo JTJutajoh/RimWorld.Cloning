@@ -75,6 +75,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Patches\TryPopulateGenes_Patch.cs" />
     <Compile Include="CloneUtils.cs" />
+    <Compile Include="WorkGiver_CarryToCloneExtractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -85,6 +86,7 @@
     <Content Include="Defs\RecipeDefs\Recipes_ClonerMechSerum.xml" />
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
     <Content Include="Defs\ThingDefs_Items\Items_Exotic.xml" />
+    <Content Include="Defs\WorkGiverDefs\WorkGivers.xml" />
     <Content Include="To Do.txt" />
   </ItemGroup>
   <ItemGroup />
