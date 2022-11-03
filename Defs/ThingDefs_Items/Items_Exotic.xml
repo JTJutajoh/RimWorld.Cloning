@@ -28,7 +28,7 @@
         <warmupMote>Mote_ResurrectAbility</warmupMote>
       </li>
       <li Class="CompProperties_Targetable">
-        <compClass>CompTargetable_SingleCorpse</compClass>
+        <compClass>Dark.Cloning.CompTargetable_SingleHumanlikeCorpse</compClass>
         <fleshCorpsesOnly>true</fleshCorpsesOnly>
         <nonDessicatedCorpsesOnly>false</nonDessicatedCorpsesOnly>
       </li>

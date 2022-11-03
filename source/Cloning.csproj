@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Building_CloneExtractor.cs" />
+    <Compile Include="CompTargetable_SingleHumanlikeCorpse.cs" />
     <Compile Include="CompTargetEffect_ScanCorpse.cs" />
     <Compile Include="GeneUtils.cs" />
     <Compile Include="JobDriver_ScanCorpse.cs" />
