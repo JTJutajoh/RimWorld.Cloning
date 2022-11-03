@@ -32,4 +32,9 @@
   <Cloning_Letter_MutationText>A clone embryo has finished gestating and gained these genetic mutations:</Cloning_Letter_MutationText>
   <Cloning_CloneExtractionComplete>Clone embryo extraction complete for {PAWN_nameDef}.</Cloning_CloneExtractionComplete>
   <Cloning_ExtractingCloneFrom>Extracting clone embryo from {PAWN_nameDef}.</Cloning_ExtractingCloneFrom>
+  <Cloning_InsertPersonBrainScanDesc>Insert a pawn to extract a brain scan that can be applied to another pawn to overwrite their consciousness.</Cloning_InsertPersonBrainScanDesc>
+  <Cloning_CloneExtractorModeSwitch>Mode</Cloning_CloneExtractorModeSwitch>
+  <Cloning_EmbryoMode>Clone Embryo</Cloning_EmbryoMode>
+  <Cloning_BrainScanMode>Scan Brain</Cloning_BrainScanMode>
+  <Cloning_ExtractorWorking>Extraction process is already running. Cancel to change modes.</Cloning_ExtractorWorking>
 </LanguageData>

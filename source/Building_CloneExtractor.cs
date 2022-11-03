@@ -28,6 +28,14 @@ namespace Dark.Cloning
         private float WorkingPowerUsageFactor = 6f;
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
+        public enum CloneExtractorModes
+        {
+            Embryo,
+            Brain
+        }
+        [Unsaved(false)]
+        private CloneExtractorModes currentMode = CloneExtractorModes.Embryo;
+
         private Pawn ContainedPawn => this.innerContainer.Count <= 0 ? (Pawn)null : (Pawn)this.innerContainer[0];
 
         public bool PowerOn => this.PowerTraderComp.PowerOn;
@@ -287,6 +295,38 @@ namespace Dark.Cloning
                 yield return command_Action3;
                 yield break;
             }
+
+            // Button to switch modes
+            Command_Action toggleModeCommandAction = new Command_Action();
+            toggleModeCommandAction.defaultLabel = "Cloning_CloneExtractorModeSwitch".Translate();
+            toggleModeCommandAction.defaultDesc = "Cloning_InsertPersonBrainScanDesc".Translate();
+            toggleModeCommandAction.icon = GeneSetHolderBase.GeneticInfoTex.Texture; //TODO: Replace this gizmo texture
+            toggleModeCommandAction.action = delegate
+            {
+                List<FloatMenuOption> floatMenuOptions = new List<FloatMenuOption>();
+                floatMenuOptions.Add(new FloatMenuOption("Cloning_EmbryoMode".Translate(), delegate
+                {
+                    currentMode = CloneExtractorModes.Embryo;
+                }
+                ));
+                floatMenuOptions.Add(new FloatMenuOption("Cloning_BrainScanMode".Translate(), delegate
+                {
+                    currentMode = CloneExtractorModes.Brain;
+                }
+                ));
+
+                if (!floatMenuOptions.Any())
+                {
+                    floatMenuOptions.Add(new FloatMenuOption("NoExtractablePawns".Translate(), null));
+                }
+                Find.WindowStack.Add(new FloatMenu(floatMenuOptions));
+            };
+            if (this.Working)
+            {
+                toggleModeCommandAction.Disable("Cloning_ExtractorWorking".Translate().CapitalizeFirst());
+            }
+            yield return toggleModeCommandAction;
+
             Command_Action command_Action4 = new Command_Action();
             command_Action4.defaultLabel = "InsertPerson".Translate() + "...";
             command_Action4.defaultDesc = "InsertPersonGeneExtractorDesc".Translate();
@@ -309,6 +349,7 @@ namespace Dark.Cloning
                     {
                         list.Add(new FloatMenuOption(item.LabelShortCap + ", " + pawn.genes.XenotypeLabelCap, delegate
                         {
+                            currentMode = CloneExtractorModes.Embryo;
                             SelectPawn(pawn);
                         }, pawn, Color.white));
                     }
@@ -349,6 +390,7 @@ namespace Dark.Cloning
                     str1 += "\n";
                 string str2 = str1 + "Cloning_ExtractingCloneFrom".Translate(this.ContainedPawn.Named("PAWN")).Resolve() + "\n";
                 str1 = !this.PowerOn ? (string)( str2 + "ExtractionPausedNoPower".Translate() ) : str2 + "DurationLeft".Translate((NamedArgument)this.ticksRemaining.ToStringTicksToPeriod()).Resolve();
+                str1 = str1 + currentMode;
             }
             return str1;
         }
@@ -357,6 +399,7 @@ namespace Dark.Cloning
         {
             base.ExposeData();
             Scribe_Values.Look<int>(ref this.ticksRemaining, "ticksRemaining");
+            Scribe_Values.Look<CloneExtractorModes>(ref this.currentMode, "currentMode");
         }
     }
 }
