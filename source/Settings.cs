@@ -132,24 +132,29 @@ namespace Dark.Cloning
                 if (Settings.numMutations.min > Settings.genesEligibleForMutation.Count) Settings.numMutations.min = Settings.genesEligibleForMutation.Count;
                 if (Settings.numMutations.max == 0) Settings.numMutations.max = Settings.numMutations.min;
 
+                listingStandard.DoBlankColumn(12f);
+
                 #region Mutations Gene list
-                float tmp = listingStandard.ColumnWidth;
-
-                // Do a vertical gap between the columns
-                listingStandard.NewColumn();
-                listingStandard.ColumnWidth = 12f;
-
-                listingStandard.NewColumn();
-                listingStandard.ColumnWidth = tmp;
 
                 // Begin scrollview for gene mutation settings
                 Rect scrollRect = inRect.RightPartPixels(listingStandard.ColumnWidth);
                 scrollRect.yMin = 50f;
                 scrollRect.yMax = inRect.height;
-                //scrollRect.yMax -= 50f;
 
                 // Draw the header
                 listingStandard.Label($"[{Settings.genesEligibleForMutation.Count}] " + "Cloning_Settings_GeneListHeader".Translate() + ":");
+
+                // Draw buttons for collapsing categories
+                float collapseButtonsHeight = 24f;
+                Rect collapseButtonsRect = new Rect(scrollRect.xMin, scrollRect.yMin - collapseButtonsHeight, scrollRect.width, collapseButtonsHeight).LeftHalf();
+                if (Widgets.ButtonText(collapseButtonsRect.RightHalf(), "Cloning_Settings_CollapseAll".Translate()))
+                {
+                    ToggleCollapseOnAllCategories(true);
+                }
+                if (Widgets.ButtonText(collapseButtonsRect.LeftHalf(), "Cloning_Settings_ExpandAll".Translate()))
+                {
+                    ToggleCollapseOnAllCategories(false);
+                }
 
                 // Draw buttons for manipulating the whole list at once.
                 //TODO: Move these elsewhere in the menu
@@ -192,42 +197,7 @@ namespace Dark.Cloning
                 List<KeyValuePair<string, int>> genesList = genesEligibleForMutation.ToList();
                 foreach (GeneCategoryDef geneCategory in GeneUtils.AllGeneCategoriesCache.Keys)
                 {
-                    float rowHeight = 86f;
-                    float geneWidth = 72f;
-
-                    Rect collapseBarRect = scrollList.GetRect(Text.LineHeight);
-                    Widgets.DrawRectFast(collapseBarRect, new Color(0, 0, 0, 0.2f));
-                    Rect labelRect = new Rect(collapseBarRect.x + 16f, collapseBarRect.y, collapseBarRect.width, collapseBarRect.height);
-                    Widgets.Label(labelRect, geneCategory.LabelCap);
-
-                    Rect rect2 = new Rect(0f, collapseBarRect.y, collapseBarRect.width, Text.LineHeight);
-                    Rect position = new Rect(rect2.x, rect2.y + ( rect2.height - 18f ) / 2f, 18f, 18f);
-                    GUI.DrawTexture(position, IsCategoryCollapsed(geneCategory) ? TexButton.Reveal : TexButton.Collapse);
-                    if (Widgets.ButtonInvisible(collapseBarRect))
-                    {
-                        categoryCollapsedStates[geneCategory] = !IsCategoryCollapsed(geneCategory);
-                        if (categoryCollapsedStates[geneCategory])
-                        {
-                            SoundDefOf.TabClose.PlayOneShotOnCamera();
-                        }
-                        else
-                        {
-                            SoundDefOf.TabOpen.PlayOneShotOnCamera();
-                        }
-                    }
-                    if (Mouse.IsOver(collapseBarRect))
-                    {
-                        Widgets.DrawHighlight(collapseBarRect);
-                    }
-
-
-                    RectRow row = new RectRow(4f, collapseBarRect.yMax, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, 4f);
-                    row.RowGapExtra = 36f;
-
-                    if (!IsCategoryCollapsed(geneCategory))
-                        DrawGenes(GeneUtils.AllGeneCategoriesCache[geneCategory], scrollList, row, scrollRect, geneWidth, rowHeight);
-                    else
-                        scrollList.GapLine(4f);
+                    DrawGeneCategory(geneCategory, scrollList, scrollRect);
                 }
 
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
@@ -243,6 +213,22 @@ namespace Dark.Cloning
                 categoryCollapsedStates.Add(category, true);
             }
             return categoryCollapsedStates[category];
+        }
+
+        void ToggleCollapseOnAllCategories(bool newCollapsed)
+        {
+            foreach (GeneCategoryDef category in GeneUtils.AllGeneCategoriesCache.Keys)
+            {
+                categoryCollapsedStates[category] = newCollapsed;
+            }
+        }
+
+        void SetEnableForCategory(GeneCategoryDef category, bool newEnabled)
+        {
+            foreach (string gene in GeneUtils.AllGeneCategoriesCache[category])
+            {
+                GeneUtils.SetEligible(gene, newEnabled);
+            }
         }
 
         void DrawGene(string gene, Listing_Standard scrollList, RectRow row, Rect scrollRect, float geneWidth, float rowHeight)
@@ -314,6 +300,64 @@ namespace Dark.Cloning
             scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Add another offset for the last row
         }
 
+        Rect DrawCategoryCollapsibleHeader(GeneCategoryDef geneCategory, Listing_Standard scrollList)
+        {
+            float clickablePercent = 0.7f;
+            Rect collapseBarRect = scrollList.GetRect(Text.LineHeight);
+            Widgets.DrawRectFast(collapseBarRect, new Color(0, 0, 0, 0.2f));
+            Rect labelRect = new Rect(collapseBarRect.x + 16f, collapseBarRect.y, collapseBarRect.width, collapseBarRect.height);
+            Widgets.Label(labelRect, geneCategory.LabelCap);
+
+            Rect rect2 = new Rect(0f, collapseBarRect.y, collapseBarRect.width, Text.LineHeight);
+            Rect position = new Rect(rect2.x, rect2.y + ( rect2.height - 18f ) / 2f, 18f, 18f);
+            GUI.DrawTexture(position, IsCategoryCollapsed(geneCategory) ? TexButton.Reveal : TexButton.Collapse);
+            if (Widgets.ButtonInvisible(collapseBarRect.LeftPart(clickablePercent)))
+            {
+                categoryCollapsedStates[geneCategory] = !IsCategoryCollapsed(geneCategory);
+                if (categoryCollapsedStates[geneCategory])
+                {
+                    SoundDefOf.TabClose.PlayOneShotOnCamera();
+                }
+                else
+                {
+                    SoundDefOf.TabOpen.PlayOneShotOnCamera();
+                }
+            }
+            if (Mouse.IsOver(collapseBarRect.LeftPart(clickablePercent)))
+            {
+                Widgets.DrawHighlight(collapseBarRect);
+            }
+
+            // Draw buttons for enabling/disabling the whole category at once
+            Rect enableButtonsRect = collapseBarRect.RightPart(1f - clickablePercent);
+            if (Widgets.ButtonText(enableButtonsRect.LeftHalf(), "Cloning_Settings_DisableAll".Translate()))
+            {
+                SetEnableForCategory(geneCategory, false);
+            }
+            if (Widgets.ButtonText(enableButtonsRect.RightHalf(), "Cloning_Settings_EnableAll".Translate()))
+            {
+                SetEnableForCategory(geneCategory, true);
+            }
+
+            return collapseBarRect;
+        }
+
+        void DrawGeneCategory(GeneCategoryDef geneCategory, Listing_Standard scrollList, Rect scrollRect)
+        {
+            float rowHeight = 86f;
+            float geneWidth = 72f;
+
+            Rect collapseBarRect = DrawCategoryCollapsibleHeader(geneCategory, scrollList);
+
+            RectRow row = new RectRow(4f, collapseBarRect.yMax, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, 4f);
+            row.RowGapExtra = 36f;
+
+            if (!IsCategoryCollapsed(geneCategory))
+                DrawGenes(GeneUtils.AllGeneCategoriesCache[geneCategory], scrollList, row, scrollRect, geneWidth, rowHeight);
+            else
+                scrollList.GapLine(4f);
+        }
+
         public override void ExposeData()
         {
             Scribe_Values.Look(ref cloningCooldown, "cloningCooldown", true);
@@ -363,6 +407,18 @@ namespace Dark.Cloning
         {
             listing.ColumnWidth += amount;
             listing.Outdent(amount);
+        }
+
+        public static void DoBlankColumn(this Listing_Standard listing, float width = 12f)
+        {
+            float tmp = listing.ColumnWidth;
+
+            // Do a vertical gap between the columns
+            listing.NewColumn();
+            listing.ColumnWidth = width;
+
+            listing.NewColumn();
+            listing.ColumnWidth = tmp;
         }
         /// <summary>
         /// Draws one button used for switching tabs based on an enum value
