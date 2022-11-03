@@ -59,6 +59,9 @@ namespace Dark.Cloning
 			yield return Toils_General.Do(ScanCorpse);
 		}
 
+		/// <summary>
+		/// Method where the magic happens. Replaces Resurrect() in the original Mech Resurrector Serum code that this is based on.
+		/// </summary>
 		private void ScanCorpse()
 		{
 			Pawn innerPawn = Corpse.InnerPawn;
