@@ -152,6 +152,8 @@ namespace Dark.Cloning
                 listingStandard.Label($"[{Settings.genesEligibleForMutation.Count}] " + "Cloning_Settings_GeneListHeader".Translate() + ":");
 
                 // Draw buttons for manipulating the whole list at once.
+                //TODO: Move these elsewhere in the menu
+                //TODO: Add preset save/load buttons
                 float selectButtonWidth = 60f;
                 float selectButtonHeight = 24f;
                 Rect selectButtonRect = new Rect(scrollRect.xMax - selectButtonWidth, scrollRect.yMin - selectButtonHeight, selectButtonWidth, selectButtonHeight);
@@ -223,7 +225,7 @@ namespace Dark.Cloning
                     row.RowGapExtra = 36f;
 
                     if (!IsCategoryCollapsed(geneCategory))
-                        DrawGenes(GeneUtils.AllGeneCategoriesCache[geneCategory], scrollList, row, geneWidth, rowHeight);
+                        DrawGenes(GeneUtils.AllGeneCategoriesCache[geneCategory], scrollList, row, scrollRect, geneWidth, rowHeight);
                     else
                         scrollList.GapLine(4f);
                 }
@@ -243,10 +245,18 @@ namespace Dark.Cloning
             return categoryCollapsedStates[category];
         }
 
-        void DrawGene(string gene, Listing_Standard scrollList, RectRow row, float geneWidth, float rowHeight)
+        void DrawGene(string gene, Listing_Standard scrollList, RectRow row, Rect scrollRect, float geneWidth, float rowHeight)
         {
             Rect buttonRect = row.GetRect(geneWidth, out bool newRow);
             if (newRow) scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Needed so that the scrollview listing_standard knows the correct height
+
+            // Cull offscreen genes
+            Rect visibleRect = new Rect(scrollPos.x, scrollPos.y, scrollRect.width, scrollRect.height);
+            if ( !( visibleRect.Contains(new Vector2(buttonRect.xMin, buttonRect.yMin)) || visibleRect.Contains(new Vector2(buttonRect.xMax, buttonRect.yMax)) ) )
+            {
+                Log.Message($"Gene culled: {gene}. Topleft {new Vector2(buttonRect.xMin, buttonRect.yMin)} scrollRect {scrollRect}");
+                return;
+            }
 
             bool eligible = GeneUtils.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
 
@@ -281,7 +291,7 @@ namespace Dark.Cloning
             }
         }
 
-        void DrawGenes(List<string> genes, Listing_Standard scrollList, RectRow row, float geneWidth, float rowHeight)
+        void DrawGenes(List<string> genes, Listing_Standard scrollList, RectRow row, Rect scrollRect, float geneWidth, float rowHeight)
         {
             foreach (string gene in genes)
             {
@@ -299,7 +309,7 @@ namespace Dark.Cloning
                 }
 
                 // Draw one gene
-                DrawGene(gene, scrollList, row, geneWidth, rowHeight);
+                DrawGene(gene, scrollList, row, scrollRect, geneWidth, rowHeight);
             }
             scrollList.GetRect(rowHeight + row.CellGap + row.RowGapExtra); // Add another offset for the last row
         }
