@@ -240,7 +240,6 @@ namespace Dark.Cloning
             Rect visibleRect = new Rect(scrollPos.x, scrollPos.y, scrollRect.width, scrollRect.height);
             if ( !( visibleRect.Contains(new Vector2(buttonRect.xMin, buttonRect.yMin)) || visibleRect.Contains(new Vector2(buttonRect.xMax, buttonRect.yMax)) ) )
             {
-                Log.Message($"Gene culled: {gene}. Topleft {new Vector2(buttonRect.xMin, buttonRect.yMin)} scrollRect {scrollRect}");
                 return;
             }
 
