@@ -338,7 +338,7 @@ namespace Dark.Cloning
 					List<FloatMenuOption> options = new List<FloatMenuOption>();
 					foreach (Thing brainScan in brainScans)
 					{
-						options.Add(new FloatMenuOption(brainScan.LabelCap + " (" + ((BrainScan)brainScan).sourceName + ")", delegate
+						options.Add(new FloatMenuOption(brainScan.LabelCap + " (" + ((BrainScan)brainScan).sourceLabel + ")", delegate
 						{
 							SelectBrainScan(brainScan as BrainScan);
 						}, brainScan, Color.white));
@@ -358,7 +358,7 @@ namespace Dark.Cloning
 			else
             {
 				Command_Action cancelScan = new Command_Action();
-				cancelScan.defaultLabel = "CancelBrainScan".Translate();
+				cancelScan.defaultLabel = innerContainer.Contains(selectedBrainScan) ?  "RemoveBrainScan".Translate() : "CancelBrainScan".Translate();
 				cancelScan.defaultDesc = "CancelBrainScanDesc".Translate();
 				cancelScan.icon = CancelLoadingIcon;
 				cancelScan.action = delegate
@@ -367,6 +367,25 @@ namespace Dark.Cloning
 				};
 				yield return cancelScan;
             }
+			Command_Action applyScan = new Command_Action();
+			applyScan.defaultLabel = "ApplyBrainScan".Translate();
+			applyScan.defaultDesc = "ApplyBrainScanDesc".Translate();
+			applyScan.icon = InsertBrainScanIcon.Texture;
+			applyScan.action = delegate
+			{
+				//TODO: Add a warning confirmation dialog reminding the player that the pawn will effectively be killed by this procedure and it is not reversible
+				ApplyBrainScanToPawn();
+			};
+			if (selectedBrainScan == null || !innerContainer.Contains(selectedBrainScan))
+            {
+				applyScan.Disable("NoBrainScan".Translate());
+            }
+			if (selectedPawn == null || !innerContainer.Contains(selectedPawn))
+            {
+				applyScan.Disable("NoPawnToApplyTo".Translate());
+            }
+			//TODO: Disable brain scan application for other reasons, like target is already the same pawn stored in the scan or target does not have Clone gene
+			yield return applyScan;
 		}
 
 		public void SelectBrainScan(BrainScan brainScan)
@@ -394,22 +413,23 @@ namespace Dark.Cloning
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append(base.GetInspectString());
-			if (base.Working)
+			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
 			{
-				if (selectedPawn != null && innerContainer.Contains(selectedPawn))
-				{
-					stringBuilder.AppendLineIfNotEmpty().Append(string.Format("{0}: {1}, {2}", "CasketContains".Translate().ToString(), selectedPawn.NameShortColored.Resolve(), selectedPawn.ageTracker.AgeBiologicalYears));
-				}
+				stringBuilder.AppendLineIfNotEmpty().Append(string.Format("{0}: {1}, {2}", "CasketContains".Translate().ToString(), selectedPawn.NameShortColored.Resolve(), selectedPawn.ageTracker.AgeBiologicalYears));
 			}
 			else if (selectedPawn != null)
 			{
 				stringBuilder.AppendLineIfNotEmpty().Append("WaitingForPawn".Translate(selectedPawn.Named("PAWN")).Resolve());
 			}
-			
-			if (base.Working)
-			{
-				
-			}
+
+			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
+            {
+				stringBuilder.AppendLineIfNotEmpty().Append("ContainsBrainScan".Translate() + ": " + selectedBrainScan.sourceLabel);
+            }
+			else if (selectedBrainScan != null)
+            {
+				stringBuilder.AppendLineIfNotEmpty().Append("WaitingForBrainScan".Translate());
+            }
 			return stringBuilder.ToString();
 		}
 
@@ -437,6 +457,49 @@ namespace Dark.Cloning
 				yield return new FloatMenuOption("CannotEnterBuilding".Translate(this) + ": " + acceptanceReport.Reason.CapitalizeFirst(), null);
 			}
 		}
+
+		public void ApplyBrainScanToPawn()
+        {
+			Pawn pawn = SelectedPawn;
+			BrainScan brainScan = selectedBrainScan;
+
+			// Name
+			pawn.Name = brainScan.sourceName;
+
+			// Backstories
+			if (pawn.story != null)
+            {
+				pawn.story.Childhood = brainScan.backStoryChild;
+				pawn.story.Adulthood = brainScan.backStoryAdult;
+            }
+			
+			// Traits
+			// First clear the old traits
+			List<Trait> tmpList = new List<Trait>(pawn.story.traits.allTraits);
+			foreach (Trait trait in tmpList)
+            {
+				pawn.story.traits.RemoveTrait(trait);
+			}
+			// Then add the new ones
+			foreach (TraitBackup trait in brainScan.traits)
+            {
+				pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
+            }
+
+			// Skills
+			for (int i = 0; i < brainScan.skills.Count; i++)
+            {
+				SkillRecordBackup scannedSkill = brainScan.skills[i];
+				SkillRecord skill = pawn.skills.GetSkill(scannedSkill.def);
+				skill.Level = scannedSkill.level; //SOMEDAY: Maybe an efficiency setting for brain scan skill copying?
+				skill.passion = scannedSkill.passion;
+				skill.xpSinceLastLevel = scannedSkill.xpSinceLastLevel;
+				skill.Notify_SkillDisablesChanged();
+            }
+
+			// Social relations
+			//TODO: Copy social relations
+        }
 
 		public override void ExposeData()
 		{

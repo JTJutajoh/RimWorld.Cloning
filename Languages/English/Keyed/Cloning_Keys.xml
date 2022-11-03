@@ -44,8 +44,16 @@
   <InsertBrainScanCloneVatDesc>Insert a brain scan into this clone vat to be applied to any pawns inside.</InsertBrainScanCloneVatDesc>
   <InsertBrainScanNoScans>No brain scans</InsertBrainScanNoScans>
   <CancelBrainScan>Cancel installing brain scan</CancelBrainScan>
+  <RemoveBrainScan>Remove brain scan</RemoveBrainScan>
   <CancelBrainScanDesc>Cancel loading the selected brain scan into this clone vat or remove it if it has already been installed.</CancelBrainScanDesc>
   <ImplantBrainScanCancel>Cancel installing brain scan</ImplantBrainScanCancel>
+  <ImplantBrainScanRemove>Remove brain scan</ImplantBrainScanRemove>
   <CannotInsertBrainScan>Cannot insert brain scan</CannotInsertBrainScan>
   <BrainScanAlreadyInside>There is already a brain scan installed</BrainScanAlreadyInside>
+  <ContainsBrainScan>Contains brain scan of</ContainsBrainScan>
+  <NoBrainScan>No brain scan installed</NoBrainScan>
+  <NoPawnToApplyTo>Clone vat is empty</NoPawnToApplyTo>
+  <WaitingForBrainScan>Waiting for brain scan to be delivered</WaitingForBrainScan>
+  <ApplyBrainScan>Apply brain scan</ApplyBrainScan>
+  <ApplyBrainScanDesc>Applies the stored consciousness in the contained brain scan onto the contained pawn.\nCompletely overwrites the person's entire sentient personality.\n\nSeems painful.</ApplyBrainScanDesc>
 </LanguageData>
