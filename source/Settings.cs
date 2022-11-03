@@ -173,7 +173,7 @@ namespace Dark.Cloning
                 {
                     foreach (GeneDef geneDef in GeneUtils.AllGenesCache.Values)
                     {
-                        if (geneDef.defName == CloneDefs.Clone.defName) continue;
+                        if (geneDef.defName == CloneDefOf.Clone.defName) continue;
                         GeneUtils.SetEligible(geneDef.defName, true);
                     }
                 }
@@ -288,7 +288,7 @@ namespace Dark.Cloning
                 }
 
                 // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
-                if (gene == CloneDefs.Clone.defName)
+                if (gene == CloneDefOf.Clone.defName)
                 {
                     continue;
                 }

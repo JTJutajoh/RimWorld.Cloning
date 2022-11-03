@@ -40,4 +40,12 @@
   <Cloning_BrainScanComplete>Brain Scan complete from {PAWN_nameDef}.</Cloning_BrainScanComplete>
   <Mode_BrainScan>for Brain Scan</Mode_BrainScan>
   <Mode_Clone>for Embryo Extraction</Mode_Clone>
+  <InstallBrainScan>Install Brain Scan</InstallBrainScan>
+  <InsertBrainScanCloneVatDesc>Insert a brain scan into this clone vat to be applied to any pawns inside.</InsertBrainScanCloneVatDesc>
+  <InsertBrainScanNoScans>No brain scans</InsertBrainScanNoScans>
+  <CancelBrainScan>Cancel installing brain scan</CancelBrainScan>
+  <CancelBrainScanDesc>Cancel loading the selected brain scan into this clone vat or remove it if it has already been installed.</CancelBrainScanDesc>
+  <ImplantBrainScanCancel>Cancel installing brain scan</ImplantBrainScanCancel>
+  <CannotInsertBrainScan>Cannot insert brain scan</CannotInsertBrainScan>
+  <BrainScanAlreadyInside>There is already a brain scan installed</BrainScanAlreadyInside>
 </LanguageData>

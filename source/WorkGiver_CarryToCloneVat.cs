@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using RimWorld;
 using Verse;
+using Verse.AI;
 
 namespace Dark.Cloning
 {
-	public class WorkGiver_CarryTocloneExtractor : WorkGiver_CarryToBuilding
+    class WorkGiver_CarryToCloneVat : WorkGiver_CarryToBuilding
 	{
-		public override ThingRequest ThingRequest => ThingRequest.ForDef(CloneDefOf.CloneExtractor);
+		public override ThingRequest ThingRequest => ThingRequest.ForDef(CloneDefOf.CloneVat);
 
 		public override bool ShouldSkip(Pawn pawn, bool forced = false)
 		{

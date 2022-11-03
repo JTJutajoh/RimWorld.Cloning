@@ -69,7 +69,7 @@
     <Compile Include="GeneUtils.cs" />
     <Compile Include="JobDriver_ScanCorpse.cs" />
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
-    <Compile Include="CloneDefs.cs" />
+    <Compile Include="CloneDefOf.cs" />
     <Compile Include="EmbryoTracker.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Patches\Notify_LifeStageStarted_Patch.cs" />
@@ -79,6 +79,8 @@
     <Compile Include="Patches\TryPopulateGenes_Patch.cs" />
     <Compile Include="CloneUtils.cs" />
     <Compile Include="WorkGiver_CarryToCloneExtractor.cs" />
+    <Compile Include="WorkGiver_CarryToCloneVat.cs" />
+    <Compile Include="WorkGiver_HaulToCloneVat.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

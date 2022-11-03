@@ -95,9 +95,6 @@
     <uiOrder>2102</uiOrder>
     <hasInteractionCell>true</hasInteractionCell>
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
-    <inspectorTabs>
-      <li>ITab_Storage</li>
-    </inspectorTabs>
     <researchPrerequisites>
       <li>AdvancedCloning</li>
     </researchPrerequisites>
@@ -107,20 +104,6 @@
       <buildingTags>
         <li>Biotech</li>
       </buildingTags>
-      <fixedStorageSettings>
-        <filter>
-          <thingDefs>
-            <li>BrainScan</li>
-          </thingDefs>
-        </filter>
-      </fixedStorageSettings>
-      <defaultStorageSettings>
-        <filter>
-          <thingDefs>
-            <li>BrainScan</li>
-          </thingDefs>
-        </filter>
-      </defaultStorageSettings>-->
     </building>
     <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
     <comps>

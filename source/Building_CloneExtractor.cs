@@ -191,7 +191,7 @@ namespace Dark.Cloning
                         ), MessageTypeDefOf.PositiveEvent);
                     break;
                 case CloneExtractorModes.Brain:
-                    BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefs.BrainScan);
+                    BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefOf.BrainScan);
                     brainScan.ScanPawn(ContainedPawn);
                     this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
                     //TODO: Add a thought about having had your brain scanned

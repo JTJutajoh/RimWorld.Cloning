@@ -13,6 +13,8 @@ namespace Dark.Cloning
 {
     public class Building_CloneVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder
 	{
+		public BrainScan selectedBrainScan;
+
 		[Unsaved(false)]
 		private CompPowerTrader cachedPowerComp;
 
@@ -28,6 +30,8 @@ namespace Dark.Cloning
 		private static readonly Texture2D CancelLoadingIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
 		public static readonly CachedTexture InsertPawnIcon = new CachedTexture("UI/Gizmos/InsertPawn");
+
+		public static readonly CachedTexture InsertBrainScanIcon = new CachedTexture("UI/Gizmos/InsertEmbryo");
 
 		private const int GlowIntervalTicks = 132;
 
@@ -61,7 +65,7 @@ namespace Dark.Cloning
 			{
 				if (cachedTopGraphic == null)
 				{
-					cachedTopGraphic = GraphicDatabase.Get<Graphic_Multi>("Things/Building/Misc/GrowthVat/GrowthVatTop", ShaderDatabase.Transparent, def.graphicData.drawSize, Color.white);
+					cachedTopGraphic = GraphicDatabase.Get<Graphic_Multi>("Things/Building/Misc/GrowthVat/GrowthVatTop", ShaderDatabase.Transparent, def.graphicData.drawSize, Color.green);
 				}
 				return cachedTopGraphic;
 			}
@@ -207,6 +211,12 @@ namespace Dark.Cloning
 			{
 				FinishPawn();
 			}
+			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
+            {
+				innerContainer.TryDrop(selectedBrainScan, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var _);
+			}
+			
+			OnStop();
 		}
 
 		private void FinishPawn()
@@ -219,13 +229,13 @@ namespace Dark.Cloning
 					selectedPawn.health.AddHediff(HediffDefOf.CryptosleepSickness);
                 }
 				innerContainer.TryDrop(selectedPawn, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var _);
-				OnStop();
 			}
 		}
 
 		private void OnStop()
 		{
 			selectedPawn = null;
+			selectedBrainScan = null;
 			startTick = -1;
 			sustainerWorking = null;
 		}
@@ -243,20 +253,17 @@ namespace Dark.Cloning
 			}
 			if (base.Working)
 			{
-				if (DebugSettings.ShowDevGizmos)
+				Command_Action command_Action = new Command_Action();
+				command_Action.defaultLabel = "CommandCancelGrowth".Translate();
+				command_Action.defaultDesc = "CommandCancelGrowthDesc".Translate();
+				command_Action.icon = CancelLoadingIcon;
+				command_Action.activateSound = SoundDefOf.Designate_Cancel;
+				command_Action.action = delegate
 				{
-					Command_Action command_Action = new Command_Action();
-					command_Action.defaultLabel = "CommandCancelGrowth".Translate();
-					command_Action.defaultDesc = "CommandCancelGrowthDesc".Translate();
-					command_Action.icon = CancelLoadingIcon;
-					command_Action.activateSound = SoundDefOf.Designate_Cancel;
-					command_Action.action = delegate
-					{
-						Finish();
-						innerContainer.TryDropAll(InteractionCell, base.Map, ThingPlaceMode.Near);
-					};
-					yield return command_Action;
-				}
+					Finish();
+					innerContainer.TryDropAll(InteractionCell, base.Map, ThingPlaceMode.Near);
+				};
+				yield return command_Action;
 			}
 			else
 			{
@@ -319,7 +326,53 @@ namespace Dark.Cloning
 					yield return command_Action3;
 				}
 			}
+			if (selectedBrainScan == null)
+            {
+				List<Thing> brainScans = base.Map.listerThings.ThingsOfDef(CloneDefOf.BrainScan);
+				Command_Action installBrainScan = new Command_Action();
+				installBrainScan.defaultLabel = "InstallBrainScan".Translate() + "...";
+				installBrainScan.defaultDesc = "InsertBrainScanCloneVatDesc".Translate();
+				installBrainScan.icon = InsertBrainScanIcon.Texture;
+				installBrainScan.action = delegate
+				{
+					List<FloatMenuOption> options = new List<FloatMenuOption>();
+					foreach (Thing brainScan in brainScans)
+					{
+						options.Add(new FloatMenuOption(brainScan.LabelCap + " (" + ((BrainScan)brainScan).sourceName + ")", delegate
+						{
+							SelectBrainScan(brainScan as BrainScan);
+						}, brainScan, Color.white));
+					}
+					Find.WindowStack.Add(new FloatMenu(options));
+				};
+				if (brainScans.NullOrEmpty())
+                {
+					installBrainScan.Disable("InsertBrainScanNoScans".Translate().CapitalizeFirst());
+                }
+				else if (!PowerOn)
+                {
+					installBrainScan.Disable("NoPower".Translate().CapitalizeFirst());
+                }
+				yield return installBrainScan;
+            }
+			else
+            {
+				Command_Action cancelScan = new Command_Action();
+				cancelScan.defaultLabel = "CancelBrainScan".Translate();
+				cancelScan.defaultDesc = "CancelBrainScanDesc".Translate();
+				cancelScan.icon = CancelLoadingIcon;
+				cancelScan.action = delegate
+				{
+					Finish();
+				};
+				yield return cancelScan;
+            }
 		}
+
+		public void SelectBrainScan(BrainScan brainScan)
+        {
+			selectedBrainScan = brainScan;
+        }
 
 		public override void Draw()
 		{

@@ -9,16 +9,17 @@ using Verse;
 namespace Dark.Cloning
 {
     [DefOf]
-    public static class CloneDefs
+    public static class CloneDefOf
     {
         public static GeneDef Clone;
         public static JobDef ScanCorpse;
         public static ThingDef CloneExtractor;
+        public static ThingDef CloneVat;
         public static ThingDef BrainScan;
 
-        static CloneDefs()
+        static CloneDefOf()
         {
-            DefOfHelper.EnsureInitializedInCtor(typeof(CloneDefs));
+            DefOfHelper.EnsureInitializedInCtor(typeof(CloneDefOf));
         }
     }
 }
