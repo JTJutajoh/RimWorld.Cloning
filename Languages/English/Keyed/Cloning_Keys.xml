@@ -37,4 +37,7 @@
   <Cloning_EmbryoMode>Clone Embryo</Cloning_EmbryoMode>
   <Cloning_BrainScanMode>Scan Brain</Cloning_BrainScanMode>
   <Cloning_ExtractorWorking>Extraction process is already running. Cancel to change modes.</Cloning_ExtractorWorking>
+  <Cloning_BrainScanComplete>Brain Scan complete from {PAWN_nameDef}.</Cloning_BrainScanComplete>
+  <Mode_BrainScan>for Brain Scan</Mode_BrainScan>
+  <Mode_Clone>for Embryo Extraction</Mode_Clone>
 </LanguageData>

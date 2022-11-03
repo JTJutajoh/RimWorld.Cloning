@@ -172,20 +172,45 @@ namespace Dark.Cloning
             if (this.ContainedPawn == null)
                 return;
             Pawn containedPawn = this.ContainedPawn;
-            HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
-            if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
             IntVec3 intVec3 = this.def.hasInteractionCell ? this.InteractionCell : this.Position;
-            this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
-            if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
-                containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
-            GenPlace.TryPlaceThing((Thing)embryo, intVec3, this.Map, ThingPlaceMode.Near);
-            Messages.Message((string)( "Cloning_CloneExtractionComplete".Translate(containedPawn.Named("PAWN")) ),
-                new LookTargets(new TargetInfo[2]
-                    {
+            switch (currentMode)
+            {
+                case CloneExtractorModes.Embryo:
+                    HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
+                    if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+                    this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
+                    if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
+                        containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
+                    GenPlace.TryPlaceThing((Thing)embryo, intVec3, this.Map, ThingPlaceMode.Near);
+                    Messages.Message((string)( "Cloning_CloneExtractionComplete".Translate(containedPawn.Named("PAWN")) ),
+                        new LookTargets(new TargetInfo[2]
+                            {
                         (TargetInfo) (Thing) containedPawn,
                         (TargetInfo) (Thing) embryo
-                    }
-                ), MessageTypeDefOf.PositiveEvent);
+                            }
+                        ), MessageTypeDefOf.PositiveEvent);
+                    break;
+                case CloneExtractorModes.Brain:
+                    BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefs.BrainScan);
+                    brainScan.ScanPawn(ContainedPawn);
+                    this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
+                    //TODO: Add a thought about having had your brain scanned
+                    //if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
+                    //    containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
+                    GenPlace.TryPlaceThing((Thing)brainScan, intVec3, this.Map, ThingPlaceMode.Near);
+                    Messages.Message((string)( "Cloning_BrainScanComplete".Translate(containedPawn.Named("PAWN")) ),
+                        new LookTargets(new TargetInfo[2]
+                            {
+                        (TargetInfo) (Thing) containedPawn,
+                        (TargetInfo) (Thing) brainScan
+                            }
+                        ), MessageTypeDefOf.PositiveEvent);
+                    break;
+                default:
+                    Log.Error("Clone Extractor failed, invalid mode");
+                    break;
+            }
+            
         }
 
         public override void TryAcceptPawn(Pawn pawn)
@@ -206,7 +231,7 @@ namespace Dark.Cloning
 
         protected override void SelectPawn(Pawn pawn)
         {
-            if (pawn.health.hediffSet.HasHediff(HediffDefOf.XenogermReplicating))
+            if (currentMode == CloneExtractorModes.Embryo && pawn.health.hediffSet.HasHediff(HediffDefOf.XenogermReplicating))
                 Find.WindowStack.Add((Window)Dialog_MessageBox.CreateConfirmation("ConfirmExtractXenogermWillKill".Translate(pawn.Named("PAWN")), (Action)( () => base.SelectPawn(pawn) )));
             else
                 base.SelectPawn(pawn);
@@ -226,8 +251,14 @@ namespace Dark.Cloning
             AcceptanceReport acceptanceReport = CanAcceptPawn(selPawn);
             if (acceptanceReport.Accepted)
             {
-                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this), delegate
+                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this) + " " + "Mode_Clone".Translate(), delegate
                 {
+                    currentMode = CloneExtractorModes.Embryo;
+                    SelectPawn(selPawn);
+                }), selPawn, this);
+                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this) + " " + "Mode_BrainScan".Translate(), delegate
+                {
+                    currentMode = CloneExtractorModes.Brain;
                     SelectPawn(selPawn);
                 }), selPawn, this);
             }

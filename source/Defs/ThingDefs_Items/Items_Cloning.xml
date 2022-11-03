@@ -37,5 +37,42 @@
       </li>
     </comps>
   </ThingDef>
+
+  <ThingDef>
+    <defName>BrainScan</defName>
+    <label>brain scan</label>
+    <description>A hard-copy backup of a person's entire consciousness, ready to be applied to a new host. This process essentially kills the personality that was there before application, completely overwriting it with the one stored on this backup.</description>
+    <graphicData>
+      <texPath>Things/Item/Special/ClonerMechSerum</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <drawerType>MapMeshOnly</drawerType>
+    <selectable>true</selectable>
+    <altitudeLayer>Item</altitudeLayer>
+    <alwaysHaulable>true</alwaysHaulable>
+    <tradeNeverStack>true</tradeNeverStack>
+    <rotatable>false</rotatable>
+    <healthAffectsPrice>false</healthAffectsPrice>
+    <pathCost>14</pathCost>
+    <thingClass>Dark.Cloning.BrainScan</thingClass>
+    <stackLimit>1</stackLimit>
+    <statBases>
+      <MarketValue>500</MarketValue>
+      <Mass>0.5</Mass>
+      <MaxHitPoints>50</MaxHitPoints>
+      <Flammability>1</Flammability>
+    </statBases>
+    <thingCategories>
+      <li>ItemsMisc</li>
+    </thingCategories>
+    <category>Item</category>
+    <tradeability>Sellable</tradeability>
+    <comps>
+      <li Class="CompProperties_Forbiddable"/>
+    </comps>
+    <descriptionHyperlinks>
+      <ThingDef>CloneExtractor</ThingDef>
+    </descriptionHyperlinks>
+  </ThingDef>
   
 </Defs>

@@ -61,7 +61,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrainScan.cs" />
     <Compile Include="Building_CloneExtractor.cs" />
+    <Compile Include="Building_CloneVat.cs" />
     <Compile Include="CompTargetable_SingleHumanlikeCorpse.cs" />
     <Compile Include="CompTargetEffect_ScanCorpse.cs" />
     <Compile Include="GeneUtils.cs" />
