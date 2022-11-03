@@ -11,7 +11,7 @@ namespace Dark.Cloning
 {
     class WorkGiver_CarryToCloneVat : WorkGiver_CarryToBuilding
 	{
-		public override ThingRequest ThingRequest => ThingRequest.ForDef(CloneDefOf.CloneVat);
+		public override ThingRequest ThingRequest => ThingRequest.ForDef(CloneDefOf.CloneStorageVat);
 
 		public override bool ShouldSkip(Pawn pawn, bool forced = false)
 		{

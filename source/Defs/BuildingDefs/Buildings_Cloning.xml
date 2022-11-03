@@ -57,14 +57,14 @@
   </ThingDef>
 
   <ThingDef ParentName="BuildingBase">
-    <defName>CloneVat</defName>
-    <label>clone vat</label>
-    <description>A vat for indefinitely storing clones and applying clone-related operations such as brain scans.</description>
-    <thingClass>Dark.Cloning.Building_CloneVat</thingClass>
+    <defName>CloneStorageVat</defName>
+    <label>clone storage vat</label>
+    <description>A vat for indefinitely storing clones and applying clone-related operations such as brain scans. Suspends the containing pawn in cryptosleep.</description>
+    <thingClass>Dark.Cloning.Building_CloneStorageVat</thingClass>
     <containedPawnsSelectable>true</containedPawnsSelectable>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <texPath>Things/Building/Misc/GrowthVat/GrowthVat</texPath>
+      <texPath>Things/Building/Misc/CloneStorageVat/CloneStorageVat</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <drawSize>(1,2)</drawSize>
       <shadowData>

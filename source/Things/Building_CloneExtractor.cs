@@ -24,7 +24,7 @@ namespace Dark.Cloning
         private Sustainer sustainerWorking;
         [Unsaved(false)]
         private Effecter progressBar;
-        private const int TicksToExtract = 30000;
+        private const int TicksToApplyScan = 30000;
         private float WorkingPowerUsageFactor = 6f;
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
@@ -36,6 +36,7 @@ namespace Dark.Cloning
         [Unsaved(false)]
         private CloneExtractorModes currentMode = CloneExtractorModes.Embryo;
 
+        #region Mostly Vanilla
         private Pawn ContainedPawn => this.innerContainer.Count <= 0 ? (Pawn)null : (Pawn)this.innerContainer[0];
 
         public bool PowerOn => this.PowerTraderComp.PowerOn;
@@ -134,6 +135,7 @@ namespace Dark.Cloning
             mote.progress = 1f - Mathf.Clamp01((float)this.ticksRemaining / 30000f);
             mote.offsetZ = this.Rotation == Rot4.North ? 0.5f : -0.5f;
         }
+        #endregion Mostly Vanilla
 
         public override AcceptanceReport CanAcceptPawn(Pawn pawn)
         {
@@ -147,10 +149,6 @@ namespace Dark.Cloning
                 return (AcceptanceReport)"NoPower".Translate().CapitalizeFirst();
             if (this.innerContainer.Count > 0)
                 return (AcceptanceReport)"Occupied".Translate();
-            //if (pawn.genes == null || !pawn.genes.GenesListForReading.Any<Gene>())
-            //    return (AcceptanceReport)"PawnHasNoGenes".Translate(pawn.Named("PAWN"));
-            //if (!pawn.genes.GenesListForReading.Any<Gene>((Predicate<Gene>)( x => x.def.biostatArc == 0 )))
-            //    return (AcceptanceReport)"PawnHasNoNonArchiteGenes".Translate(pawn.Named("PAWN"));
             return pawn.health.hediffSet.HasHediff(HediffDefOf.XenogerminationComa) ? (AcceptanceReport)"InXenogerminationComa".Translate() : (AcceptanceReport)true;
         }
 
@@ -192,7 +190,7 @@ namespace Dark.Cloning
                     break;
                 case CloneExtractorModes.Brain:
                     BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefOf.BrainScan);
-                    brainScan.ScanPawn(ContainedPawn);
+                    BrainUtil.ScanPawn(ContainedPawn, brainScan);
                     this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
                     //TODO: Add a thought about having had your brain scanned
                     //if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))

@@ -61,26 +61,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BrainScan.cs" />
-    <Compile Include="Building_CloneExtractor.cs" />
-    <Compile Include="Building_CloneVat.cs" />
-    <Compile Include="CompTargetable_SingleHumanlikeCorpse.cs" />
-    <Compile Include="CompTargetEffect_ScanCorpse.cs" />
-    <Compile Include="GeneUtils.cs" />
-    <Compile Include="JobDriver_ScanCorpse.cs" />
+    <Compile Include="Things\BrainScan.cs" />
+    <Compile Include="Things\Building_CloneExtractor.cs" />
+    <Compile Include="Things\Building_CloneStorageVat.cs" />
+    <Compile Include="ThingComps\CompTargetable_SingleHumanlikeCorpse.cs" />
+    <Compile Include="ThingComps\CompTargetEffect_ScanCorpse.cs" />
+    <Compile Include="Utilities\BrainUtil.cs" />
+    <Compile Include="Utilities\GeneUtils.cs" />
+    <Compile Include="AI\JobDriver_ScanCorpse.cs" />
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
-    <Compile Include="CloneDefOf.cs" />
-    <Compile Include="EmbryoTracker.cs" />
-    <Compile Include="CloningMod.cs" />
+    <Compile Include="Utilities\CloneDefOf.cs" />
+    <Compile Include="Utilities\EmbryoTracker.cs" />
+    <Compile Include="CloningMod\CloningMod.cs" />
     <Compile Include="Patches\Notify_LifeStageStarted_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recipe_ExtractClone.cs" />
-    <Compile Include="CloningSettings.cs" />
+    <Compile Include="Recipes\Recipe_ExtractClone.cs" />
+    <Compile Include="CloningMod\CloningSettings.cs" />
     <Compile Include="Patches\TryPopulateGenes_Patch.cs" />
-    <Compile Include="CloneUtils.cs" />
-    <Compile Include="WorkGiver_CarryToCloneExtractor.cs" />
-    <Compile Include="WorkGiver_CarryToCloneVat.cs" />
-    <Compile Include="WorkGiver_HaulToCloneVat.cs" />
+    <Compile Include="Utilities\CloneUtils.cs" />
+    <Compile Include="AI\WorkGiver_CarryToCloneExtractor.cs" />
+    <Compile Include="AI\WorkGiver_CarryToCloneVat.cs" />
+    <Compile Include="AI\WorkGiver_HaulToCloneVat.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

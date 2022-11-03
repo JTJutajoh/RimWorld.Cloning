@@ -11,7 +11,7 @@ namespace Dark.Cloning
 {
     class WorkGiver_HaulToCloneVat : WorkGiver_Scanner
     {
-        public override ThingRequest PotentialWorkThingRequest => ThingRequest.ForDef(CloneDefOf.CloneVat);
+        public override ThingRequest PotentialWorkThingRequest => ThingRequest.ForDef(CloneDefOf.CloneStorageVat);
 
         public override PathEndMode PathEndMode => PathEndMode.Touch;
 
@@ -33,7 +33,7 @@ namespace Dark.Cloning
 			{
 				return false;
 			}
-			if (!( t is Building_CloneVat building_CloneVat ))
+			if (!( t is Building_CloneStorageVat building_CloneVat ))
 			{
 				return false;
 			}
@@ -47,7 +47,7 @@ namespace Dark.Cloning
 
 		public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
 		{
-			if (!( t is Building_CloneVat building_CloneVat ))
+			if (!( t is Building_CloneStorageVat building_CloneVat ))
 			{
 				return null;
 			}

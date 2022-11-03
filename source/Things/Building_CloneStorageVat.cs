@@ -11,7 +11,8 @@ using UnityEngine;
 
 namespace Dark.Cloning
 {
-    public class Building_CloneVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder
+	// Based on the vanilla GrowthVat class, with different behavior
+    public class Building_CloneStorageVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder
 	{
 		public BrainScan selectedBrainScan;
 
@@ -65,7 +66,7 @@ namespace Dark.Cloning
 			{
 				if (cachedTopGraphic == null)
 				{
-					cachedTopGraphic = GraphicDatabase.Get<Graphic_Multi>("Things/Building/Misc/GrowthVat/GrowthVatTop", ShaderDatabase.Transparent, def.graphicData.drawSize, Color.green);
+					cachedTopGraphic = GraphicDatabase.Get<Graphic_Multi>("Things/Building/Misc/CloneStorageVat/CloneStorageVatTop", ShaderDatabase.Transparent, def.graphicData.drawSize, Color.white);
 				}
 				return cachedTopGraphic;
 			}
@@ -367,25 +368,28 @@ namespace Dark.Cloning
 				};
 				yield return cancelScan;
             }
-			Command_Action applyScan = new Command_Action();
-			applyScan.defaultLabel = "ApplyBrainScan".Translate();
-			applyScan.defaultDesc = "ApplyBrainScanDesc".Translate();
-			applyScan.icon = InsertBrainScanIcon.Texture;
-			applyScan.action = delegate
+			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
 			{
-				//TODO: Add a warning confirmation dialog reminding the player that the pawn will effectively be killed by this procedure and it is not reversible
-				ApplyBrainScanToPawn();
-			};
-			if (selectedBrainScan == null || !innerContainer.Contains(selectedBrainScan))
-            {
-				applyScan.Disable("NoBrainScan".Translate());
-            }
-			if (selectedPawn == null || !innerContainer.Contains(selectedPawn))
-            {
-				applyScan.Disable("NoPawnToApplyTo".Translate());
-            }
-			//TODO: Disable brain scan application for other reasons, like target is already the same pawn stored in the scan or target does not have Clone gene
-			yield return applyScan;
+				Command_Action applyScan = new Command_Action();
+				applyScan.defaultLabel = "ApplyBrainScan".Translate();
+				applyScan.defaultDesc = "ApplyBrainScanDesc".Translate();
+				applyScan.icon = InsertBrainScanIcon.Texture;
+				applyScan.action = delegate
+				{
+					//TODO: Add a warning confirmation dialog reminding the player that the pawn will effectively be killed by this procedure and it is not reversible
+					BrainUtil.ApplyBrainScanToPawn(selectedPawn, selectedBrainScan);
+				};
+				if (selectedBrainScan == null || !innerContainer.Contains(selectedBrainScan))
+				{
+					applyScan.Disable("NoBrainScan".Translate());
+				}
+				if (selectedPawn == null || !innerContainer.Contains(selectedPawn))
+				{
+					applyScan.Disable("NoPawnToApplyTo".Translate());
+				}
+				//TODO: Disable brain scan application for other reasons, like target is already the same pawn stored in the scan or target does not have Clone gene
+				yield return applyScan;
+			}
 		}
 
 		public void SelectBrainScan(BrainScan brainScan)
@@ -458,53 +462,12 @@ namespace Dark.Cloning
 			}
 		}
 
-		public void ApplyBrainScanToPawn()
-        {
-			Pawn pawn = SelectedPawn;
-			BrainScan brainScan = selectedBrainScan;
-
-			// Name
-			pawn.Name = brainScan.sourceName;
-
-			// Backstories
-			if (pawn.story != null)
-            {
-				pawn.story.Childhood = brainScan.backStoryChild;
-				pawn.story.Adulthood = brainScan.backStoryAdult;
-            }
-			
-			// Traits
-			// First clear the old traits
-			List<Trait> tmpList = new List<Trait>(pawn.story.traits.allTraits);
-			foreach (Trait trait in tmpList)
-            {
-				pawn.story.traits.RemoveTrait(trait);
-			}
-			// Then add the new ones
-			foreach (TraitBackup trait in brainScan.traits)
-            {
-				pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
-            }
-
-			// Skills
-			for (int i = 0; i < brainScan.skills.Count; i++)
-            {
-				SkillRecordBackup scannedSkill = brainScan.skills[i];
-				SkillRecord skill = pawn.skills.GetSkill(scannedSkill.def);
-				skill.Level = scannedSkill.level; //SOMEDAY: Maybe an efficiency setting for brain scan skill copying?
-				skill.passion = scannedSkill.passion;
-				skill.xpSinceLastLevel = scannedSkill.xpSinceLastLevel;
-				skill.Notify_SkillDisablesChanged();
-            }
-
-			// Social relations
-			//TODO: Copy social relations
-        }
-
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			
+
+			Scribe_References.Look(ref this.selectedBrainScan, "selectedBrainScan");
+			Scribe_References.Look(ref this.selectedPawn, "selectedPawn");
 		}
 	}
 }
