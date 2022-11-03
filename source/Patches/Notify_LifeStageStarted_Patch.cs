@@ -43,7 +43,7 @@ namespace Dark.Cloning.Patches
                 }*/
                 pawn.style.Notify_StyleItemChanged();
 
-                if (Settings.cloneTraits)
+                if (CloningSettings.cloneTraits)
                 {
                     CloneUtils.CopyTraitsFromParent(pawn);
                 }

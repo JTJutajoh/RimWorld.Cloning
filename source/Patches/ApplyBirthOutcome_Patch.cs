@@ -99,7 +99,7 @@ namespace Dark.Cloning
 
                 GeneUtils.TryAddMutationsToRequest(ref request);
 
-                if (Settings.cloneXenogenes && donor.genes.Xenogenes.Count > 0)
+                if (CloningSettings.cloneXenogenes && donor.genes.Xenogenes.Count > 0)
                 {
                     if (request.ForcedXenogenes == null)
                     {
@@ -107,7 +107,7 @@ namespace Dark.Cloning
                     }
                     foreach (Gene gene in donor.genes.Xenogenes)
                     {
-                        if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !Settings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
+                        if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !CloningSettings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
 
                         if (!request.ForcedXenogenes.Contains(gene.def))
                         {
@@ -134,7 +134,7 @@ namespace Dark.Cloning
                 pawn.story.headType = donor.story.headType;
                 pawn.story.skinColorOverride = donor.story.skinColorOverride;
                 pawn.story.furDef = donor.story.furDef;
-                if (Settings.inheritHair)
+                if (CloningSettings.inheritHair)
                 {
                     pawn.story.hairDef = donor.story.hairDef;
                     pawn.style.beardDef = donor.style.beardDef;
@@ -142,7 +142,7 @@ namespace Dark.Cloning
                 pawn.style.Notify_StyleItemChanged();
             }
 
-            if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+            if (CloningSettings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * CloningSettings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
         }
     }
 }

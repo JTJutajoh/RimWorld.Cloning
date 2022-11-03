@@ -71,11 +71,11 @@
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
     <Compile Include="CloneDefOf.cs" />
     <Compile Include="EmbryoTracker.cs" />
-    <Compile Include="Mod.cs" />
+    <Compile Include="CloningMod.cs" />
     <Compile Include="Patches\Notify_LifeStageStarted_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe_ExtractClone.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="CloningSettings.cs" />
     <Compile Include="Patches\TryPopulateGenes_Patch.cs" />
     <Compile Include="CloneUtils.cs" />
     <Compile Include="WorkGiver_CarryToCloneExtractor.cs" />

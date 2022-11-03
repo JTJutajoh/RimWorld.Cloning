@@ -177,7 +177,7 @@ namespace Dark.Cloning
             {
                 case CloneExtractorModes.Embryo:
                     HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
-                    if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+                    if (CloningSettings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * CloningSettings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
                     this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
                     if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
                         containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
