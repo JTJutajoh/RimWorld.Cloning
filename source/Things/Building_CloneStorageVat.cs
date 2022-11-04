@@ -259,6 +259,7 @@ namespace Dark.Cloning
 			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
             {
 				innerContainer.TryDrop(selectedBrainScan, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var _);
+				selectedBrainScan = null;
 				startTick = -1;
 			}
         }
@@ -320,146 +321,164 @@ namespace Dark.Cloning
 			{
 				yield return gizmo;
 			}
-			// Eject pawn
-			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
-			{
-				Command_Action command_Action = new Command_Action();
-				command_Action.defaultLabel = "EjectClone".Translate();
-				command_Action.defaultDesc = "EjectCloneDesc".Translate();
-				command_Action.icon = CancelLoadingIcon;
-				command_Action.activateSound = SoundDefOf.Designate_Cancel;
-				command_Action.action = delegate
-				{
-					EjectPawn();
-				};
-				yield return command_Action;
-			}
-			// Pawn loading
-			else
-			{
-				// Cancel load
-				if (selectedPawn != null)
-				{
-					Command_Action command_Action2 = new Command_Action();
-					command_Action2.defaultLabel = "CancelLoadPawn".Translate();
-					command_Action2.defaultDesc = "CancelLoadPawnDesc".Translate();
-					command_Action2.icon = CancelLoadingIcon;
-					command_Action2.activateSound = SoundDefOf.Designate_Cancel;
-					command_Action2.action = delegate
-					{
-						innerContainer.TryDropAll(InteractionCell, base.Map, ThingPlaceMode.Near);
-						if (innerContainer.Contains(selectedPawn))
-						{
-							EjectPawn();
-						}
-						if (selectedPawn?.CurJobDef == JobDefOf.EnterBuilding)
-						{
-							selectedPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
-						}
-						selectedPawn = null;
-					};
-					yield return command_Action2;
-				}
-				// Load pawn
-				if (selectedPawn == null)
-				{
-					Command_Action command_Action3 = new Command_Action();
-					command_Action3.defaultLabel = "InsertClone".Translate() + "...";
-					command_Action3.defaultDesc = "InsertCloneDesc".Translate();
-					command_Action3.icon = InsertPawnIcon.Texture;
-					command_Action3.action = delegate
-					{
-						List<FloatMenuOption> list2 = new List<FloatMenuOption>();
-						foreach (Pawn item2 in base.Map.mapPawns.AllPawnsSpawned)
-						{
-							Pawn pawn = item2;
-							if ((bool)CanAcceptPawn(item2))
-							{
-								list2.Add(new FloatMenuOption(item2.LabelCap, delegate
-								{
-									SelectPawn(pawn);
-								}, pawn, Color.white));
-							}
-						}
-						if (!list2.Any())
-						{
-							list2.Add(new FloatMenuOption("NoViablePawns".Translate(), null));
-						}
-						Find.WindowStack.Add(new FloatMenu(list2));
-					};
-					if (!PowerOn)
-					{
-						command_Action3.Disable("NoPower".Translate().CapitalizeFirst());
-					}
-					else if (!base.AnyAcceptablePawns)
-					{
-						command_Action3.Disable("NoPawnsCanEnterCloneVat".Translate(18f).ToString());
-					}
-					yield return command_Action3;
-				}
-			}
-			// BrainScan loading
-			if (selectedBrainScan == null)
+			// If there is no scan underway
+			if (!base.Working)
             {
-				List<Thing> brainScans = base.Map.listerThings.ThingsOfDef(CloneDefOf.BrainScan);
-				Command_Action installBrainScan = new Command_Action();
-				installBrainScan.defaultLabel = "InstallBrainScan".Translate() + "...";
-				installBrainScan.defaultDesc = "InsertBrainScanCloneVatDesc".Translate();
-				installBrainScan.icon = InsertBrainScanIcon.Texture;
-				installBrainScan.action = delegate
+				// Eject pawn
+				if (selectedPawn != null && innerContainer.Contains(selectedPawn))
 				{
-					List<FloatMenuOption> options = new List<FloatMenuOption>();
-					foreach (Thing brainScan in brainScans)
+					Command_Action command_Action = new Command_Action();
+					command_Action.defaultLabel = "EjectClone".Translate();
+					command_Action.defaultDesc = "EjectCloneDesc".Translate();
+					command_Action.icon = CancelLoadingIcon;
+					command_Action.activateSound = SoundDefOf.Designate_Cancel;
+					command_Action.action = delegate
 					{
-						options.Add(new FloatMenuOption(brainScan.LabelCap + " (" + ((BrainScan)brainScan).sourceLabel + ")", delegate
-						{
-							SelectBrainScan(brainScan as BrainScan);
-						}, brainScan, Color.white));
-					}
-					Find.WindowStack.Add(new FloatMenu(options));
-				};
-				if (brainScans.NullOrEmpty())
-                {
-					installBrainScan.Disable("InsertBrainScanNoScans".Translate().CapitalizeFirst());
-                }
-				else if (!PowerOn)
-                {
-					installBrainScan.Disable("NoPower".Translate().CapitalizeFirst());
-                }
-				yield return installBrainScan;
-            }
-			// BrainScan loading/unloading
-			else
-            {
-				// Eject BrainScan
-				if (innerContainer.Contains(selectedBrainScan))
-				{
-					Command_Action removeScan = new Command_Action();
-					removeScan.defaultLabel = "RemoveBrainScan".Translate();
-					removeScan.defaultDesc = "CancelBrainScanDesc".Translate();
-					removeScan.icon = CancelLoadingIcon;
-					removeScan.action = delegate
-					{
-						EjectBrainScan();
+						EjectPawn();
 					};
-					yield return removeScan;
+					yield return command_Action;
 				}
-				// Cancel loading
+				// Pawn loading
 				else
-                {
-					Command_Action cancelScan = new Command_Action();
-					cancelScan.defaultLabel = "CancelBrainScan".Translate();
-					cancelScan.defaultDesc = "CancelBrainScanDesc".Translate();
-					cancelScan.icon = CancelLoadingIcon;
-					cancelScan.action = delegate
+				{
+					// Cancel load
+					if (selectedPawn != null)
 					{
-						selectedBrainScan = null;
+						Command_Action command_Action2 = new Command_Action();
+						command_Action2.defaultLabel = "CancelLoadPawn".Translate();
+						command_Action2.defaultDesc = "CancelLoadPawnDesc".Translate();
+						command_Action2.icon = CancelLoadingIcon;
+						command_Action2.activateSound = SoundDefOf.Designate_Cancel;
+						command_Action2.action = delegate
+						{
+							innerContainer.TryDropAll(InteractionCell, base.Map, ThingPlaceMode.Near);
+							if (innerContainer.Contains(selectedPawn))
+							{
+								EjectPawn();
+							}
+							if (selectedPawn?.CurJobDef == JobDefOf.EnterBuilding)
+							{
+								selectedPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
+							}
+							selectedPawn = null;
+						};
+						yield return command_Action2;
+					}
+					// Load pawn
+					if (selectedPawn == null)
+					{
+						Command_Action command_Action3 = new Command_Action();
+						command_Action3.defaultLabel = "InsertClone".Translate() + "...";
+						command_Action3.defaultDesc = "InsertCloneDesc".Translate();
+						command_Action3.icon = InsertPawnIcon.Texture;
+						command_Action3.action = delegate
+						{
+							List<FloatMenuOption> list2 = new List<FloatMenuOption>();
+							foreach (Pawn item2 in base.Map.mapPawns.AllPawnsSpawned)
+							{
+								Pawn pawn = item2;
+								if ((bool)CanAcceptPawn(item2))
+								{
+									list2.Add(new FloatMenuOption(item2.LabelCap, delegate
+									{
+										SelectPawn(pawn);
+									}, pawn, Color.white));
+								}
+							}
+							if (!list2.Any())
+							{
+								list2.Add(new FloatMenuOption("NoViablePawns".Translate(), null));
+							}
+							Find.WindowStack.Add(new FloatMenu(list2));
+						};
+						if (!PowerOn)
+						{
+							command_Action3.Disable("NoPower".Translate().CapitalizeFirst());
+						}
+						else if (!base.AnyAcceptablePawns)
+						{
+							command_Action3.Disable("NoPawnsCanEnterCloneVat".Translate(18f).ToString());
+						}
+						yield return command_Action3;
+					}
+				}
+				// BrainScan loading
+				if (selectedBrainScan == null)
+				{
+					List<Thing> brainScans = base.Map.listerThings.ThingsOfDef(CloneDefOf.BrainScan);
+					Command_Action installBrainScan = new Command_Action();
+					installBrainScan.defaultLabel = "InstallBrainScan".Translate() + "...";
+					installBrainScan.defaultDesc = "InsertBrainScanCloneVatDesc".Translate();
+					installBrainScan.icon = InsertBrainScanIcon.Texture;
+					installBrainScan.action = delegate
+					{
+						List<FloatMenuOption> options = new List<FloatMenuOption>();
+						foreach (Thing brainScan in brainScans)
+						{
+							options.Add(new FloatMenuOption(brainScan.LabelCap + " (" + ( (BrainScan)brainScan ).sourceLabel + ")", delegate
+							{
+								SelectBrainScan(brainScan as BrainScan);
+							}, brainScan, Color.white));
+						}
+						Find.WindowStack.Add(new FloatMenu(options));
 					};
-					yield return cancelScan;
-                }
-            }
+					if (brainScans.NullOrEmpty())
+					{
+						installBrainScan.Disable("InsertBrainScanNoScans".Translate().CapitalizeFirst());
+					}
+					else if (!PowerOn)
+					{
+						installBrainScan.Disable("NoPower".Translate().CapitalizeFirst());
+					}
+					yield return installBrainScan;
+				}
+				// BrainScan loading/unloading
+				else
+				{
+					// Eject BrainScan
+					if (innerContainer.Contains(selectedBrainScan))
+					{
+						Command_Action removeScan = new Command_Action();
+						removeScan.defaultLabel = "RemoveBrainScan".Translate();
+						removeScan.defaultDesc = "CancelBrainScanDesc".Translate();
+						removeScan.icon = CancelLoadingIcon;
+						removeScan.action = delegate
+						{
+							EjectBrainScan();
+						};
+						yield return removeScan;
+					}
+					// Cancel loading
+					else
+					{
+						Command_Action cancelScan = new Command_Action();
+						cancelScan.defaultLabel = "CancelBrainScan".Translate();
+						cancelScan.defaultDesc = "CancelBrainScanDesc".Translate();
+						cancelScan.icon = CancelLoadingIcon;
+						cancelScan.action = delegate
+						{
+							selectedBrainScan = null;
+						};
+						yield return cancelScan;
+					}
+				}
+			}
+			
+			// Cancel scan application
+			if (base.Working)
+            {
+				Command_Action cancelScanApplication = new Command_Action();
+				cancelScanApplication.defaultLabel = "CancelScanApplication".Translate();
+				cancelScanApplication.defaultDesc = "CancelScanApplicationDesc".Translate();
+				cancelScanApplication.icon = CancelLoadingIcon;
+				cancelScanApplication.action = delegate
+				{
+					OnStopScanApplication();
+				};
+				yield return cancelScanApplication;
+			}
 			// BrainScan application
-			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
+			else if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
 			{
 				Command_Action applyScan = new Command_Action();
 				applyScan.defaultLabel = "ApplyBrainScan".Translate();

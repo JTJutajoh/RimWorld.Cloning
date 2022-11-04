@@ -64,4 +64,6 @@
   <NoPawnsCanEnterCloneVat>No eligible pawns</NoPawnsCanEnterCloneVat>
   <CancelLoadPawn>Cancel loading pawn</CancelLoadPawn>
   <CancelLoadPawnDesc>Cancel loading this with the selected people</CancelLoadPawnDesc>
+  <CancelScanApplication>Cancel scan application</CancelScanApplication>
+  <CancelScanApplicationDesc>Stops the current process of applying a brain scan to the contained pawn before completion.</CancelScanApplicationDesc>
 </LanguageData>
