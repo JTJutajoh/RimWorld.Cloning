@@ -58,7 +58,7 @@
   <EjectCloneDesc>Remove the pawn currently inside the clone storage vat.</EjectCloneDesc>
   <ApplyBrainScan>Apply brain scan</ApplyBrainScan>
   <ApplyBrainScanDesc>Applies the stored consciousness in the contained brain scan onto the contained pawn.\nCompletely overwrites the person's entire sentient personality.\n\nSeems painful.</ApplyBrainScanDesc>
-  <ConfirmBrainScanApplication>Warning: {PAWN_nameDef}'s entire consciousness will be destroyed and overwritten with the contents of the brain scan. \n\nAre you sure you wish to continue?</ConfirmBrainScanApplication>
+  <ConfirmBrainScanApplication>Warning: {PAWN_nameDef}'s entire consciousness will be destroyed and overwritten with the contents of the brain scan.\nThis process cannot be undone. The previous sentient mind is lost forever! \n\nAre you sure you wish to continue?</ConfirmBrainScanApplication>
   <InsertClone>Insert person</InsertClone>
   <InsertCloneDesc>Insert a person into the clone storage vat. They will be put into cryptosleep suspension and can have a brain scan applied to them while inside.</InsertCloneDesc>
   <NoPawnsCanEnterCloneVat>No eligible pawns</NoPawnsCanEnterCloneVat>
