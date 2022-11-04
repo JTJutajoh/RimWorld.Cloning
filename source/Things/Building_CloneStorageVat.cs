@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Dark.Cloning
 {
 	// Based on the vanilla GrowthVat class, with different behavior
-    public class Building_CloneStorageVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder
+	public class Building_CloneStorageVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder, IOpenable
 	{
 		public BrainScan selectedBrainScan;
 
@@ -48,11 +48,11 @@ namespace Dark.Cloning
 
 		public float HeldPawnDrawPos_Y => DrawPos.y + 3f / 74f;
 
-        public float HeldPawnBodyAngle => base.Rotation.AsAngle;
+		public float HeldPawnBodyAngle => base.Rotation.AsAngle;
 
-        public PawnPosture HeldPawnPosture => PawnPosture.LayingOnGroundFaceUp;
+		public PawnPosture HeldPawnPosture => PawnPosture.LayingOnGroundFaceUp;
 
-        public override Vector3 PawnDrawOffset => CompBiosculpterPod.FloatingOffset(Find.TickManager.TicksGame);
+		public override Vector3 PawnDrawOffset => CompBiosculpterPod.FloatingOffset(Find.TickManager.TicksGame);
 
 		private CompPowerTrader PowerTraderComp
 		{
@@ -80,7 +80,11 @@ namespace Dark.Cloning
 
 		public bool PowerOn => PowerTraderComp.PowerOn;
 
-		public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
+		public bool CanOpen => (!base.Working && selectedPawn != null && innerContainer.Contains(selectedPawn));
+
+        public int OpenTicks => 200;
+
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
 		{
 			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
 			{
@@ -268,12 +272,14 @@ namespace Dark.Cloning
 		{
 			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
 			{
+				innerContainer.TryDrop(selectedPawn, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var pawn);
+				ThingDef filth_Slime = ThingDefOf.Filth_Slime;
+				selectedPawn.filth?.GainFilth(filth_Slime); //FIXME: filth is null here for some reason
 				Notify_PawnRemoved();
 				if (selectedPawn.RaceProps.IsFlesh)
-                {
-					selectedPawn.health.AddHediff(HediffDefOf.CryptosleepSickness);
-                }
-				innerContainer.TryDrop(selectedPawn, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var _);
+				{
+					selectedPawn.health?.AddHediff(HediffDefOf.CryptosleepSickness);
+				}
 				selectedPawn = null;
 				startTick = -1;
 			}
@@ -330,13 +336,14 @@ namespace Dark.Cloning
 					Command_Action command_Action = new Command_Action();
 					command_Action.defaultLabel = "EjectClone".Translate();
 					command_Action.defaultDesc = "EjectCloneDesc".Translate();
-					command_Action.icon = CancelLoadingIcon;
+					command_Action.icon = ContentFinder<Texture2D>.Get("UI/Commands/PodEject");
 					command_Action.activateSound = SoundDefOf.Designate_Cancel;
 					command_Action.action = delegate
 					{
 						EjectPawn();
 					};
-					yield return command_Action;
+					//yield return command_Action;
+					// Commented out in favor of implementing IOpenable and letting it handle this.
 				}
 				// Pawn loading
 				else
@@ -578,5 +585,10 @@ namespace Dark.Cloning
 			Scribe_References.Look(ref this.selectedBrainScan, "selectedBrainScan");
 			Scribe_References.Look(ref this.selectedPawn, "selectedPawn");
 		}
-	}
+
+        public void Open()
+        {
+			EjectPawn();
+        }
+    }
 }
