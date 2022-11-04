@@ -38,7 +38,7 @@ namespace Dark.Cloning
 
 		public static readonly CachedTexture InsertPawnIcon = new CachedTexture("UI/Gizmos/InsertPawn");
 
-		public static readonly CachedTexture InsertBrainScanIcon = new CachedTexture("UI/Gizmos/InsertEmbryo");
+		public static readonly CachedTexture InsertBrainScanIcon = new CachedTexture("UI/Gizmos/InsertBrainScan");
 
 		private const int GlowIntervalTicks = 132;
 

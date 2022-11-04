@@ -43,7 +43,7 @@
     <label>brain scan</label>
     <description>A hard-copy backup of a person's entire consciousness, ready to be applied to a new host. This process essentially kills the personality that was there before application, completely overwriting it with the one stored on this backup.</description>
     <graphicData>
-      <texPath>Things/Item/Special/ClonerMechSerum</texPath>
+      <texPath>Things/Item/Special/BrainScan</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <drawerType>MapMeshOnly</drawerType>
