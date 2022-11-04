@@ -42,11 +42,6 @@ namespace Dark.Cloning.Patches
                     pawn.style.beardDef = donor.style.beardDef;
                 }*/
                 pawn.style.Notify_StyleItemChanged();
-
-                if (CloningSettings.cloneTraits)
-                {
-                    CloneUtils.CopyTraitsFromParent(pawn);
-                }
             }
         }
     }

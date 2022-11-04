@@ -55,6 +55,7 @@ namespace Dark.Cloning
 			{
 				Job job2 = HaulAIUtility.HaulToContainerJob(pawn, building_CloneVat.selectedBrainScan, t);
 				job2.count = 1;
+				
 				return job2;
 			}
 			return null;

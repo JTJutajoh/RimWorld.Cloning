@@ -49,20 +49,6 @@ namespace Dark.Cloning
             }
         }
 
-        public static void CopyTraitsFromParent(Pawn pawn)
-        {
-            Pawn parent = pawn.GetMother() ?? pawn.GetFather();
-            if (parent == null)
-            {
-                Log.Error($"Error copying traits for clone {pawn.LabelCap}, both parents were null");
-                return;
-            }
-            foreach (Trait trait in parent.story.traits.allTraits)
-            {
-                pawn.story.traits.GainTrait(trait);
-            }
-        }
-
         public static CustomXenotype CopyCustomXenotypeFrom(Pawn pawn)
         {
             CustomXenotype result = new CustomXenotype();

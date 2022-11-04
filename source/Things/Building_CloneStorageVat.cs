@@ -16,6 +16,9 @@ namespace Dark.Cloning
 	{
 		public BrainScan selectedBrainScan;
 
+		private const int scanTicks = 1000;
+		private int ticksRemaining = 0;
+
 		[Unsaved(false)]
 		private CompPowerTrader cachedPowerComp;
 
@@ -27,6 +30,9 @@ namespace Dark.Cloning
 
 		[Unsaved(false)]
 		private Effecter bubbleEffecter;
+
+		[Unsaved(false)]
+		private Effecter progressBar;
 
 		private static readonly Texture2D CancelLoadingIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
@@ -94,11 +100,53 @@ namespace Dark.Cloning
 			}
 			Pawn pawn = selectedPawn;
 
+			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
+			{
+				if (bubbleEffecter == null)
+				{
+					if (BubbleEffecterPerRotation == null)
+                    {
+						BubbleEffecterPerRotation = new Dictionary<Rot4, EffecterDef>
+						{
+							{
+								Rot4.South,
+								EffecterDefOf.Vat_Bubbles_South
+							},
+							{
+								Rot4.East,
+								EffecterDefOf.Vat_Bubbles_East
+							},
+							{
+								Rot4.West,
+								EffecterDefOf.Vat_Bubbles_West
+							},
+							{
+								Rot4.North,
+								EffecterDefOf.Vat_Bubbles_North
+							}
+						};
+					}
+					bubbleEffecter = BubbleEffecterPerRotation[base.Rotation].SpawnAttached(this, base.MapHeld);
+				}
+				bubbleEffecter.EffectTick(this, this);
+			}
 			if (base.Working)
 			{
-				if (selectedPawn != null)
+				if (PowerOn)
+                {
+					ticksRemaining--;
+				}
+				if (ticksRemaining <= 0)
 				{
-					
+					if (selectedPawn != null && innerContainer.Contains(selectedPawn) && selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
+					{
+						BrainUtil.ApplyBrainScanToPawn(selectedPawn, selectedBrainScan);
+						OnStopScanApplication();
+					}
+					else
+                    {
+						Log.Error("Clone Storage Vat tried to complete a brain scan, but didn't contain either a pawn or a brain scan");
+                    }
 				}
 				if (sustainerWorking == null || sustainerWorking.Ended)
 				{
@@ -129,38 +177,30 @@ namespace Dark.Cloning
 						ThingDefOf.Mote_VatGlowVertical
 					}
 				};
-					BubbleEffecterPerRotation = new Dictionary<Rot4, EffecterDef>
-				{
-					{
-						Rot4.South,
-						EffecterDefOf.Vat_Bubbles_South
-					},
-					{
-						Rot4.East,
-						EffecterDefOf.Vat_Bubbles_East
-					},
-					{
-						Rot4.West,
-						EffecterDefOf.Vat_Bubbles_West
-					},
-					{
-						Rot4.North,
-						EffecterDefOf.Vat_Bubbles_North
-					}
-				};
 				}
 				if (this.IsHashIntervalTick(132))
 				{
 					MoteMaker.MakeStaticMote(DrawPos, base.MapHeld, GlowMotePerRotation[base.Rotation]);
 				}
-				if (bubbleEffecter == null)
+				if (progressBar == null)
 				{
-					bubbleEffecter = BubbleEffecterPerRotation[base.Rotation].SpawnAttached(this, base.MapHeld);
+					progressBar = EffecterDefOf.ProgressBarAlwaysVisible.Spawn();
 				}
-				bubbleEffecter.EffectTick(this, this);
+				progressBar.EffectTick(new TargetInfo(base.Position + IntVec3.North.RotatedBy(base.Rotation), base.Map), TargetInfo.Invalid);
+				MoteProgressBar mote = ( (SubEffecter_ProgressBar)progressBar.children[0] ).mote;
+				if (mote != null)
+				{
+					mote.progress = 1f - Mathf.Clamp01((float)ticksRemaining / scanTicks);
+					mote.offsetZ = ( ( base.Rotation == Rot4.North ) ? 0.5f : ( -0.5f ) );
+				}
 			}
 			else
 			{
+				if (progressBar != null)
+				{
+					progressBar.Cleanup();
+					progressBar = null;
+				}
 				bubbleEffecter?.Cleanup();
 				bubbleEffecter = null;
 			}
@@ -198,7 +238,6 @@ namespace Dark.Cloning
 			if (innerContainer.TryAddOrTransfer(pawn))
 			{
 				SoundDefOf.GrowthVat_Close.PlayOneShot(SoundInfo.InMap(this));
-				startTick = Find.TickManager.TicksGame;
 			}
 			if (num)
 			{
@@ -206,21 +245,25 @@ namespace Dark.Cloning
 			}
 		}
 
-		private void Finish()
+		private void StartApplyingBrainScan()
 		{
-			if (selectedPawn != null)
+			if (!base.Working && PowerOn && selectedBrainScan != null && innerContainer.Contains(selectedBrainScan) && selectedPawn != null && innerContainer.Contains(SelectedPawn))
 			{
-				FinishPawn();
+				startTick = Find.TickManager.TicksGame + scanTicks;
+				ticksRemaining = scanTicks;
 			}
+		}
+
+		private void EjectBrainScan()
+        {
 			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
             {
 				innerContainer.TryDrop(selectedBrainScan, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var _);
+				startTick = -1;
 			}
-			
-			OnStop();
-		}
+        }
 
-		private void FinishPawn()
+		private void EjectPawn()
 		{
 			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
 			{
@@ -230,13 +273,13 @@ namespace Dark.Cloning
 					selectedPawn.health.AddHediff(HediffDefOf.CryptosleepSickness);
                 }
 				innerContainer.TryDrop(selectedPawn, InteractionCell, base.Map, ThingPlaceMode.Near, 1, out var _);
+				selectedPawn = null;
+				startTick = -1;
 			}
 		}
 
-		private void OnStop()
+		private void OnStopScanApplication()
 		{
-			selectedPawn = null;
-			selectedBrainScan = null;
 			startTick = -1;
 			sustainerWorking = null;
 		}
@@ -246,33 +289,60 @@ namespace Dark.Cloning
 			SoundDefOf.GrowthVat_Open.PlayOneShot(SoundInfo.InMap(this));
 		}
 
+		// Used in a Harmony Patch to cancel the haul job, by adding a new FailOn to MakeNewToils
+		public static bool WasHaulJobCanceled(Thing thing, Thing thingToCarry)
+        {
+			var cloneVat = thing as Building_CloneStorageVat;
+			if (cloneVat == null)
+            {
+				return false;
+            }
+			if (cloneVat.selectedBrainScan == null)
+            {
+				return true;
+            }
+			var brainScan = thingToCarry as BrainScan;
+			if (brainScan == null)
+            {
+				return true;
+            }
+			if (cloneVat.selectedBrainScan != brainScan)
+            {
+				return true;
+            }
+
+			return false;
+        }
+
 		public override IEnumerable<Gizmo> GetGizmos()
 		{
 			foreach (Gizmo gizmo in base.GetGizmos())
 			{
 				yield return gizmo;
 			}
-			if (base.Working)
+			// Eject pawn
+			if (selectedPawn != null && innerContainer.Contains(selectedPawn))
 			{
 				Command_Action command_Action = new Command_Action();
-				command_Action.defaultLabel = "CommandCancelGrowth".Translate();
-				command_Action.defaultDesc = "CommandCancelGrowthDesc".Translate();
+				command_Action.defaultLabel = "EjectClone".Translate();
+				command_Action.defaultDesc = "EjectCloneDesc".Translate();
 				command_Action.icon = CancelLoadingIcon;
 				command_Action.activateSound = SoundDefOf.Designate_Cancel;
 				command_Action.action = delegate
 				{
-					Finish();
-					innerContainer.TryDropAll(InteractionCell, base.Map, ThingPlaceMode.Near);
+					EjectPawn();
 				};
 				yield return command_Action;
 			}
+			// Pawn loading
 			else
 			{
+				// Cancel load
 				if (selectedPawn != null)
 				{
 					Command_Action command_Action2 = new Command_Action();
-					command_Action2.defaultLabel = "CommandCancelLoad".Translate();
-					command_Action2.defaultDesc = "CommandCancelLoadDesc".Translate();
+					command_Action2.defaultLabel = "CancelLoadPawn".Translate();
+					command_Action2.defaultDesc = "CancelLoadPawnDesc".Translate();
 					command_Action2.icon = CancelLoadingIcon;
 					command_Action2.activateSound = SoundDefOf.Designate_Cancel;
 					command_Action2.action = delegate
@@ -280,21 +350,22 @@ namespace Dark.Cloning
 						innerContainer.TryDropAll(InteractionCell, base.Map, ThingPlaceMode.Near);
 						if (innerContainer.Contains(selectedPawn))
 						{
-							Notify_PawnRemoved();
+							EjectPawn();
 						}
 						if (selectedPawn?.CurJobDef == JobDefOf.EnterBuilding)
 						{
 							selectedPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
 						}
-						OnStop();
+						selectedPawn = null;
 					};
 					yield return command_Action2;
 				}
+				// Load pawn
 				if (selectedPawn == null)
 				{
 					Command_Action command_Action3 = new Command_Action();
-					command_Action3.defaultLabel = "InsertPerson".Translate() + "...";
-					command_Action3.defaultDesc = "InsertPersonGrowthVatDesc".Translate();
+					command_Action3.defaultLabel = "InsertClone".Translate() + "...";
+					command_Action3.defaultDesc = "InsertCloneDesc".Translate();
 					command_Action3.icon = InsertPawnIcon.Texture;
 					command_Action3.action = delegate
 					{
@@ -322,11 +393,12 @@ namespace Dark.Cloning
 					}
 					else if (!base.AnyAcceptablePawns)
 					{
-						command_Action3.Disable("NoPawnsCanEnterGrowthVat".Translate(18f).ToString());
+						command_Action3.Disable("NoPawnsCanEnterCloneVat".Translate(18f).ToString());
 					}
 					yield return command_Action3;
 				}
 			}
+			// BrainScan loading
 			if (selectedBrainScan == null)
             {
 				List<Thing> brainScans = base.Map.listerThings.ThingsOfDef(CloneDefOf.BrainScan);
@@ -356,18 +428,37 @@ namespace Dark.Cloning
                 }
 				yield return installBrainScan;
             }
+			// BrainScan loading/unloading
 			else
             {
-				Command_Action cancelScan = new Command_Action();
-				cancelScan.defaultLabel = innerContainer.Contains(selectedBrainScan) ?  "RemoveBrainScan".Translate() : "CancelBrainScan".Translate();
-				cancelScan.defaultDesc = "CancelBrainScanDesc".Translate();
-				cancelScan.icon = CancelLoadingIcon;
-				cancelScan.action = delegate
+				// Eject BrainScan
+				if (innerContainer.Contains(selectedBrainScan))
 				{
-					Finish();
-				};
-				yield return cancelScan;
+					Command_Action removeScan = new Command_Action();
+					removeScan.defaultLabel = "RemoveBrainScan".Translate();
+					removeScan.defaultDesc = "CancelBrainScanDesc".Translate();
+					removeScan.icon = CancelLoadingIcon;
+					removeScan.action = delegate
+					{
+						EjectBrainScan();
+					};
+					yield return removeScan;
+				}
+				// Cancel loading
+				else
+                {
+					Command_Action cancelScan = new Command_Action();
+					cancelScan.defaultLabel = "CancelBrainScan".Translate();
+					cancelScan.defaultDesc = "CancelBrainScanDesc".Translate();
+					cancelScan.icon = CancelLoadingIcon;
+					cancelScan.action = delegate
+					{
+						selectedBrainScan = null;
+					};
+					yield return cancelScan;
+                }
             }
+			// BrainScan application
 			if (selectedBrainScan != null && innerContainer.Contains(selectedBrainScan))
 			{
 				Command_Action applyScan = new Command_Action();
@@ -376,8 +467,10 @@ namespace Dark.Cloning
 				applyScan.icon = InsertBrainScanIcon.Texture;
 				applyScan.action = delegate
 				{
-					//TODO: Add a warning confirmation dialog reminding the player that the pawn will effectively be killed by this procedure and it is not reversible
-					BrainUtil.ApplyBrainScanToPawn(selectedPawn, selectedBrainScan);
+					Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("ConfirmBrainScanApplication".Translate(SelectedPawn.Named("PAWN")), delegate
+					{
+						StartApplyingBrainScan();
+					}));
 				};
 				if (selectedBrainScan == null || !innerContainer.Contains(selectedBrainScan))
 				{
@@ -400,14 +493,11 @@ namespace Dark.Cloning
 		public override void Draw()
 		{
 			base.Draw();
-			if (base.Working)
+			if (selectedPawn != null)
 			{
-				if (selectedPawn != null)
+				if (innerContainer.Contains(selectedPawn))
 				{
-					if (innerContainer.Contains(selectedPawn))
-					{
-						selectedPawn.Drawer.renderer.RenderPawnAt(DrawPos + PawnDrawOffset, null, neverAimWeapon: true);
-					}
+					selectedPawn.Drawer.renderer.RenderPawnAt(DrawPos + PawnDrawOffset, null, neverAimWeapon: true);
 				}
 			}
 			TopGraphic.Draw(DrawPos + Altitudes.AltIncVect * 2f, base.Rotation, this);

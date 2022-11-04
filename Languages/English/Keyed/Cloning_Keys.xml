@@ -54,6 +54,14 @@
   <NoBrainScan>No brain scan installed</NoBrainScan>
   <NoPawnToApplyTo>Clone vat is empty</NoPawnToApplyTo>
   <WaitingForBrainScan>Waiting for brain scan to be delivered</WaitingForBrainScan>
+  <EjectClone>Eject pawn</EjectClone>
+  <EjectCloneDesc>Remove the pawn currently inside the clone storage vat.</EjectCloneDesc>
   <ApplyBrainScan>Apply brain scan</ApplyBrainScan>
   <ApplyBrainScanDesc>Applies the stored consciousness in the contained brain scan onto the contained pawn.\nCompletely overwrites the person's entire sentient personality.\n\nSeems painful.</ApplyBrainScanDesc>
+  <ConfirmBrainScanApplication>Warning: {PAWN_nameDef}'s entire consciousness will be destroyed and overwritten with the contents of the brain scan. \n\nAre you sure you wish to continue?</ConfirmBrainScanApplication>
+  <InsertClone>Insert person</InsertClone>
+  <InsertCloneDesc>Insert a person into the clone storage vat. They will be put into cryptosleep suspension and can have a brain scan applied to them while inside.</InsertCloneDesc>
+  <NoPawnsCanEnterCloneVat>No eligible pawns</NoPawnsCanEnterCloneVat>
+  <CancelLoadPawn>Cancel loading pawn</CancelLoadPawn>
+  <CancelLoadPawnDesc>Cancel loading this with the selected people</CancelLoadPawnDesc>
 </LanguageData>
