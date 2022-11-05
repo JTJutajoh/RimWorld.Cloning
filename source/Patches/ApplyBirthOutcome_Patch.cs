@@ -127,6 +127,7 @@ namespace Dark.Cloning
         static void Postfix(ref Thing __result, Pawn geneticMother, Pawn father)
         {
             if (!( __result is Pawn pawn )) return; // If the clone was stillborn.
+            if (CloneUtils.HasCloneGene(pawn)) return; // Not a clone, ignore
             // Copy basic things from the parent.
             Pawn donor = geneticMother != null ? geneticMother : father;
             if (donor != null) // Shouldn't ever happen but let's just be safe
@@ -142,7 +143,8 @@ namespace Dark.Cloning
                 pawn.style.Notify_StyleItemChanged();
             }
 
-            if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+            //FIXME: Disabled temporarily because it causes babies to die
+            //if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
         }
     }
 }
