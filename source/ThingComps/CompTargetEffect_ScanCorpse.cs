@@ -17,7 +17,7 @@ namespace Dark.Cloning
         {
             if (user.IsColonistPlayerControlled && user.CanReserveAndReach(target, PathEndMode.Touch, Danger.Deadly))
             {
-                Job job = JobMaker.MakeJob(CloneDefs.ScanCorpse, target, parent);
+                Job job = JobMaker.MakeJob(CloneDefOf.ScanCorpse, target, parent);
                 job.count = 1;
                 user.jobs.TryTakeOrderedJob(job, JobTag.Misc);
             }

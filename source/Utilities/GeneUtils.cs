@@ -121,7 +121,7 @@ namespace Dark.Cloning
 
         public static bool IsEligible(string gene)
         {
-            return Settings.genesEligibleForMutation.ContainsKey(gene);
+            return CloningSettings.genesEligibleForMutation.ContainsKey(gene);
         }
 
         public static void SetEligible(string gene, bool newEligible)
@@ -131,11 +131,11 @@ namespace Dark.Cloning
             if (( newEligible && isEligible ) || ( !newEligible && !isEligible )) return;
             if (newEligible)
             {
-                Settings.genesEligibleForMutation.Add(gene, 1);
+                CloningSettings.genesEligibleForMutation.Add(gene, 1);
             }
             else if (isEligible)
             {
-                Settings.genesEligibleForMutation.Remove(gene);
+                CloningSettings.genesEligibleForMutation.Remove(gene);
             }
         }
         #endregion Misc Getters
@@ -153,7 +153,7 @@ namespace Dark.Cloning
         {
             List<GeneDef> originalEndoGenes = request.ForcedEndogenes;
             List<GeneDef> originalXenoGenes = request.ForcedXenogenes;
-            if (Settings.doRandomMutations && Settings.genesEligibleForMutation.Count > 0)
+            if (CloningSettings.doRandomMutations && CloningSettings.genesEligibleForMutation.Count > 0)
             {
                 List<GeneDef> mutations = GeneUtils.GetRandomMutations();
                 if (mutations.Count > 0)
@@ -166,7 +166,7 @@ namespace Dark.Cloning
                     Letter letter = LetterMaker.MakeLetter("Cloning_Letter_MutationLabel".Translate(), letterContents, LetterDefOf.NeutralEvent);
                     Find.LetterStack.ReceiveLetter(letter);
                 }
-                if (Settings.addMutationsAsXenogenes)
+                if (CloningSettings.addMutationsAsXenogenes)
                 {
                     foreach (GeneDef gene in mutations)
                     {
@@ -220,10 +220,10 @@ namespace Dark.Cloning
         {
             List<GeneDef> genes = new List<GeneDef>();
             // First do a dice roll to see if we get any mutations at all
-            if (!Verse.Rand.Chance(Settings.randomMutationChance)) return genes;
+            if (!Verse.Rand.Chance(CloningSettings.randomMutationChance)) return genes;
 
-            Dictionary<string, int> geneOptions = Settings.genesEligibleForMutation;
-            int numMutations = Settings.numMutations.RandomInRange;
+            Dictionary<string, int> geneOptions = CloningSettings.genesEligibleForMutation;
+            int numMutations = CloningSettings.numMutations.RandomInRange;
 
             for (int i = 0; i < numMutations; i++)
             {

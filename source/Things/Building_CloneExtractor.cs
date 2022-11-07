@@ -24,10 +24,19 @@ namespace Dark.Cloning
         private Sustainer sustainerWorking;
         [Unsaved(false)]
         private Effecter progressBar;
-        private const int TicksToExtract = 30000;
+        private const int TicksToApplyScan = 30000;
         private float WorkingPowerUsageFactor = 6f;
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
+        public enum CloneExtractorModes
+        {
+            Embryo,
+            Brain
+        }
+        [Unsaved(false)]
+        private CloneExtractorModes currentMode = CloneExtractorModes.Embryo;
+
+        #region Mostly Vanilla
         private Pawn ContainedPawn => this.innerContainer.Count <= 0 ? (Pawn)null : (Pawn)this.innerContainer[0];
 
         public bool PowerOn => this.PowerTraderComp.PowerOn;
@@ -126,6 +135,7 @@ namespace Dark.Cloning
             mote.progress = 1f - Mathf.Clamp01((float)this.ticksRemaining / 30000f);
             mote.offsetZ = this.Rotation == Rot4.North ? 0.5f : -0.5f;
         }
+        #endregion Mostly Vanilla
 
         public override AcceptanceReport CanAcceptPawn(Pawn pawn)
         {
@@ -139,10 +149,6 @@ namespace Dark.Cloning
                 return (AcceptanceReport)"NoPower".Translate().CapitalizeFirst();
             if (this.innerContainer.Count > 0)
                 return (AcceptanceReport)"Occupied".Translate();
-            //if (pawn.genes == null || !pawn.genes.GenesListForReading.Any<Gene>())
-            //    return (AcceptanceReport)"PawnHasNoGenes".Translate(pawn.Named("PAWN"));
-            //if (!pawn.genes.GenesListForReading.Any<Gene>((Predicate<Gene>)( x => x.def.biostatArc == 0 )))
-            //    return (AcceptanceReport)"PawnHasNoNonArchiteGenes".Translate(pawn.Named("PAWN"));
             return pawn.health.hediffSet.HasHediff(HediffDefOf.XenogerminationComa) ? (AcceptanceReport)"InXenogerminationComa".Translate() : (AcceptanceReport)true;
         }
 
@@ -164,20 +170,45 @@ namespace Dark.Cloning
             if (this.ContainedPawn == null)
                 return;
             Pawn containedPawn = this.ContainedPawn;
-            HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
-            if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
             IntVec3 intVec3 = this.def.hasInteractionCell ? this.InteractionCell : this.Position;
-            this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
-            if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
-                containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
-            GenPlace.TryPlaceThing((Thing)embryo, intVec3, this.Map, ThingPlaceMode.Near);
-            Messages.Message((string)( "Cloning_CloneExtractionComplete".Translate(containedPawn.Named("PAWN")) ),
-                new LookTargets(new TargetInfo[2]
-                    {
+            switch (currentMode)
+            {
+                case CloneExtractorModes.Embryo:
+                    HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
+                    if (CloningSettings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * CloningSettings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+                    this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
+                    if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
+                        containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
+                    GenPlace.TryPlaceThing((Thing)embryo, intVec3, this.Map, ThingPlaceMode.Near);
+                    Messages.Message((string)( "Cloning_CloneExtractionComplete".Translate(containedPawn.Named("PAWN")) ),
+                        new LookTargets(new TargetInfo[2]
+                            {
                         (TargetInfo) (Thing) containedPawn,
                         (TargetInfo) (Thing) embryo
-                    }
-                ), MessageTypeDefOf.PositiveEvent);
+                            }
+                        ), MessageTypeDefOf.PositiveEvent);
+                    break;
+                case CloneExtractorModes.Brain:
+                    BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefOf.BrainScan);
+                    BrainUtil.ScanPawn(ContainedPawn, brainScan);
+                    this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
+                    //TODO: Add a thought about having had your brain scanned
+                    //if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
+                    //    containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
+                    GenPlace.TryPlaceThing((Thing)brainScan, intVec3, this.Map, ThingPlaceMode.Near);
+                    Messages.Message((string)( "Cloning_BrainScanComplete".Translate(containedPawn.Named("PAWN")) ),
+                        new LookTargets(new TargetInfo[2]
+                            {
+                        (TargetInfo) (Thing) containedPawn,
+                        (TargetInfo) (Thing) brainScan
+                            }
+                        ), MessageTypeDefOf.PositiveEvent);
+                    break;
+                default:
+                    Log.Error("Clone Extractor failed, invalid mode");
+                    break;
+            }
+            
         }
 
         public override void TryAcceptPawn(Pawn pawn)
@@ -198,7 +229,7 @@ namespace Dark.Cloning
 
         protected override void SelectPawn(Pawn pawn)
         {
-            if (pawn.health.hediffSet.HasHediff(HediffDefOf.XenogermReplicating))
+            if (currentMode == CloneExtractorModes.Embryo && pawn.health.hediffSet.HasHediff(HediffDefOf.XenogermReplicating))
                 Find.WindowStack.Add((Window)Dialog_MessageBox.CreateConfirmation("ConfirmExtractXenogermWillKill".Translate(pawn.Named("PAWN")), (Action)( () => base.SelectPawn(pawn) )));
             else
                 base.SelectPawn(pawn);
@@ -218,8 +249,14 @@ namespace Dark.Cloning
             AcceptanceReport acceptanceReport = CanAcceptPawn(selPawn);
             if (acceptanceReport.Accepted)
             {
-                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this), delegate
+                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this) + " " + "Mode_Clone".Translate(), delegate
                 {
+                    currentMode = CloneExtractorModes.Embryo;
+                    SelectPawn(selPawn);
+                }), selPawn, this);
+                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this) + " " + "Mode_BrainScan".Translate(), delegate
+                {
+                    currentMode = CloneExtractorModes.Brain;
                     SelectPawn(selPawn);
                 }), selPawn, this);
             }
@@ -287,6 +324,38 @@ namespace Dark.Cloning
                 yield return command_Action3;
                 yield break;
             }
+
+            // Button to switch modes
+            Command_Action toggleModeCommandAction = new Command_Action();
+            toggleModeCommandAction.defaultLabel = "Cloning_CloneExtractorModeSwitch".Translate();
+            toggleModeCommandAction.defaultDesc = "Cloning_InsertPersonBrainScanDesc".Translate();
+            toggleModeCommandAction.icon = GeneSetHolderBase.GeneticInfoTex.Texture; //TODO: Replace this gizmo texture
+            toggleModeCommandAction.action = delegate
+            {
+                List<FloatMenuOption> floatMenuOptions = new List<FloatMenuOption>();
+                floatMenuOptions.Add(new FloatMenuOption("Cloning_EmbryoMode".Translate(), delegate
+                {
+                    currentMode = CloneExtractorModes.Embryo;
+                }
+                ));
+                floatMenuOptions.Add(new FloatMenuOption("Cloning_BrainScanMode".Translate(), delegate
+                {
+                    currentMode = CloneExtractorModes.Brain;
+                }
+                ));
+
+                if (!floatMenuOptions.Any())
+                {
+                    floatMenuOptions.Add(new FloatMenuOption("NoExtractablePawns".Translate(), null));
+                }
+                Find.WindowStack.Add(new FloatMenu(floatMenuOptions));
+            };
+            if (this.Working)
+            {
+                toggleModeCommandAction.Disable("Cloning_ExtractorWorking".Translate().CapitalizeFirst());
+            }
+            yield return toggleModeCommandAction;
+
             Command_Action command_Action4 = new Command_Action();
             command_Action4.defaultLabel = "InsertPerson".Translate() + "...";
             command_Action4.defaultDesc = "InsertPersonGeneExtractorDesc".Translate();
@@ -309,6 +378,7 @@ namespace Dark.Cloning
                     {
                         list.Add(new FloatMenuOption(item.LabelShortCap + ", " + pawn.genes.XenotypeLabelCap, delegate
                         {
+                            currentMode = CloneExtractorModes.Embryo;
                             SelectPawn(pawn);
                         }, pawn, Color.white));
                     }
@@ -349,6 +419,7 @@ namespace Dark.Cloning
                     str1 += "\n";
                 string str2 = str1 + "Cloning_ExtractingCloneFrom".Translate(this.ContainedPawn.Named("PAWN")).Resolve() + "\n";
                 str1 = !this.PowerOn ? (string)( str2 + "ExtractionPausedNoPower".Translate() ) : str2 + "DurationLeft".Translate((NamedArgument)this.ticksRemaining.ToStringTicksToPeriod()).Resolve();
+                str1 = str1 + currentMode;
             }
             return str1;
         }
@@ -357,6 +428,7 @@ namespace Dark.Cloning
         {
             base.ExposeData();
             Scribe_Values.Look<int>(ref this.ticksRemaining, "ticksRemaining");
+            Scribe_Values.Look<CloneExtractorModes>(ref this.currentMode, "currentMode");
         }
     }
 }

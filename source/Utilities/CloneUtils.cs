@@ -15,7 +15,7 @@ namespace Dark.Cloning
         public static bool HasCloneGene(List<GeneDef> genes)
         {
             if (genes == null || genes.Count < 1) return false;
-            return genes.Contains(CloneDefs.Clone);
+            return genes.Contains(CloneDefOf.Clone);
         }
         public static bool HasCloneGene(GeneSet genes)
         {
@@ -27,7 +27,7 @@ namespace Dark.Cloning
         }
         public static bool HasCloneGene(Pawn pawn)
         {
-            return pawn.genes.HasGene(CloneDefs.Clone);
+            return pawn.genes.HasGene(CloneDefOf.Clone);
         }
 
         public static void CopyGenesFromParent(ref GeneSet genes, HumanEmbryo embryo)
@@ -43,23 +43,9 @@ namespace Dark.Cloning
             foreach (Gene gene in parent.genes.Endogenes)
             {
                 // Safety check to make sure the Clone gene doesn't get inherited (Since we already ensured it's there, this would just add it a second time (We ensured that, right?))
-                if (gene.def == CloneDefs.Clone) continue;
+                if (gene.def == CloneDefOf.Clone) continue;
 
                 genes.AddGene(gene.def);
-            }
-        }
-
-        public static void CopyTraitsFromParent(Pawn pawn)
-        {
-            Pawn parent = pawn.GetMother() ?? pawn.GetFather();
-            if (parent == null)
-            {
-                Log.Error($"Error copying traits for clone {pawn.LabelCap}, both parents were null");
-                return;
-            }
-            foreach (Trait trait in parent.story.traits.allTraits)
-            {
-                pawn.story.traits.GainTrait(trait);
             }
         }
 
@@ -95,7 +81,7 @@ namespace Dark.Cloning
         {
             Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.XenogermReplicating);
 
-            hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange);
+            hediff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = Mathf.RoundToInt(60000f * CloningSettings.CloneExtractorRegrowingDurationDaysRange.RandomInRange);
         }
     }
 }

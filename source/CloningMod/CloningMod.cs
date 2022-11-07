@@ -10,17 +10,17 @@ using UnityEngine;
 
 namespace Dark.Cloning
 {
-    class Mod : Verse.Mod
+    class CloningMod : Verse.Mod
     {
-        public Mod(ModContentPack content) : base(content)
+        public CloningMod(ModContentPack content) : base(content)
         {
-            GetSettings<Settings>();
+            GetSettings<CloningSettings>();
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
             base.DoSettingsWindowContents(inRect);
-            GetSettings<Settings>().DoWindowContents(inRect);
+            GetSettings<CloningSettings>().DoWindowContents(inRect);
         }
 
         public override string SettingsCategory()

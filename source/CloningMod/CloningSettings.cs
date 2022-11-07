@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Dark.Cloning
 {
-    class Settings : ModSettings
+    class CloningSettings : ModSettings
     {
         public static bool cloningCooldown = true;
         public static bool inheritHair = true;
@@ -79,12 +79,12 @@ namespace Dark.Cloning
             listingStandard.Begin(inRect);
 
             listingStandard.ColumnWidth = inRect.width / 2f * 0.98f;
-            listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref Settings.inheritHair);
-            listingStandard.CheckboxLabeled("Cloning_Settings_CloneXenogenes".Translate(), ref Settings.cloneXenogenes, "Cloning_Settings_CloneXenogenes_Tooltip".Translate());
-            if (Settings.cloneXenogenes)
+            listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref CloningSettings.inheritHair);
+            listingStandard.CheckboxLabeled("Cloning_Settings_CloneXenogenes".Translate(), ref CloningSettings.cloneXenogenes, "Cloning_Settings_CloneXenogenes_Tooltip".Translate());
+            if (CloningSettings.cloneXenogenes)
             {
                 listingStandard.DoIndent();
-                listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref Settings.cloneArchiteGenes);
+                listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref CloningSettings.cloneArchiteGenes);
                 listingStandard.DoOutdent();
             }
             else
@@ -95,8 +95,8 @@ namespace Dark.Cloning
 
             #region Cooldown Settings
 
-            listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref Settings.cloningCooldown);
-            if (Settings.cloningCooldown)
+            listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref CloningSettings.cloningCooldown);
+            if (CloningSettings.cloningCooldown)
             {
                 listingStandard.Label("Cloning_Settings_CooldownDays".Translate());
                 listingStandard.IntRange(ref CloneExtractorRegrowingDurationDaysRange, 0, 60);
@@ -114,23 +114,23 @@ namespace Dark.Cloning
 
             listingStandard.ColumnWidth = inRect.width / 2f * 0.95f;
 
-            listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref Settings.doRandomMutations);
+            listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref CloningSettings.doRandomMutations);
             listingStandard.Label("Cloning_Mutations_Description".Translate());
-            if (Settings.doRandomMutations)
+            if (CloningSettings.doRandomMutations)
             {
-                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(), ref Settings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
+                listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(), ref CloningSettings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
 
-                Settings.randomMutationChance = listingStandard.SliderLabeled(
-                    "Cloning_Settings_MutationChance".Translate() + $": {Mathf.RoundToInt(Settings.randomMutationChance * 100)}%",
-                    Settings.randomMutationChance,
+                CloningSettings.randomMutationChance = listingStandard.SliderLabeled(
+                    "Cloning_Settings_MutationChance".Translate() + $": {Mathf.RoundToInt(CloningSettings.randomMutationChance * 100)}%",
+                    CloningSettings.randomMutationChance,
                     0f,
                     1f
                 );
                 listingStandard.Label("Cloning_Settings_MaxMutations".Translate());
-                listingStandard.IntRange(ref Settings.numMutations, 0, Settings.genesEligibleForMutation.Count);
-                if (Settings.numMutations.max > Settings.genesEligibleForMutation.Count) Settings.numMutations.max = Settings.genesEligibleForMutation.Count;
-                if (Settings.numMutations.min > Settings.genesEligibleForMutation.Count) Settings.numMutations.min = Settings.genesEligibleForMutation.Count;
-                if (Settings.numMutations.max == 0) Settings.numMutations.max = Settings.numMutations.min;
+                listingStandard.IntRange(ref CloningSettings.numMutations, 0, CloningSettings.genesEligibleForMutation.Count);
+                if (CloningSettings.numMutations.max > CloningSettings.genesEligibleForMutation.Count) CloningSettings.numMutations.max = CloningSettings.genesEligibleForMutation.Count;
+                if (CloningSettings.numMutations.min > CloningSettings.genesEligibleForMutation.Count) CloningSettings.numMutations.min = CloningSettings.genesEligibleForMutation.Count;
+                if (CloningSettings.numMutations.max == 0) CloningSettings.numMutations.max = CloningSettings.numMutations.min;
 
                 listingStandard.DoBlankColumn(12f);
 
@@ -142,7 +142,7 @@ namespace Dark.Cloning
                 scrollRect.yMax = inRect.height;
 
                 // Draw the header
-                listingStandard.Label($"[{Settings.genesEligibleForMutation.Count}] " + "Cloning_Settings_GeneListHeader".Translate() + ":");
+                listingStandard.Label($"[{CloningSettings.genesEligibleForMutation.Count}] " + "Cloning_Settings_GeneListHeader".Translate() + ":");
 
                 // Draw buttons for collapsing categories
                 float collapseButtonsHeight = 24f;
@@ -166,24 +166,24 @@ namespace Dark.Cloning
                 #region Selection Buttons
                 if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_SelectNone".Translate()))
                 {
-                    Settings.genesEligibleForMutation.Clear();
+                    CloningSettings.genesEligibleForMutation.Clear();
                 }
                 selectButtonRect.position = new Vector2(selectButtonRect.x - ( selectButtonWidth + 6f ), selectButtonRect.y);
                 if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_SelectAll".Translate()))
                 {
                     foreach (GeneDef geneDef in GeneUtils.AllGenesCache.Values)
                     {
-                        if (geneDef.defName == CloneDefs.Clone.defName) continue;
+                        if (geneDef.defName == CloneDefOf.Clone.defName) continue;
                         GeneUtils.SetEligible(geneDef.defName, true);
                     }
                 }
                 selectButtonRect.position = new Vector2(selectButtonRect.x - ( selectButtonWidth + 6f ), selectButtonRect.y);
                 if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_Reset".Translate()))
                 {
-                    Settings.genesEligibleForMutation.Clear();
+                    CloningSettings.genesEligibleForMutation.Clear();
                     foreach (string geneDefault in GeneUtils.defaultGenesEligible.Keys)
                     {
-                        Settings.genesEligibleForMutation.Add(geneDefault, GeneUtils.defaultGenesEligible[geneDefault]);
+                        CloningSettings.genesEligibleForMutation.Add(geneDefault, GeneUtils.defaultGenesEligible[geneDefault]);
                     }
                 }
                 #endregion Selection Buttons
@@ -240,7 +240,6 @@ namespace Dark.Cloning
             Rect visibleRect = new Rect(scrollPos.x, scrollPos.y, scrollRect.width, scrollRect.height);
             if ( !( visibleRect.Contains(new Vector2(buttonRect.xMin, buttonRect.yMin)) || visibleRect.Contains(new Vector2(buttonRect.xMax, buttonRect.yMax)) ) )
             {
-                Log.Message($"Gene culled: {gene}. Topleft {new Vector2(buttonRect.xMin, buttonRect.yMin)} scrollRect {scrollRect}");
                 return;
             }
 
@@ -289,7 +288,7 @@ namespace Dark.Cloning
                 }
 
                 // Skip the Clone gene added by this mod. It wouldn't make any sense for a clone to randomly gain the Clone gene
-                if (gene == CloneDefs.Clone.defName)
+                if (gene == CloneDefOf.Clone.defName)
                 {
                     continue;
                 }

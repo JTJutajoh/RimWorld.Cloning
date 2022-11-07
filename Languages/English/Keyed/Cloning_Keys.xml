@@ -32,4 +32,38 @@
   <Cloning_Letter_MutationText>A clone embryo has finished gestating and gained these genetic mutations:</Cloning_Letter_MutationText>
   <Cloning_CloneExtractionComplete>Clone embryo extraction complete for {PAWN_nameDef}.</Cloning_CloneExtractionComplete>
   <Cloning_ExtractingCloneFrom>Extracting clone embryo from {PAWN_nameDef}.</Cloning_ExtractingCloneFrom>
+  <Cloning_InsertPersonBrainScanDesc>Insert a pawn to extract a brain scan that can be applied to another pawn to overwrite their consciousness.</Cloning_InsertPersonBrainScanDesc>
+  <Cloning_CloneExtractorModeSwitch>Mode</Cloning_CloneExtractorModeSwitch>
+  <Cloning_EmbryoMode>Clone Embryo</Cloning_EmbryoMode>
+  <Cloning_BrainScanMode>Scan Brain</Cloning_BrainScanMode>
+  <Cloning_ExtractorWorking>Extraction process is already running. Cancel to change modes.</Cloning_ExtractorWorking>
+  <Cloning_BrainScanComplete>Brain Scan complete from {PAWN_nameDef}.</Cloning_BrainScanComplete>
+  <Mode_BrainScan>for Brain Scan</Mode_BrainScan>
+  <Mode_Clone>for Embryo Extraction</Mode_Clone>
+  <InstallBrainScan>Install Brain Scan</InstallBrainScan>
+  <InsertBrainScanCloneVatDesc>Insert a brain scan into this clone vat to be applied to any pawns inside.</InsertBrainScanCloneVatDesc>
+  <InsertBrainScanNoScans>No brain scans</InsertBrainScanNoScans>
+  <CancelBrainScan>Cancel installing brain scan</CancelBrainScan>
+  <RemoveBrainScan>Remove brain scan</RemoveBrainScan>
+  <CancelBrainScanDesc>Cancel loading the selected brain scan into this clone vat or remove it if it has already been installed.</CancelBrainScanDesc>
+  <ImplantBrainScanCancel>Cancel installing brain scan</ImplantBrainScanCancel>
+  <ImplantBrainScanRemove>Remove brain scan</ImplantBrainScanRemove>
+  <CannotInsertBrainScan>Cannot insert brain scan</CannotInsertBrainScan>
+  <BrainScanAlreadyInside>There is already a brain scan installed</BrainScanAlreadyInside>
+  <ContainsBrainScan>Contains brain scan of</ContainsBrainScan>
+  <NoBrainScan>No brain scan installed</NoBrainScan>
+  <NoPawnToApplyTo>Clone vat is empty</NoPawnToApplyTo>
+  <WaitingForBrainScan>Waiting for brain scan to be delivered</WaitingForBrainScan>
+  <EjectClone>Eject pawn</EjectClone>
+  <EjectCloneDesc>Remove the pawn currently inside the clone storage vat.</EjectCloneDesc>
+  <ApplyBrainScan>Apply brain scan</ApplyBrainScan>
+  <ApplyBrainScanDesc>Applies the stored consciousness in the contained brain scan onto the contained pawn.\nCompletely overwrites the person's entire sentient personality.\n\nSeems painful.</ApplyBrainScanDesc>
+  <ConfirmBrainScanApplication>Warning: {PAWN_nameDef}'s entire consciousness will be destroyed and overwritten with the contents of the brain scan.\nThis process cannot be undone. The previous sentient mind is lost forever! \n\nAre you sure you wish to continue?</ConfirmBrainScanApplication>
+  <InsertClone>Insert person</InsertClone>
+  <InsertCloneDesc>Insert a person into the clone storage vat. They will be put into cryptosleep suspension and can have a brain scan applied to them while inside.</InsertCloneDesc>
+  <NoPawnsCanEnterCloneVat>No eligible pawns</NoPawnsCanEnterCloneVat>
+  <CancelLoadPawn>Cancel loading pawn</CancelLoadPawn>
+  <CancelLoadPawnDesc>Cancel loading this with the selected people</CancelLoadPawnDesc>
+  <CancelScanApplication>Cancel scan application</CancelScanApplication>
+  <CancelScanApplicationDesc>Stops the current process of applying a brain scan to the contained pawn before completion.</CancelScanApplicationDesc>
 </LanguageData>

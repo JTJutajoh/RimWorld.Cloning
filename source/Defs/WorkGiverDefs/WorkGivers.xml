@@ -8,7 +8,34 @@
     <workType>Hauling</workType>
     <verb>extract clone</verb>
     <gerund>extracting clone from</gerund>
-    <priorityInType>90</priorityInType>
+    <priorityInType>91</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <canBeDoneByMechs>false</canBeDoneByMechs>
+  </WorkGiverDef>
+
+  <WorkGiverDef>
+    <defName>HaulToCloneVat</defName>
+    <label>carry to clone vat</label>
+    <giverClass>Dark.Cloning.WorkGiver_HaulToCloneVat</giverClass>
+    <workType>Hauling</workType>
+    <verb>fill</verb>
+    <gerund>filling</gerund>
+    <priorityInType>110</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+
+  <WorkGiverDef>
+    <defName>CarryToCloneVat</defName>
+    <label>carry to building</label>
+    <giverClass>Dark.Cloning.WorkGiver_CarryToCloneVat</giverClass>
+    <workType>Hauling</workType>
+    <verb>grow</verb>
+    <gerund>growing</gerund>
+    <priorityInType>91</priorityInType>
     <requiredCapacities>
       <li>Manipulation</li>
     </requiredCapacities>
