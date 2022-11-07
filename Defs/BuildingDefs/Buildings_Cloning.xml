@@ -52,6 +52,12 @@
         <compClass>CompPowerTrader</compClass>
         <basePowerConsumption>100</basePowerConsumption>
       </li>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <!--<li>GeneBank</li> -->
+          <li>GeneProcessor</li>
+        </linkableFacilities>
+      </li>
       <li Class="CompProperties_Flickable"/>
     </comps>
   </ThingDef>
