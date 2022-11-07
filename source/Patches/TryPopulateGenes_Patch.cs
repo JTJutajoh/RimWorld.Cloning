@@ -25,6 +25,11 @@ namespace Dark.Cloning
 
             CloneUtils.CopyGenesFromParent(ref clonedGenes, __instance);
 
+            if (EmbryoTracker.HasForcedXenogenes(__instance))
+            {
+                GeneUtils.AddGeneSet(ref ___geneSet, EmbryoTracker.GetForcedGenesFor(__instance));
+            }
+
             GeneUtils.ApplyRandomMutations(ref clonedGenes);
             
             clonedGenes.SortGenes();

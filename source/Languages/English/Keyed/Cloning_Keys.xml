@@ -66,4 +66,6 @@
   <CancelLoadPawnDesc>Cancel loading this with the selected people</CancelLoadPawnDesc>
   <CancelScanApplication>Cancel scan application</CancelScanApplication>
   <CancelScanApplicationDesc>Stops the current process of applying a brain scan to the contained pawn before completion.</CancelScanApplicationDesc>
+  <DonorGenes>Donor Xenotype</DonorGenes>
+  <FromDonorXenotype>Added by donor xenotype. Remove the entire xenotype to remove.</FromDonorXenotype>
 </LanguageData>

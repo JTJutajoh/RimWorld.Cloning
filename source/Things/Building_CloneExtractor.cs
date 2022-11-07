@@ -25,9 +25,89 @@ namespace Dark.Cloning
         [Unsaved(false)]
         private Effecter progressBar;
         private const int TicksToApplyScan = 30000;
-        private float WorkingPowerUsageFactor = 6f;
+        private const int TicksToMakeEmbryo = 30000;
+        private float WorkingPowerUsageFactor = 8f;
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
+        public List<Thing> ConnectedFacilities => this.TryGetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading;
+
+        // See: Building_GeneAssembler
+        private List<Genepack> genepacksToRecombine;
+
+        private int architesRequired;
+
+        public string xenotypeName;
+
+        public XenotypeIconDef iconDef;
+
+        [Unsaved(false)]
+        private List<Genepack> tmpGenepacks = new List<Genepack>();
+
+        [Unsaved(false)]
+        private HashSet<Thing> tmpUsedFacilities = new HashSet<Thing>();
+
+        [Unsaved(false)]
+        private int? cachedComplexity;
+
+        private const int CheckContainersInterval = 180;
+
+        public int ArchitesCount
+        {
+            get
+            {
+                int num = 0;
+                for (int i = 0; i < innerContainer.Count; i++)
+                {
+                    if (innerContainer[i].def == ThingDefOf.ArchiteCapsule)
+                    {
+                        num += innerContainer[i].stackCount;
+                    }
+                }
+                return num;
+            }
+        }
+
+        private int TotalGCX //TODO: Make TotalGCX into a static utility instead
+        {
+            get
+            {
+                if (!Working)
+                {
+                    return 0;
+                }
+                if (!cachedComplexity.HasValue)
+                {
+                    cachedComplexity = 0;
+                    if (!genepacksToRecombine.NullOrEmpty())
+                    {
+                        List<GeneDefWithType> list = new List<GeneDefWithType>();
+                        for (int i = 0; i < genepacksToRecombine.Count; i++)
+                        {
+                            if (genepacksToRecombine[i].GeneSet != null)
+                            {
+                                for (int j = 0; j < genepacksToRecombine[i].GeneSet.GenesListForReading.Count; j++)
+                                {
+                                    list.Add(new GeneDefWithType(genepacksToRecombine[i].GeneSet.GenesListForReading[j], xenogene: true));
+                                }
+                            }
+                        }
+                        List<GeneDef> list2 = list.NonOverriddenGenes();
+                        for (int k = 0; k < list2.Count; k++)
+                        {
+                            cachedComplexity += list2[k].biostatCpx;
+                        }
+                    }
+                }
+                return cachedComplexity.Value;
+            }
+        }
+        public const int baseGCX = 0;
+
+
+        public int ArchitesRequiredNow => architesRequired - ArchitesCount;
+
+
+        //SOMEDAY: Make this a custom def instead of an enum
         public enum CloneExtractorModes
         {
             Embryo,
@@ -37,7 +117,7 @@ namespace Dark.Cloning
         private CloneExtractorModes currentMode = CloneExtractorModes.Embryo;
 
         #region Mostly Vanilla
-        private Pawn ContainedPawn => this.innerContainer.Count <= 0 ? (Pawn)null : (Pawn)this.innerContainer[0];
+        public Pawn ContainedPawn => this.innerContainer.Count <= 0 ? (Pawn)null : (Pawn)this.innerContainer[0];
 
         public bool PowerOn => this.PowerTraderComp.PowerOn;
 
@@ -135,7 +215,119 @@ namespace Dark.Cloning
             mote.progress = 1f - Mathf.Clamp01((float)this.ticksRemaining / 30000f);
             mote.offsetZ = this.Rotation == Rot4.North ? 0.5f : -0.5f;
         }
+
+        public List<Genepack> GetGenepacks(bool includePowered, bool includeUnpowered)
+        {
+            tmpGenepacks.Clear();
+            List<Thing> connectedFacilities = ConnectedFacilities;
+            if (connectedFacilities != null)
+            {
+                foreach (Thing item in connectedFacilities)
+                {
+                    CompGenepackContainer compGenepackContainer = item.TryGetComp<CompGenepackContainer>();
+                    if (compGenepackContainer != null)
+                    {
+                        bool flag = item.TryGetComp<CompPowerTrader>()?.PowerOn ?? true;
+                        if (( includePowered && flag ) || ( includeUnpowered && !flag ))
+                        {
+                            tmpGenepacks.AddRange(compGenepackContainer.ContainedGenepacks);
+                        }
+                    }
+                }
+            }
+            return tmpGenepacks;
+        }
+        public CompGenepackContainer GetGeneBankHoldingPack(Genepack pack)
+        {
+            List<Thing> connectedFacilities = ConnectedFacilities;
+            if (connectedFacilities != null)
+            {
+                foreach (Thing item in connectedFacilities)
+                {
+                    CompGenepackContainer compGenepackContainer = item.TryGetComp<CompGenepackContainer>();
+                    if (compGenepackContainer == null)
+                    {
+                        continue;
+                    }
+                    foreach (Genepack containedGenepack in compGenepackContainer.ContainedGenepacks)
+                    {
+                        if (containedGenepack == pack)
+                        {
+                            return compGenepackContainer;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void CheckAllContainersValid()
+        {
+            if (genepacksToRecombine.NullOrEmpty())
+            {
+                return;
+            }
+            List<Thing> connectedFacilities = ConnectedFacilities;
+            for (int i = 0; i < genepacksToRecombine.Count; i++)
+            {
+                bool flag = false;
+                for (int j = 0; j < connectedFacilities.Count; j++)
+                {
+                    CompGenepackContainer compGenepackContainer = connectedFacilities[j].TryGetComp<CompGenepackContainer>();
+                    if (compGenepackContainer != null && compGenepackContainer.ContainedGenepacks.Contains(genepacksToRecombine[i]))
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag)
+                {
+                    Messages.Message("MessageXenogermCancelledMissingPack".Translate(this), this, MessageTypeDefOf.NegativeEvent);
+                    Reset();
+                    break;
+                }
+            }
+        }
         #endregion Mostly Vanilla
+
+        public int MaxComplexity()
+        {
+            List<Thing> connectedFacilities = ConnectedFacilities;
+            if (connectedFacilities == null)
+                return baseGCX;
+
+            int result = baseGCX;
+            foreach (Thing item in connectedFacilities)
+            {
+                CompPowerTrader compPowerTrader = item.TryGetComp<CompPowerTrader>();
+                if (compPowerTrader == null || compPowerTrader.PowerOn)
+                {
+                    result += (int)item.GetStatValue(StatDefOf.GeneticComplexityIncrease);
+                }
+            }
+            return result;
+        }
+
+        private void Reset()
+        {
+            startTick = -1;
+            genepacksToRecombine = null;
+            xenotypeName = null;
+            cachedComplexity = null;
+            iconDef = XenotypeIconDefOf.Basic;
+            architesRequired = 0;
+            innerContainer.TryDropAll(def.hasInteractionCell ? InteractionCell : base.Position, base.Map, ThingPlaceMode.Near);
+        }
+
+        public void Start(List<Genepack> packs, int architesRequired, string xenotypeName, XenotypeIconDef iconDef)
+        {
+            Reset();
+            genepacksToRecombine = packs;
+            this.architesRequired = architesRequired;
+            this.xenotypeName = xenotypeName;
+            this.iconDef = iconDef;
+            AcceptPawn(selectedPawn);
+        }
 
         public override AcceptanceReport CanAcceptPawn(Pawn pawn)
         {
@@ -162,6 +354,51 @@ namespace Dark.Cloning
             this.innerContainer.TryDropAll(this.def.hasInteractionCell ? this.InteractionCell : this.Position, this.Map, ThingPlaceMode.Near);
         }
 
+        private HumanEmbryo ProduceEmbryo(Pawn donor, IntVec3 intVec3)
+        {
+            HumanEmbryo embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, GeneUtils.GetAllGenesInPacks(tmpGenepacks));
+
+            // Gene sickness Hediff
+            if (CloningSettings.cloningCooldown) 
+                GeneUtility.ExtractXenogerm(donor, Mathf.RoundToInt(60000f * CloningSettings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+
+
+            this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
+
+            if (!donor.Dead && ( donor.IsPrisonerOfColony || donor.IsSlaveOfColony ))
+                donor.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
+
+            GenPlace.TryPlaceThing((Thing)embryo, intVec3, this.Map, ThingPlaceMode.Near);
+
+            Messages.Message((string)( "Cloning_CloneExtractionComplete".Translate(donor.Named("PAWN")) ),
+                new LookTargets(new TargetInfo[2]
+                    {
+                        (TargetInfo) (Thing) donor,
+                        (TargetInfo) (Thing) embryo
+                    }
+                ), MessageTypeDefOf.PositiveEvent);
+            return embryo;
+        }
+
+        //TODO: Remove brain scanning drop
+        private void ProduceBrainScan(Pawn donor, IntVec3 intVec3)
+        {
+            BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefOf.BrainScan);
+            BrainUtil.ScanPawn(ContainedPawn, brainScan);
+            this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
+            //TODO: Add a thought about having had your brain scanned
+            //if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
+            //    containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
+            GenPlace.TryPlaceThing((Thing)brainScan, intVec3, this.Map, ThingPlaceMode.Near);
+            Messages.Message((string)( "Cloning_BrainScanComplete".Translate(donor.Named("PAWN")) ),
+                new LookTargets(new TargetInfo[2]
+                    {
+                        (TargetInfo) (Thing) donor,
+                        (TargetInfo) (Thing) brainScan
+                    }
+                ), MessageTypeDefOf.PositiveEvent);
+        }
+
         private void Finish()
         {
             this.startTick = -1;
@@ -174,41 +411,15 @@ namespace Dark.Cloning
             switch (currentMode)
             {
                 case CloneExtractorModes.Embryo:
-                    HumanEmbryo embryo = (HumanEmbryo)CloneUtils.ProduceCloneEmbryo(this.ContainedPawn);
-                    if (CloningSettings.cloningCooldown) GeneUtility.ExtractXenogerm(containedPawn, Mathf.RoundToInt(60000f * CloningSettings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
-                    this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
-                    if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
-                        containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
-                    GenPlace.TryPlaceThing((Thing)embryo, intVec3, this.Map, ThingPlaceMode.Near);
-                    Messages.Message((string)( "Cloning_CloneExtractionComplete".Translate(containedPawn.Named("PAWN")) ),
-                        new LookTargets(new TargetInfo[2]
-                            {
-                        (TargetInfo) (Thing) containedPawn,
-                        (TargetInfo) (Thing) embryo
-                            }
-                        ), MessageTypeDefOf.PositiveEvent);
+                    ProduceEmbryo(containedPawn, intVec3);
                     break;
                 case CloneExtractorModes.Brain:
-                    BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefOf.BrainScan);
-                    BrainUtil.ScanPawn(ContainedPawn, brainScan);
-                    this.innerContainer.TryDropAll(intVec3, this.Map, ThingPlaceMode.Near);
-                    //TODO: Add a thought about having had your brain scanned
-                    //if (!containedPawn.Dead && ( containedPawn.IsPrisonerOfColony || containedPawn.IsSlaveOfColony ))
-                    //    containedPawn.needs?.mood?.thoughts?.memories?.TryGainMemory(ThoughtDefOf.XenogermHarvested_Prisoner); //SOMEDAY: Make a new type of thought instead of using the xenogerm harvested thought
-                    GenPlace.TryPlaceThing((Thing)brainScan, intVec3, this.Map, ThingPlaceMode.Near);
-                    Messages.Message((string)( "Cloning_BrainScanComplete".Translate(containedPawn.Named("PAWN")) ),
-                        new LookTargets(new TargetInfo[2]
-                            {
-                        (TargetInfo) (Thing) containedPawn,
-                        (TargetInfo) (Thing) brainScan
-                            }
-                        ), MessageTypeDefOf.PositiveEvent);
+                    ProduceBrainScan(containedPawn, intVec3);
                     break;
                 default:
                     Log.Error("Clone Extractor failed, invalid mode");
                     break;
             }
-            
         }
 
         public override void TryAcceptPawn(Pawn pawn)
@@ -216,11 +427,18 @@ namespace Dark.Cloning
             if (!(bool)this.CanAcceptPawn(pawn))
                 return;
             this.selectedPawn = pawn;
+            Find.WindowStack.Add(new Dialog_CreateClone(this));
+            this.selectedPawn = null;
+        }
+
+        public void AcceptPawn(Pawn pawn)
+        {
+            this.selectedPawn = pawn;
             int num = pawn.DeSpawnOrDeselect() ? 1 : 0;
             if (this.innerContainer.TryAddOrTransfer((Thing)pawn))
             {
                 this.startTick = Find.TickManager.TicksGame;
-                this.ticksRemaining = 30000; //TODO: Redefine how long the clone extractor takes
+                this.ticksRemaining = TicksToMakeEmbryo;
             }
             if (num == 0)
                 return;
@@ -429,6 +647,16 @@ namespace Dark.Cloning
             base.ExposeData();
             Scribe_Values.Look<int>(ref this.ticksRemaining, "ticksRemaining");
             Scribe_Values.Look<CloneExtractorModes>(ref this.currentMode, "currentMode");
+
+            Scribe_Deep.Look(ref innerContainer, "innerContainer", this);
+            Scribe_Collections.Look(ref genepacksToRecombine, "genepacksToRecombine", LookMode.Reference);
+            Scribe_Values.Look(ref architesRequired, "architesRequired", 0);
+            Scribe_Values.Look(ref xenotypeName, "xenotypeName");
+            Scribe_Defs.Look(ref iconDef, "iconDef");
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && iconDef == null)
+            {
+                iconDef = XenotypeIconDefOf.Basic;
+            }
         }
     }
 }

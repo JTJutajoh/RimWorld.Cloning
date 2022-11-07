@@ -54,7 +54,7 @@
       </li>
       <li Class="CompProperties_AffectedByFacilities">
         <linkableFacilities>
-          <!--<li>GeneBank</li> -->
+          <li>GeneBank</li>
           <li>GeneProcessor</li>
         </linkableFacilities>
       </li>

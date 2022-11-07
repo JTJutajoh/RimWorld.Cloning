@@ -18,14 +18,23 @@ namespace Dark.Cloning
     {
         private static List<int> embryoHashes = new List<int>();
 
+        private static Dictionary<int, GeneSet> embryoHashesForcedXenogenes = new Dictionary<int, GeneSet>();
+
         /// <summary>
         /// Add an embryo to the list of tracked embryos, as its hash.
         /// </summary>
         /// <param name="embryo">Reference to the embryo to be tracked</param>
-        public static void Track(HumanEmbryo embryo)
+        /// <param name="forcedXenogenes">Optional GeneSet that contains a list of xenogenes to force</param>
+        public static void Track(HumanEmbryo embryo, GeneSet forcedXenogenes = null)
         {
             int hash = embryo.GetHashCode();
             embryoHashes.Add(hash);
+
+            if (forcedXenogenes != null)
+            {
+                Log.Message($"Copying a GeneSet into the embryoTracker for embryo hash {embryo.LabelCap} with {forcedXenogenes.GenesListForReading.Count} genes");
+                embryoHashesForcedXenogenes.Add(embryo.GetHashCode(), forcedXenogenes);
+            }
 
             //Log.Message($"EmbryoTracker tracking embryo {embryo.ToString()} with hash {hash}. {embryoHashes.Count} embryos tracked.");
         }
@@ -42,9 +51,30 @@ namespace Dark.Cloning
 
             if (result) embryoHashes.Remove(hash);
 
+            if (embryoHashesForcedXenogenes.ContainsKey(hash))
+                embryoHashesForcedXenogenes.Remove(hash);
+
             //Log.Message($"EmbryoTracker checking for embryo {embryo.ToString()} with hash {hash}: {result}. {embryoHashes.Count} embryos tracked.");
 
             return result;
+        }
+
+        public static bool HasForcedXenogenes(int hash)
+        {
+            return embryoHashesForcedXenogenes.ContainsKey(hash);
+        }
+        public static bool HasForcedXenogenes(HumanEmbryo embryo)
+        {
+            return HasForcedXenogenes(embryo);
+        }
+
+        public static GeneSet GetForcedGenesFor(HumanEmbryo embryo)
+        {
+            int hash = embryo.GetHashCode();
+            if (!HasForcedXenogenes(embryo))
+                return null;
+
+            return embryoHashesForcedXenogenes[hash];
         }
     }
 }

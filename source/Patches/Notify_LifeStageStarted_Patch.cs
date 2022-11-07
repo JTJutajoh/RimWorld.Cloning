@@ -28,7 +28,7 @@ namespace Dark.Cloning.Patches
             if (__state && CloneUtils.HasCloneGene(pawn))
             {
                 // Get the clone's parent by getting their parent of the same gender, since we force clones to match donor genders.
-                //FIXME: This will cause an incompatibility with any mods that change gender if the donor's gender changes before the clone reaches 13. Not sure how to approach fixing this. Maybe it doesn't need fixing?
+                //HACK: This will cause an incompatibility with any mods that change gender if the donor's gender changes before the clone reaches 13. Not sure how to approach fixing this. Maybe it doesn't need fixing?
                 Pawn donor = pawn.gender == Gender.Female ? pawn.GetMother() : pawn.GetFather(); 
                 if (donor == null)
                 {

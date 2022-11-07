@@ -138,6 +138,62 @@ namespace Dark.Cloning
                 CloningSettings.genesEligibleForMutation.Remove(gene);
             }
         }
+
+        /// <summary>
+        /// Helper method to get all of the genes in a list of genepacks. Does not check for duplicates
+        /// </summary>
+        public static GeneSet GetAllGenesInPacks(List<Genepack> genepacks)
+        {
+            GeneSet geneSet = new GeneSet();
+            for (int i = 0; i < genepacks.Count; i++)
+            {
+                if (genepacks[i].GeneSet != null)
+                {
+                    List<GeneDef> genes = genepacks[i].GeneSet.GenesListForReading;
+                    for (int j = 0; j < genes.Count; j++)
+                    {
+                        geneSet.AddGene(genes[i]);
+                    }
+                }
+            }
+            return geneSet;
+        }
+
+        public static Genepack GetXenogenesAsGenepack(Pawn pawn)
+        {
+            if (pawn == null)
+            {
+                Log.Error("Tried to get xenogenes from null pawn");
+                return null;
+            }
+
+            
+            Genepack genepack = (Genepack)ThingMaker.MakeThing(ThingDefOf.Genepack); //HACK: Needs cleaning up?
+            List<GeneDef> genesToAdd = new List<GeneDef>();
+
+            if (pawn.genes != null && pawn.genes.Xenogenes != null)
+            {
+                if (pawn.genes.Xenogenes.Count == 0)
+                    return null;
+                foreach (Gene gene in pawn.genes.Xenogenes)
+                {
+                    genesToAdd.Add(gene.def);
+                }
+            }
+
+            genepack.Initialize(genesToAdd);
+
+
+            return genepack;
+        }
+
+        public static void AddGeneSet(ref GeneSet a, GeneSet b)
+        {
+            for (int i = 0; i < b.GenesListForReading.Count; i++)
+            {
+                a.AddGene(b.GenesListForReading[i]);
+            }
+        }
         #endregion Misc Getters
 
         #region Mutation Utils

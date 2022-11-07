@@ -67,6 +67,7 @@
     <Compile Include="Things\Building_CloneStorageVat.cs" />
     <Compile Include="ThingComps\CompTargetable_SingleHumanlikeCorpse.cs" />
     <Compile Include="ThingComps\CompTargetEffect_ScanCorpse.cs" />
+    <Compile Include="UI\Dialog_CreateClone.cs" />
     <Compile Include="Utilities\BrainUtil.cs" />
     <Compile Include="Utilities\GeneUtils.cs" />
     <Compile Include="AI\JobDriver_ScanCorpse.cs" />
