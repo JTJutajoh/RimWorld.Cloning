@@ -91,7 +91,8 @@
     <drawerType>MapMeshAndRealTime</drawerType>
     <fillPercent>0.5</fillPercent>
     <canOverlapZones>false</canOverlapZones>
-    <designationCategory>Biotech</designationCategory>
+    <!--Disabled, pending deletion-->
+    <!--<designationCategory>Biotech</designationCategory>-->
     <uiOrder>2102</uiOrder>
     <hasInteractionCell>true</hasInteractionCell>
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
