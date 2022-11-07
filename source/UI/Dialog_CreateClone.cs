@@ -58,7 +58,11 @@ namespace Dark.Cloning
 			maxGCX = cloneExtractor.MaxComplexity();
 			donorPawn = cloneExtractor.SelectedPawn;
 			Genepack donorGenePack = GeneUtils.GetXenogenesAsGenepack(donorPawn);
-			if (donorGenePack != null) donorGenepacks.Add(donorGenePack);
+			if (donorGenePack != null)
+			{
+				donorGenepacks.Add(donorGenePack);
+				selectedGenepacks.Add(donorGenePack);
+			}
 			libraryGenepacks.AddRange(cloneExtractor.GetGenepacks(includePowered: true, includeUnpowered: true));
 			unpoweredGenepacks.AddRange(cloneExtractor.GetGenepacks(includePowered: false, includeUnpowered: true));
 			xenotypeName = string.Empty;
