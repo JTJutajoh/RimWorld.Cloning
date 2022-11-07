@@ -34,6 +34,8 @@ namespace Dark.Cloning
         // See: Building_GeneAssembler
         private List<Genepack> genepacksToRecombine;
 
+        public Genepack donorGenepack;
+
         private int architesRequired;
 
         public string xenotypeName;
@@ -235,6 +237,7 @@ namespace Dark.Cloning
                     }
                 }
             }
+            if (donorGenepack != null) tmpGenepacks.Add(donorGenepack);
             return tmpGenepacks;
         }
         public CompGenepackContainer GetGeneBankHoldingPack(Genepack pack)
@@ -306,27 +309,6 @@ namespace Dark.Cloning
                 }
             }
             return result;
-        }
-
-        private void Reset()
-        {
-            startTick = -1;
-            genepacksToRecombine = null;
-            xenotypeName = null;
-            cachedComplexity = null;
-            iconDef = XenotypeIconDefOf.Basic;
-            architesRequired = 0;
-            innerContainer.TryDropAll(def.hasInteractionCell ? InteractionCell : base.Position, base.Map, ThingPlaceMode.Near);
-        }
-
-        public void Start(List<Genepack> packs, int architesRequired, string xenotypeName, XenotypeIconDef iconDef)
-        {
-            Reset();
-            genepacksToRecombine = packs;
-            this.architesRequired = architesRequired;
-            this.xenotypeName = xenotypeName;
-            this.iconDef = iconDef;
-            AcceptPawn(selectedPawn);
         }
 
         public override AcceptanceReport CanAcceptPawn(Pawn pawn)
@@ -427,13 +409,13 @@ namespace Dark.Cloning
             if (!(bool)this.CanAcceptPawn(pawn))
                 return;
             this.selectedPawn = pawn;
+            this.donorGenepack = GeneUtils.GetXenogenesAsGenepack(this.selectedPawn);
             Find.WindowStack.Add(new Dialog_CreateClone(this));
             this.selectedPawn = null;
         }
 
         public void AcceptPawn(Pawn pawn)
         {
-            this.selectedPawn = pawn;
             int num = pawn.DeSpawnOrDeselect() ? 1 : 0;
             if (this.innerContainer.TryAddOrTransfer((Thing)pawn))
             {
@@ -443,6 +425,28 @@ namespace Dark.Cloning
             if (num == 0)
                 return;
             Find.Selector.Select((object)pawn, false, false);
+        }
+
+        private void Reset()
+        {
+            startTick = -1;
+            genepacksToRecombine = null;
+            xenotypeName = null;
+            cachedComplexity = null;
+            iconDef = XenotypeIconDefOf.Basic;
+            architesRequired = 0;
+            innerContainer.TryDropAll(def.hasInteractionCell ? InteractionCell : base.Position, base.Map, ThingPlaceMode.Near);
+        }
+
+        public void Start(List<Genepack> packs, Pawn pawn, int architesRequired, string xenotypeName, XenotypeIconDef iconDef)
+        {
+            Reset();
+            genepacksToRecombine = packs;
+            this.architesRequired = architesRequired;
+            this.xenotypeName = xenotypeName;
+            this.iconDef = iconDef;
+            this.selectedPawn = pawn;
+            AcceptPawn(selectedPawn);
         }
 
         protected override void SelectPawn(Pawn pawn)

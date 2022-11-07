@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches\EmbryoBirth_Patch.cs" />
     <Compile Include="Patches\JobDriver_HaulToContainer_MakeNewToils_Patch.cs" />
     <Compile Include="Things\BrainScan.cs" />
     <Compile Include="Things\Building_CloneExtractor.cs" />

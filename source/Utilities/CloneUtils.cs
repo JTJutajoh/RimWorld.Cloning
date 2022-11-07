@@ -68,9 +68,9 @@ namespace Dark.Cloning
             HumanEmbryo humanEmbryo = (HumanEmbryo)ThingMaker.MakeThing(ThingDefOf.HumanEmbryo, null);
 
             humanEmbryo.GetComp<CompHasPawnSources>().AddSource(donor);
-
-            EmbryoTracker.Track(humanEmbryo, forcedGeneSet); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
-                                              //Log.Message("Embryo added to EmbryoTracker, calling TryPopulateGenes...");
+            
+            EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
+            
             humanEmbryo.TryPopulateGenes();
 
             return humanEmbryo;
