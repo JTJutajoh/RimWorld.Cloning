@@ -18,7 +18,6 @@ namespace Dark.Cloning
         public CloneData() { }
         public CloneData(GeneSet forcedXenogenes)
         {
-            Log.Message($"Creating new clone data. {forcedXenogenes.GenesListForReading.Count} genes in the GeneSet");
             this.forcedXenogenes = forcedXenogenes;
         }
 
