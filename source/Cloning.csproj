@@ -23,12 +23,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '1.4|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>1.4\Assemblies\</OutputPath>
     <DefineConstants>TRACE;v1_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -63,6 +64,7 @@
   <ItemGroup>
     <Compile Include="HediffComps\HediffComp_Pregnant_Clone.cs" />
     <Compile Include="Patches\EmbryoBirth_Patch.cs" />
+    <Compile Include="Patches\JobDriver_CarryToBuilding_MakeNewToils_Patch.cs" />
     <Compile Include="Patches\JobDriver_HaulToContainer_MakeNewToils_Patch.cs" />
     <Compile Include="Patches\CloneCompHediffPatches.cs" />
     <Compile Include="ThingComps\Comp_CloneEmbryo.cs" />
