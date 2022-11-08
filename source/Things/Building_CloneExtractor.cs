@@ -221,6 +221,7 @@ namespace Dark.Cloning
         public List<Genepack> GetGenepacks(bool includePowered, bool includeUnpowered)
         {
             tmpGenepacks.Clear();
+            if (donorGenepack != null) tmpGenepacks.Add(donorGenepack);
             List<Thing> connectedFacilities = ConnectedFacilities;
             if (connectedFacilities != null)
             {
@@ -237,7 +238,6 @@ namespace Dark.Cloning
                     }
                 }
             }
-            if (donorGenepack != null) tmpGenepacks.Add(donorGenepack);
             return tmpGenepacks;
         }
         public CompGenepackContainer GetGeneBankHoldingPack(Genepack pack)
@@ -338,7 +338,7 @@ namespace Dark.Cloning
 
         private HumanEmbryo ProduceEmbryo(Pawn donor, IntVec3 intVec3)
         {
-            HumanEmbryo embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, GeneUtils.GetAllGenesInPacks(tmpGenepacks));
+            HumanEmbryo embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, GeneUtils.GetAllGenesInPacks(genepacksToRecombine));
 
             // Gene sickness Hediff
             if (CloningSettings.cloningCooldown) 

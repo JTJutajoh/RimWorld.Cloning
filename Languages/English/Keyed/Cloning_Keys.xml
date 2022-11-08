@@ -70,4 +70,5 @@
   <FromDonorXenotype>Added by donor xenotype. Remove the entire xenotype to remove.</FromDonorXenotype>
   <ClickToRemove>Click to add or remove all of donor's xenogenes</ClickToRemove>
   <IsEndogeneTooltip>Germline gene from donor, cannot remove</IsEndogeneTooltip>
+  <CloneEmbryoInspectString>Clone embryo</CloneEmbryoInspectString>
 </LanguageData>

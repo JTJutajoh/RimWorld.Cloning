@@ -88,21 +88,17 @@ namespace Dark.Cloning
 
             // Now, add the previously-chosen xenotype to the new pawn
             // Try to get a reference to the embryo
+            CloneData cloneData = null;
             if (birtherThing is Building_GrowthVat growthVat)
             {
                 HumanEmbryo embryo = growthVat.selectedEmbryo;
-                Log.Message($"Got embryo from growth vat: {embryo.LabelCap}");
-                CloneData cloneData = CloneTrackerWorldComponent.DataFor(embryo);
-                Log.Message($"Found clone data? {cloneData != null}. Number of forced genes: {cloneData?.forcedXenogenes.GenesListForReading.Count}:");
-                foreach (GeneDef gene in cloneData?.forcedXenogenes.GenesListForReading)
-                {
-                    Log.Message($" - {gene.defName}");
-                }
+                cloneData = embryo.TryGetComp<Comp_CloneEmbryo>().cloneData;
             }
             else if (birtherThing is Pawn birtherPawn)
             {
-                //TODO: handle natural-born clones
+                cloneData =  CloneUtils.GetCloneHediffCompFromPregnancy(birtherPawn).cloneData;
             }
+            request.ForcedXenogenes = cloneData?.forcedXenogenes.GenesListForReading;
 
             /* Disabled in favor of assigning a custom xenotype for every clone
             if (donor.genes.UniqueXenotype)

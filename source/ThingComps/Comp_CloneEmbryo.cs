@@ -20,10 +20,15 @@ namespace Dark.Cloning
             else return true;
         }
 
+        public override string CompInspectStringExtra()
+        {
+            return IsClone() ? "CloneEmbryoInspectString".Translate() : null;
+        }
+
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref cloneData, "cloneData");
+            Scribe_Deep.Look(ref cloneData, "cloneData");
         }
     }
 

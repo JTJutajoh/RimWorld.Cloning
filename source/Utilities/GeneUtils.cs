@@ -152,7 +152,7 @@ namespace Dark.Cloning
                     List<GeneDef> genes = genepacks[i].GeneSet.GenesListForReading;
                     for (int j = 0; j < genes.Count; j++)
                     {
-                        geneSet.AddGene(genes[i]);
+                        geneSet.AddGene(genes[j]);
                     }
                 }
             }

@@ -39,7 +39,6 @@ namespace Dark.Cloning
             if (instance.trackedClones.ContainsKey(hash))
                 Log.Warning($"{instance.GetType()} tracking a hash code that was already tracked. The previous data will be overwritten. Hash: {hash}");
 
-            data.embryoHash = hash;
             instance.trackedClones[hash] = data;
         }
 

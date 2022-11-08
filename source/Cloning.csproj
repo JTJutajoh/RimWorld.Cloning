@@ -64,7 +64,8 @@
     <Compile Include="HediffComps\HediffComp_Pregnant_Clone.cs" />
     <Compile Include="Patches\EmbryoBirth_Patch.cs" />
     <Compile Include="Patches\JobDriver_HaulToContainer_MakeNewToils_Patch.cs" />
-    <Compile Include="ThingComps\CloneEmbryoComp.cs" />
+    <Compile Include="Patches\CloneCompHediffPatches.cs" />
+    <Compile Include="ThingComps\Comp_CloneEmbryo.cs" />
     <Compile Include="Things\BrainScan.cs" />
     <Compile Include="Things\Building_CloneExtractor.cs" />
     <Compile Include="Things\Building_CloneStorageVat.cs" />
@@ -100,6 +101,7 @@
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
     <Content Include="Defs\ThingDefs_Items\Items_Exotic.xml" />
     <Content Include="Defs\WorkGiverDefs\WorkGivers.xml" />
+    <Content Include="Patches\CloneCompPatches.xml" />
     <Content Include="To Do.txt" />
   </ItemGroup>
   <ItemGroup />

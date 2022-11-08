@@ -23,7 +23,17 @@ namespace Dark.Cloning
         public override void CompExposeData()
         {
             base.CompExposeData();
-            Scribe_Values.Look(ref cloneData, "cloneData");
+            Scribe_Deep.Look(ref cloneData, "cloneData");
+        }
+
+        public override string ToString()
+        {
+            return nameof(HediffComp_Pregnant_Clone);
+        }
+
+        public override string CompDebugString()
+        {
+            return $"CloneComp {(cloneData != null ? "has clone data" : "no clone data")}";
         }
     }
 
@@ -32,7 +42,7 @@ namespace Dark.Cloning
 
         public HediffCompProperties_PregnantClone()
         {
-            this.compClass = typeof(Comp_CloneEmbryo);
+            this.compClass = typeof(HediffComp_Pregnant_Clone);
         }
         public HediffCompProperties_PregnantClone(Type compClass)
         {

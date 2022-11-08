@@ -71,13 +71,40 @@ namespace Dark.Cloning
             
             EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
 
-            CloneData cloneData = new CloneData();
-            cloneData.forcedXenogenes = forcedXenogenes;
-            CloneTrackerWorldComponent.Track(humanEmbryo.GetHashCode(), cloneData);
+            CloneData cloneData = new CloneData(forcedXenogenes);
+
+            Comp_CloneEmbryo cloneComp = humanEmbryo.TryGetComp<Comp_CloneEmbryo>();
+            if (cloneComp == null)
+                Log.Error($"HumanEmbryo {humanEmbryo.LabelCap} missing a {nameof(Comp_CloneEmbryo)}. Did a malformed patch from another mod overwrite it?");
+            else
+            {
+                cloneComp.cloneData = cloneData;
+            }
             
             humanEmbryo.TryPopulateGenes();
 
             return humanEmbryo;
+        }
+
+        public static HediffComp_Pregnant_Clone GetCloneHediffCompFromPregnancy(Pawn pawn)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnantHuman);
+            if (hediff == null)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnancyLabor);
+            }
+            if (hediff == null)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnancyLaborPushing);
+            }
+            if (hediff == null) 
+                Log.Error($"Unable to find any pregnancy hediff on pawn {pawn.LabelCap}");
+
+            HediffComp_Pregnant_Clone cloneComp = hediff.TryGetComp<HediffComp_Pregnant_Clone>();
+            if (cloneComp == null)
+                Log.Error($"Error getting the {nameof(HediffComp_Pregnant_Clone)} from the pregnancy hediff");
+
+            return cloneComp;
         }
 
         //TODO: Remove this probably

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName = "HumanEmbryo"]/comps</xpath>
+    <value>
+      <li Class="Dark.Cloning.CompProperties_CloneEmbryo" />
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName = "PregnantHuman"]/comps</xpath>
+    <value>
+      <li Class="Dark.Cloning.HediffCompProperties_PregnantClone" />
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName = "PregnancyLabor"]/comps</xpath>
+    <value>
+      <li Class="Dark.Cloning.HediffCompProperties_PregnantClone" />
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName = "PregnancyLaborPushing"]/comps</xpath>
+    <value>
+      <li Class="Dark.Cloning.HediffCompProperties_PregnantClone" />
+    </value>
+  </Operation>
+</Patch>
