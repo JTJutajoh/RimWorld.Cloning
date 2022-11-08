@@ -7,7 +7,7 @@ using RimWorld;
 using Verse;
 using HarmonyLib;
 
-namespace Dark.Cloning.Patches
+namespace Dark.Cloning
 {
     [HarmonyPatch(typeof(LifeStageWorker_HumanlikeAdult), methodName: "Notify_LifeStageStarted")]
     class Notify_LifeStageStarted_Patch

@@ -8,7 +8,7 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 
-namespace Dark.Cloning.Patches
+namespace Dark.Cloning
 {
     /// <summary>
     /// Patch responsible for allowing cancellation of the job to haul brain scans<br />

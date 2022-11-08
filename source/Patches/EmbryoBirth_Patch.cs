@@ -7,7 +7,7 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 
-namespace Dark.Cloning.Patches
+namespace Dark.Cloning
 {
     /// <summary>
     /// A harmony patch that stores the forced xenogenes for an embryo right before it is born, so that the <see cref="ApplyBirthOutcome_Patch"/> patch can
