@@ -63,13 +63,17 @@ namespace Dark.Cloning
 		/// Modified version of vanilla's ProduceEmbryo. Made static so it can be reused. <br />
         /// Handles marking the produced embryo as a clone so that TryPopulateGenes() correctly adds clone genes
 		/// </summary>
-		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, GeneSet forcedGeneSet = null)
+		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, GeneSet forcedXenogenes = null)
         {
             HumanEmbryo humanEmbryo = (HumanEmbryo)ThingMaker.MakeThing(ThingDefOf.HumanEmbryo, null);
 
             humanEmbryo.GetComp<CompHasPawnSources>().AddSource(donor);
             
             EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
+
+            CloneData cloneData = new CloneData();
+            cloneData.forcedXenogenes = forcedXenogenes;
+            CloneTrackerWorldComponent.Track(humanEmbryo.GetHashCode(), cloneData);
             
             humanEmbryo.TryPopulateGenes();
 

@@ -73,49 +73,68 @@ namespace Dark.Cloning
         /// <returns>The modified PawnGenerationRequest, ready to be pushed back onto the stack and sent to GeneratePawn</returns>
         static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, List<GeneDef> genes, Pawn geneticMother, Pawn father)
         {
-            if (CloneUtils.HasCloneGene(genes))
+            if (!CloneUtils.HasCloneGene(genes)) return request;
+
+            // First copy basic data from the donor 
+            Pawn donor = geneticMother ?? father; // Including the father might be overkill, but let's just be safe
+            if (donor == null)
             {
-                Pawn donor = geneticMother ?? father; // Including the father might be overkill, but let's just be safe
-                if (donor == null)
+                Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn (both parents were null).");
+                return request;
+            }
+
+            request.FixedGender = donor.gender;
+            request.CanGeneratePawnRelations = false;
+
+            // Now, add the previously-chosen xenotype to the new pawn
+            // Try to get a reference to the embryo
+            if (birtherThing is Building_GrowthVat growthVat)
+            {
+                HumanEmbryo embryo = growthVat.selectedEmbryo;
+                Log.Message($"Got embryo from growth vat: {embryo.LabelCap}");
+                CloneData cloneData = CloneTrackerWorldComponent.DataFor(embryo);
+                Log.Message($"Found clone data? {cloneData != null}. Number of forced genes: {cloneData?.forcedXenogenes.GenesListForReading.Count}:");
+                foreach (GeneDef gene in cloneData?.forcedXenogenes.GenesListForReading)
                 {
-                    Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn (both parents were null).");
-                    return request;
-                }
-
-                // Modify the request based on the found genes. 
-                // Copy basics from the donor
-                request.FixedGender = donor.gender;
-                request.CanGeneratePawnRelations = false;
-
-                if (donor.genes.UniqueXenotype)
-                {
-                    request.ForcedCustomXenotype = CloneUtils.CopyCustomXenotypeFrom(donor);
-                }
-                else
-                {
-                    if (donor.genes.Xenotype == null) Log.Error("Tried to copy non-custom xenotype from donor parent, but it was null.");
-                    else request.ForcedXenotype = donor.genes.Xenotype;
-                }
-
-                GeneUtils.TryAddMutationsToRequest(ref request);
-
-                if (CloningSettings.cloneXenogenes && donor.genes.Xenogenes.Count > 0)
-                {
-                    if (request.ForcedXenogenes == null)
-                    {
-                        request.ForcedXenogenes = new List<GeneDef>();
-                    }
-                    foreach (Gene gene in donor.genes.Xenogenes)
-                    {
-                        if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !CloningSettings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
-
-                        if (!request.ForcedXenogenes.Contains(gene.def))
-                        {
-                            request.ForcedXenogenes.Add(gene.def);
-                        }
-                    }
+                    Log.Message($" - {gene.defName}");
                 }
             }
+            else if (birtherThing is Pawn birtherPawn)
+            {
+                //TODO: handle natural-born clones
+            }
+
+            /* Disabled in favor of assigning a custom xenotype for every clone
+            if (donor.genes.UniqueXenotype)
+            {
+                request.ForcedCustomXenotype = CloneUtils.CopyCustomXenotypeFrom(donor);
+            }
+            else
+            {
+                if (donor.genes.Xenotype == null) Log.Error("Tried to copy non-custom xenotype from donor parent, but it was null.");
+                else request.ForcedXenotype = donor.genes.Xenotype;
+            }*/
+
+            GeneUtils.TryAddMutationsToRequest(ref request);
+
+            /* Disabled, xenogenes are assigned by the user when the clone is created
+            if (CloningSettings.cloneXenogenes && donor.genes.Xenogenes.Count > 0)
+            {
+                if (request.ForcedXenogenes == null)
+                {
+                    request.ForcedXenogenes = new List<GeneDef>();
+                }
+                foreach (Gene gene in donor.genes.Xenogenes)
+                {
+                    if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !CloningSettings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
+
+                    if (!request.ForcedXenogenes.Contains(gene.def))
+                    {
+                        request.ForcedXenogenes.Add(gene.def);
+                    }
+                }
+            }*/
+            
 
             return request;
         }
@@ -128,6 +147,7 @@ namespace Dark.Cloning
         {
             if (!( __result is Pawn pawn )) return; // If the clone was stillborn.
             if (CloneUtils.HasCloneGene(pawn)) return; // Not a clone, ignore
+
             // Copy basic things from the parent.
             Pawn donor = geneticMother != null ? geneticMother : father;
             if (donor != null) // Shouldn't ever happen but let's just be safe

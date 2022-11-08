@@ -65,7 +65,7 @@ namespace Dark.Cloning
 			}
 			libraryGenepacks.AddRange(cloneExtractor.GetGenepacks(includePowered: true, includeUnpowered: true));
 			unpoweredGenepacks.AddRange(cloneExtractor.GetGenepacks(includePowered: false, includeUnpowered: true));
-			xenotypeName = string.Empty;
+			xenotypeName = donorPawn.genes.xenotypeName;
 			closeOnAccept = false;
 			forcePause = true;
 			absorbInputAroundWindow = true;

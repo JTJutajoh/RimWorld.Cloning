@@ -61,8 +61,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HediffComps\HediffComp_Pregnant_Clone.cs" />
     <Compile Include="Patches\EmbryoBirth_Patch.cs" />
     <Compile Include="Patches\JobDriver_HaulToContainer_MakeNewToils_Patch.cs" />
+    <Compile Include="ThingComps\CloneEmbryoComp.cs" />
     <Compile Include="Things\BrainScan.cs" />
     <Compile Include="Things\Building_CloneExtractor.cs" />
     <Compile Include="Things\Building_CloneStorageVat.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="ThingComps\CompTargetEffect_ScanCorpse.cs" />
     <Compile Include="UI\Dialog_CreateClone.cs" />
     <Compile Include="Utilities\BrainUtil.cs" />
+    <Compile Include="Utilities\CloneData.cs" />
     <Compile Include="Utilities\GeneUtils.cs" />
     <Compile Include="AI\JobDriver_ScanCorpse.cs" />
     <Compile Include="Patches\ApplyBirthOutcome_Patch.cs" />
@@ -85,6 +88,7 @@
     <Compile Include="AI\WorkGiver_CarryToCloneExtractor.cs" />
     <Compile Include="AI\WorkGiver_CarryToCloneVat.cs" />
     <Compile Include="AI\WorkGiver_HaulToCloneVat.cs" />
+    <Compile Include="WorldComponents\CloneTrackerWorldComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -14,6 +14,7 @@ namespace Dark.Cloning
     /// This should only be relied on if you're sure that the embryo was just created on this same tick, since embryos can be destroyed (such as when
     /// implanted in a mother) so the hash may not match later. 
     /// </summary>
+    // !! ONLY USE THIS METHOD FOR TRACKING AN EMBRYO ACROSS HARMONY PATCHES ON THE SAME FRAME!! HAS NO SERIALIZATION
     public static class EmbryoTracker
     {
         private static List<int> embryoHashes = new List<int>();
@@ -22,7 +23,6 @@ namespace Dark.Cloning
         /// Add an embryo to the list of tracked embryos, as its hash.
         /// </summary>
         /// <param name="embryo">Reference to the embryo to be tracked</param>
-        /// <param name="forcedXenogenes">Optional GeneSet that contains a list of xenogenes to force</param>
         public static void Track(HumanEmbryo embryo)
         {
             int hash = embryo.GetHashCode();
