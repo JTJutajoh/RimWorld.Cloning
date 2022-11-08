@@ -64,7 +64,6 @@
   <ItemGroup>
     <Compile Include="HediffComps\HediffComp_Pregnant_Clone.cs" />
     <Compile Include="Patches\EmbryoBirth_Patch.cs" />
-    <Compile Include="Patches\JobDriver_CarryToBuilding_MakeNewToils_Patch.cs" />
     <Compile Include="Patches\JobDriver_HaulToContainer_MakeNewToils_Patch.cs" />
     <Compile Include="Patches\CloneCompHediffPatches.cs" />
     <Compile Include="ThingComps\Comp_CloneEmbryo.cs" />
