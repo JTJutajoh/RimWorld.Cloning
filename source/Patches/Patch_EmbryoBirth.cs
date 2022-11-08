@@ -10,12 +10,12 @@ using Verse;
 namespace Dark.Cloning
 {
     /// <summary>
-    /// A harmony patch that stores the forced xenogenes for an embryo right before it is born, so that the <see cref="ApplyBirthOutcome_Patch"/> patch can
+    /// A harmony patch that stores the forced xenogenes for an embryo right before it is born, so that the <see cref="Patch_PregnancyUtility_ApplyBirthOutcome"/> patch can
     /// then get those genes and add them to the request
     /// </summary>
     // This method is the last time the embryo is available before the pawn is generated based on it.
     [HarmonyPatch(typeof(Building_GrowthVat), "EmbryoBirth")]
-    public class EmbryoBirth_Patch
+    public class Patch_EmbryoBirth
     {
         public static void Prefix(Building_GrowthVat __instance)
         {

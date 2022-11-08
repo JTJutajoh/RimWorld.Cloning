@@ -21,7 +21,7 @@ namespace Dark.Cloning
     /// </summary>
     [HarmonyPatch(typeof(PregnancyUtility))]
     [HarmonyPatch(nameof(PregnancyUtility.ApplyBirthOutcome))]
-    class ApplyBirthOutcome_Patch
+    class Patch_PregnancyUtility_ApplyBirthOutcome
     {
         /// <summary>
         /// The method used by <see cref="Transpiler(IEnumerable{CodeInstruction})"/> to intercept the PawnGenerationRequest and modify it. <br />
@@ -53,7 +53,7 @@ namespace Dark.Cloning
                     yield return new CodeInstruction(OpCodes.Ldarg, 6); // Pawn father
 
                     // Then call my custom method instead of the original one.
-                    yield return CodeInstruction.Call(typeof(ApplyBirthOutcome_Patch), "GeneratePawn");
+                    yield return CodeInstruction.Call(typeof(Patch_PregnancyUtility_ApplyBirthOutcome), "GeneratePawn");
                 }
 
                 // And resume emitting the original code (Including the original call to GeneratePawn, using my now-modified request that's on the stack)

@@ -10,7 +10,7 @@ using HarmonyLib;
 namespace Dark.Cloning
 {
     [HarmonyPatch(typeof(LifeStageWorker_HumanlikeAdult), methodName: "Notify_LifeStageStarted")]
-    class Notify_LifeStageStarted_Patch
+    class Patch_Notify_LifeStageStarted
     {
         /// <summary>
         /// Checks if the pawn is a child or baby before the vanilla method updates the body type,

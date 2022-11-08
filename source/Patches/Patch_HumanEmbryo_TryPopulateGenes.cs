@@ -10,7 +10,7 @@ namespace Dark.Cloning
     /// as copying the donor's genes and adding the Clone gene.
     /// </summary>
     [HarmonyPatch(typeof(HumanEmbryo), nameof(HumanEmbryo.TryPopulateGenes))]
-    class TryPopulateGenes_Patch
+    class Patch_HumanEmbryo_TryPopulateGenes
     {
         static void Prefix(ref GeneSet ___geneSet, HumanEmbryo __instance)
         {

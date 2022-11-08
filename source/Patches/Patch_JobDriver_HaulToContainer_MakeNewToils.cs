@@ -16,7 +16,7 @@ namespace Dark.Cloning
     /// </summary>
      
     [HarmonyPatch(typeof(JobDriver_HaulToContainer), "MakeNewToils")]
-    public static class JobDriver_HaulToContainer_MakeNewToils_Patch
+    public static class Patch_JobDriver_HaulToContainer_MakeNewToils
     {
         static void Postfix(JobDriver_HaulToContainer __instance)
         {
