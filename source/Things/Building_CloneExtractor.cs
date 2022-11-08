@@ -326,7 +326,7 @@ namespace Dark.Cloning
             return pawn.health.hediffSet.HasHediff(HediffDefOf.XenogerminationComa) ? (AcceptanceReport)"InXenogerminationComa".Translate() : (AcceptanceReport)true;
         }
 
-        private void Cancel()
+        public void Cancel()
         {
             this.startTick = -1;
             this.selectedPawn = (Pawn)null;
@@ -408,6 +408,7 @@ namespace Dark.Cloning
         {
             if (!(bool)this.CanAcceptPawn(pawn))
                 return;
+            if (this.selectedPawn == null) return;
             this.selectedPawn = pawn;
             this.donorGenepack = GeneUtils.GetXenogenesAsGenepack(this.selectedPawn);
             Find.WindowStack.Add(new Dialog_CreateClone(this));
