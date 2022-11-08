@@ -31,6 +31,8 @@ namespace Dark.Cloning
 
 		private List<GeneDef> tmpGenes = new List<GeneDef>();
 
+		private bool started = false;
+
 		public override Vector2 InitialSize => new Vector2(1016f, UI.screenHeight);
 
 		protected override string Header => "AssembleGenes".Translate();
@@ -98,8 +100,19 @@ namespace Dark.Cloning
 			}
 		}
 
-		private void StartAssembly()
+        public override void Close(bool doCloseSound = true)
+        {
+			if (!started)
+			{
+				cloneExtractor.Cancel();
+			}
+
+            base.Close(doCloseSound);
+        }
+
+        private void StartAssembly()
 		{
+			started = true;
 			cloneExtractor.Start(selectedGenepacks, donorPawn, arc, xenotypeName?.Trim(), iconDef);
 			SoundDefOf.StartRecombining.PlayOneShotOnCamera();
 			Close(doCloseSound: false);
