@@ -453,21 +453,6 @@ namespace Dark.Cloning
             currentTab = curTab;
             TabDrawer.DrawTabs(inRect, tabs, 420f);
             return;
-
-            //float origColumnWidth = listingStandard.ColumnWidth;
-            //listingStandard.ColumnWidth = width ?? listingStandard.ColumnWidth;
-
-            //Rect rect = listingStandard.GetRect(height);
-            Rect rect = inRect.TopPartPixels(height);
-            float buttonWidth = ( rect.width / tabsList.Count) - ( gap * (tabsList.Count-1) );
-
-            Rect buttonRect = new Rect(rect.x, rect.y, buttonWidth, height);
-            for (int i = 0; i < tabsList.Count; i++)
-            {
-                TabSwitchButton(buttonRect, tabsList[i].Value, ref currentTab, tabsList[i].Key, highlightColor);
-                buttonRect.x += buttonWidth + gap;
-            }
-            //listingStandard.ColumnWidth = origColumnWidth;
         }
 
         #region NC ScrollView
