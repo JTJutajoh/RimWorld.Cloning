@@ -340,6 +340,7 @@ namespace Dark.Cloning
                 return;
             this.innerContainer.TryDropAll(this.def.hasInteractionCell ? this.InteractionCell : this.Position, this.Map, ThingPlaceMode.Near);
             donorGenepack?.Destroy();
+            donorGenepack = null;
         }
 
         private HumanEmbryo ProduceEmbryo(Pawn donor, IntVec3 intVec3)
@@ -417,6 +418,7 @@ namespace Dark.Cloning
                 case CloneExtractorModes.Embryo:
                     ProduceEmbryo(containedPawn, intVec3);
                     donorGenepack?.Destroy();
+                    donorGenepack = null;
                     break;
                 case CloneExtractorModes.Brain:
                     ProduceBrainScan(containedPawn, intVec3);
@@ -678,12 +680,13 @@ namespace Dark.Cloning
             Scribe_Values.Look<int>(ref this.ticksRemaining, "ticksRemaining");
             Scribe_Values.Look<CloneExtractorModes>(ref this.currentMode, "currentMode");
 
-            Scribe_Deep.Look(ref innerContainer, "innerContainer", this);
+            //Scribe_Deep.Look<ThingOwner>(ref innerContainer, "innerContainer", new object[] { this });
             Scribe_Collections.Look(ref genepacksToRecombine, "genepacksToRecombine", LookMode.Reference);
             Scribe_Values.Look(ref architesRequired, "architesRequired", 0);
             Scribe_Values.Look(ref xenotypeName, "xenotypeName");
             Scribe_Defs.Look(ref iconDef, "iconDef");
-            Scribe_References.Look(ref donorGenepack, "donorGenepack");
+            Scribe_Defs.Look(ref xenotypeDef, "xenotypeDef");
+            Scribe_Deep.Look(ref donorGenepack, "donorGenepack");
             if (Scribe.mode == LoadSaveMode.PostLoadInit && iconDef == null)
             {
                 iconDef = XenotypeIconDefOf.Basic;
