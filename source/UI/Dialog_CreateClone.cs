@@ -19,6 +19,8 @@ namespace Dark.Cloning
 
 		public XenotypeDef xenotypeDef;
 
+		public bool UniqueXenotype;
+
 		private List<Genepack> libraryGenepacks = new List<Genepack>();
 
 		private List<Genepack> donorGenepacks = new List<Genepack>();
@@ -85,6 +87,7 @@ namespace Dark.Cloning
             {
 				xenotypeName = donorPawn.genes.xenotypeName;
 				iconDef = donorPawn.genes.iconDef;
+				UniqueXenotype = true;
             }
 			else
             {
@@ -134,7 +137,7 @@ namespace Dark.Cloning
         private void StartAssembly()
 		{
 			started = true;
-			cloneExtractor.Start(selectedGenepacks, donorPawn, arc, xenotypeName?.Trim(), iconDef, xenotypeDef);
+			cloneExtractor.Start(selectedGenepacks, donorPawn, arc, xenotypeName?.Trim(), iconDef, !UniqueXenotype ? xenotypeDef : null);
 			SoundDefOf.StartRecombining.PlayOneShotOnCamera();
 			Close(doCloseSound: false);
 		}
@@ -148,11 +151,11 @@ namespace Dark.Cloning
 			Rect containingRect = rect2;
 			containingRect.y = scrollPosition.y;
 			containingRect.height = rect.height;
-			DrawSection(rect, selectedGenepacks, "SelectedGenepacks".Translate(), ref curY, ref selectedHeight, adding: false, containingRect);
+			DrawCloneSection(rect, "SelectedGenepacks".Translate(), ref curY, ref selectedHeight, containingRect);
 			curY += 8f;
 			DrawDonorSection(rect, ref curY, ref unselectedHeight, containingRect);
 			curY += 8f;
-			DrawSection(rect, libraryGenepacks, "GenepackLibrary".Translate(), ref curY, ref unselectedHeight, adding: true, containingRect);
+			DrawLibrarySection(rect, "GenepackLibrary".Translate(), ref curY, ref unselectedHeight, containingRect);
 			if (Event.current.type == EventType.Layout)
 			{
 				scrollHeight = curY;
@@ -222,11 +225,6 @@ namespace Dark.Cloning
                         {
 							selectedGenepacks.Remove(genepack);
                         }
-						
-						if (!xenotypeNameLocked)
-						{
-							xenotypeName = GeneUtility.GenerateXenotypeNameFromGenes(SelectedGenes);
-						}
 						OnGenesChanged();
 						break;
 					}
@@ -240,14 +238,113 @@ namespace Dark.Cloning
 			}
 		}
 
-		private bool DrawDonorGenepack(Genepack genepack, ref float curX, float curY, float packWidth, float packHeight, bool adding, Rect containingRect)
+		private void DrawCloneSection(Rect rect, string label, ref float curY, ref float sectionHeight, Rect containingRect)
         {
+			float curX = 4f;
+			Rect labelRect = new Rect(10f, curY, rect.width - 16f - 10f, Text.LineHeight);
+			Widgets.Label(labelRect, label);
+
+			Text.Anchor = TextAnchor.UpperRight;
+			GUI.color = ColoredText.SubtleGrayColor;
+			Widgets.Label(labelRect, "ClickToAddOrRemove".Translate());
+			GUI.color = Color.white;
+			Text.Anchor = TextAnchor.UpperLeft;
+
+			curY += Text.LineHeight + 3f;
+			float startY = curY;
+			float startX = curX;
+			Rect sectionRect = new Rect(0f, curY, rect.width, sectionHeight);
+			Widgets.DrawRectFast(sectionRect, Widgets.MenuSectionBGFillColor);
+			curY += 4f;
+
+			List<Gene> endogenes = donorPawn.genes.Endogenes;
+
+			if (!selectedGenepacks.Any() && !endogenes.Any())
+			{
+				Text.Anchor = TextAnchor.MiddleCenter;
+				GUI.color = ColoredText.SubtleGrayColor;
+				Widgets.Label(sectionRect, "(" + "NoneLower".Translate() + ")");
+				GUI.color = Color.white;
+				Text.Anchor = TextAnchor.UpperLeft;
+			}
+			else
+			{
+				// Draw endogenes
+				if (endogenes != null)
+				{
+					for (int i = 0; i < endogenes.Count; i++)
+					{
+						float width = GeneCreationDialogBase.GeneSize.x + 12f;
+						DrawGeneasGenepack(endogenes[i].def, ref curX, curY, width, GeneType.Endogene, containingRect);
+						if (curX + width > rect.width - 16f)
+						{
+							curX = 4f;
+							curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
+						}
+					}
+				}
+				// Draw xenogenes
+				for (int i = 0; i < selectedGenepacks.Count; i++)
+				{
+					Genepack genepack = selectedGenepacks[i];
+					// First, if this genepack is the donor genepack, instead of drawing it, draw all the individual genes in it as if they were genepacks
+					if (donorGenepacks.Contains(genepack))
+					{
+						for (int j = 0; j < genepack.GeneSet.GenesListForReading.Count; j++)
+						{
+							float width = 34f + GeneCreationDialogBase.GeneSize.x + 12f;
+							if (DrawGeneasGenepack(genepack.GeneSet.GenesListForReading[j], ref curX, curY, width, GeneType.Xenogene, containingRect))
+							{
+								this.selectedGenepacks.Remove(genepack);
+							}
+							if (curX + width > rect.width - 16f)
+							{
+								curX = 4f;
+								curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
+							}
+						}
+						continue;
+					}
+					float packWidth = 34f + GeneCreationDialogBase.GeneSize.x * (float)genepack.GeneSet.GenesListForReading.Count + 4f * (float)( genepack.GeneSet.GenesListForReading.Count + 2 );
+					if (curX + packWidth > rect.width - 16f)
+					{
+						curX = 4f;
+						curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
+					}
+					if (DrawGenepack(genepack, ref curX, curY, packWidth, containingRect))
+					{
+                        SoundDefOf.Tick_Low.PlayOneShotOnCamera();
+						this.selectedGenepacks.Remove(genepack);
+						
+						if (!xenotypeNameLocked)
+						{
+                            xenotypeName = GeneUtility.GenerateXenotypeNameFromGenes(SelectedGenes);
+						}
+						base.OnGenesChanged();
+						break;
+					}
+				}
+			}
+			curY += GeneCreationDialogBase.GeneSize.y + 12f;
+			if (Event.current.type == EventType.Layout)
+			{
+				sectionHeight = curY - startY;
+			}
+		}
+
+		private bool DrawDonorGenepack(Genepack genepack, ref float curX, float curY, float packWidth, float packHeight, bool adding, Rect containingRect)
+		{
 			bool result = false;
+			Rect rect = new Rect(curX, curY, packWidth, packHeight);
 			if (genepack.GeneSet == null || genepack.GeneSet.GenesListForReading.NullOrEmpty())
 			{
+				Text.Anchor = TextAnchor.MiddleCenter;
+				GUI.color = ColoredText.SubtleGrayColor;
+				Widgets.Label(rect, "(" + "NoneLower".Translate() + ")");
+				GUI.color = Color.white;
+				Text.Anchor = TextAnchor.UpperLeft;
 				return result;
 			}
-			Rect rect = new Rect(curX, curY, packWidth, packHeight);
 			if (!containingRect.Overlaps(rect))
 			{
 				curX = rect.xMax + 4f;
@@ -310,19 +407,11 @@ namespace Dark.Cloning
 			return result;
 		}
 
-		private void DrawSection(Rect rect, List<Genepack> genepacks, string label, ref float curY, ref float sectionHeight, bool adding, Rect containingRect)
+		private void DrawLibrarySection(Rect rect, string label, ref float curY, ref float sectionHeight, Rect containingRect)
 		{
 			float curX = 4f;
 			Rect labelRect = new Rect(10f, curY, rect.width - 16f - 10f, Text.LineHeight);
 			Widgets.Label(labelRect, label);
-			if (!adding)
-			{
-				Text.Anchor = TextAnchor.UpperRight;
-				GUI.color = ColoredText.SubtleGrayColor;
-				Widgets.Label(labelRect, "ClickToAddOrRemove".Translate());
-				GUI.color = Color.white;
-				Text.Anchor = TextAnchor.UpperLeft;
-			}
 			curY += Text.LineHeight + 3f;
 			float startY = curY;
 			float startX = curX;
@@ -332,7 +421,7 @@ namespace Dark.Cloning
 
 			List<Gene> endogenes = donorPawn.genes.Endogenes;
 
-			if (!genepacks.Any() && !endogenes.Any())
+			if (!libraryGenepacks.Any() && !endogenes.Any())
 			{
 				Text.Anchor = TextAnchor.MiddleCenter;
 				GUI.color = ColoredText.SubtleGrayColor;
@@ -342,44 +431,16 @@ namespace Dark.Cloning
 			}
 			else
 			{
-				// Draw endogenes
-				if (!adding && endogenes != null)
-                {
-                    for (int i = 0; i < endogenes.Count; i++)
-                    {
-						float width = GeneCreationDialogBase.GeneSize.x + 12f;
-						DrawGeneasGenepack(endogenes[i].def, ref curX, curY, width, GeneType.Endogene, containingRect);
-						if (curX + width > rect.width - 16f)
-						{
-							curX = 4f;
-							curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
-						}
-					}
-                }
-				// Draw xenogenes
-				for (int i = 0; i < genepacks.Count; i++)
+				for (int i = 0; i < libraryGenepacks.Count; i++)
 				{
-					Genepack genepack = genepacks[i];
-					// First, if this genepack is the donor genepack, instead of drawing it, draw all the individual genes in it as if they were genepacks
+					Genepack genepack = libraryGenepacks[i];
+					// Don't draw the donor genepack in the library section
 					if (donorGenepacks.Contains(genepack))
-                    {
-						for (int j = 0; j < genepack.GeneSet.GenesListForReading.Count; j++)
-                        {
-							float width = 34f + GeneCreationDialogBase.GeneSize.x + 12f;
-							if (DrawGeneasGenepack(genepack.GeneSet.GenesListForReading[j], ref curX, curY, width, GeneType.Xenogene, containingRect))
-                            {
-								selectedGenepacks.Remove(genepack);
-                            }
-							if (curX + width > rect.width - 16f)
-							{
-								curX = 4f;
-								curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
-							}
-						}
+					{
 						continue;
-                    }
-					// Otherwise, draw this genepack like vanilla
-					if (quickSearchWidget.filter.Active && ( !matchingGenepacks.Contains(genepack) || ( adding && selectedGenepacks.Contains(genepack) ) ))
+					}
+
+						if (quickSearchWidget.filter.Active && ( !matchingGenepacks.Contains(genepack) || ( selectedGenepacks.Contains(genepack) ) ))
 					{
 						continue;
 					}
@@ -389,23 +450,15 @@ namespace Dark.Cloning
 						curX = 4f;
 						curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
 					}
-					if (adding && selectedGenepacks.Contains(genepack))
+					if (selectedGenepacks.Contains(genepack))
 					{
 						Widgets.DrawLightHighlight(new Rect(curX, curY, packWidth, GeneCreationDialogBase.GeneSize.y + 8f));
 						curX += packWidth + 14f;
 					}
 					else if (DrawGenepack(genepack, ref curX, curY, packWidth, containingRect))
 					{
-						if (adding)
-						{
-							SoundDefOf.Tick_High.PlayOneShotOnCamera();
-							selectedGenepacks.Add(genepack);
-						}
-						else
-						{
-							SoundDefOf.Tick_Low.PlayOneShotOnCamera();
-							selectedGenepacks.Remove(genepack);
-						}
+						SoundDefOf.Tick_High.PlayOneShotOnCamera();
+						selectedGenepacks.Add(genepack);
 						if (!xenotypeNameLocked)
 						{
 							xenotypeName = GeneUtility.GenerateXenotypeNameFromGenes(SelectedGenes);
@@ -647,11 +700,11 @@ namespace Dark.Cloning
 			{
 				return false;
 			}
-			if (!selectedGenepacks.Any())
+			/*if (!selectedGenepacks.Any())
 			{
 				Messages.Message("MessageNoSelectedGenepacks".Translate(), null, MessageTypeDefOf.RejectInput, historical: false);
 				return false;
-			}
+			}*/
 			if (arc > 0 && !ResearchProjectDefOf.Archogenetics.IsFinished)
 			{
 				Messages.Message("AssemblingRequiresResearch".Translate(ResearchProjectDefOf.Archogenetics), null, MessageTypeDefOf.RejectInput, historical: false);
@@ -719,5 +772,16 @@ namespace Dark.Cloning
 			}
 			quickSearchWidget.noResultsMatched = !matchingGenepacks.Any();
 		}
-	}
+
+        public override void DoWindowContents(Rect rect)
+        {
+            base.DoWindowContents(rect);
+
+			//HACK: This is a terrible way to do this in general, but it works I guess. A property would probably be better. Maybe a backing field that can override the getter
+			if (!donorPawn.genes.UniqueXenotype && selectedGenepacks.Count == 1 && selectedGenepacks[0] == donorGenepacks[0] && xenotypeName == donorPawn.genes.XenotypeLabel) //HACK: This will break if I allow more than one donor genepack in the future
+				UniqueXenotype = false;
+			else
+				UniqueXenotype = true;
+        }
+    }
 }
