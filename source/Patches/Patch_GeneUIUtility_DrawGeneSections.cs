@@ -56,6 +56,48 @@ namespace Dark.Cloning
                 yield return codes[i];
             }
         }
+        /* Original (unpatched Vanilla 1.4) method:
+        private static void DrawGeneSections(Rect rect, Thing target, GeneSet genesOverride, ref Vector2 scrollPosition)
+		{
+			GeneUIUtility.RecacheGenes(target, genesOverride);
+			GUI.BeginGroup(rect);
+			Rect rect2 = new Rect(0f, 0f, rect.width - 16f, GeneUIUtility.scrollHeight);
+			float num = 0f;
+			Widgets.BeginScrollView(rect.AtZero(), ref scrollPosition, rect2, true);
+			Rect containingRect = rect2;
+			containingRect.y = scrollPosition.y;
+			containingRect.height = rect.height;
+			if (target is Pawn)
+			{
+				if (GeneUIUtility.endogenes.Any<Gene>())
+				{
+					GeneUIUtility.DrawSection(rect, false, GeneUIUtility.endogenes.Count, ref num, ref GeneUIUtility.endogenesHeight, delegate(int i, Rect r)
+					{
+						GeneUIUtility.DrawGene(GeneUIUtility.endogenes[i], r, GeneType.Endogene, true, true);
+					}, containingRect);
+					num += 12f;
+				}
+				GeneUIUtility.DrawSection(rect, true, GeneUIUtility.xenogenes.Count, ref num, ref GeneUIUtility.xenogenesHeight, delegate(int i, Rect r)
+				{
+					GeneUIUtility.DrawGene(GeneUIUtility.xenogenes[i], r, GeneType.Xenogene, true, true);
+				}, containingRect);
+			}
+			else
+			{
+				GeneType geneType = (genesOverride != null || target is HumanEmbryo) ? GeneType.Endogene : GeneType.Xenogene;
+				GeneUIUtility.DrawSection(rect, geneType == GeneType.Xenogene, GeneUIUtility.geneDefs.Count, ref num, ref GeneUIUtility.xenogenesHeight, delegate(int i, Rect r)
+				{
+					GeneUIUtility.DrawGeneDef(GeneUIUtility.geneDefs[i], r, geneType, null, true, true, false);
+				}, containingRect);
+			}
+			if (Event.current.type == EventType.Layout)
+			{
+				GeneUIUtility.scrollHeight = num;
+			}
+			Widgets.EndScrollView();
+			GUI.EndGroup();
+		}
+         */
 
         /// <summary>
         /// Injected method, checks if the thing whose genes are being drawn is a clone embryo first,

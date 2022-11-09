@@ -61,6 +61,63 @@ namespace Dark.Cloning
                 yield return codes[i];
             }
         }
+        /* Original (unpatched Vanilla 1.4) method, truncated to end where the transpiler begins because it's 952 lines in dnSpy:
+        public static Thing ApplyBirthOutcome(OutcomeChance outcome, float quality, Precept_Ritual ritual, List<GeneDef> genes, Pawn geneticMother, Thing birtherThing, Pawn father = null, Pawn doctor = null, LordJob_Ritual lordJobRitual = null, RitualRoleAssignments assignments = null)
+		{
+			Pawn birtherPawn = birtherThing as Pawn;
+			Building_GrowthVat building_GrowthVat = birtherThing as Building_GrowthVat;
+			if (birtherThing.Spawned)
+			{
+				EffecterDefOf.Birth.Spawn(birtherThing, birtherThing.Map, 1f);
+			}
+			bool babiesAreHealthy = Find.Storyteller.difficulty.babiesAreHealthy;
+			int positivityIndex = outcome.positivityIndex;
+			bool flag = birtherPawn != null && Rand.Chance(PregnancyUtility.ChanceMomDiesDuringBirth(quality)) && (birtherPawn.genes == null || !birtherPawn.genes.HasGene(GeneDefOf.Deathless));
+			PawnKindDef kind = ((geneticMother != null) ? geneticMother.kindDef : null) ?? PawnKindDefOf.Colonist;
+			Faction faction = birtherThing.Faction;
+			PawnGenerationContext context = PawnGenerationContext.NonPlayer;
+			int tile = -1;
+			bool forceGenerateNewPawn = false;
+			bool allowDead = false;
+			bool allowDowned = true;
+			bool canGeneratePawnRelations = true;
+			bool mustBeCapableOfViolence = false;
+			float colonistRelationChanceFactor = 1f;
+			bool forceAddFreeWarmLayerIfNeeded = false;
+			bool allowGay = true;
+			bool allowPregnant = false;
+			bool allowFood = true;
+			bool allowAddictions = true;
+			bool inhabitant = false;
+			bool certainlyBeenInCryptosleep = false;
+			bool forceRedressWorldPawnIfFormerColonist = false;
+			bool worldPawnFactionDoesntMatter = false;
+			float biocodeWeaponChance = 0f;
+			float biocodeApparelChance = 0f;
+			Pawn extraPawnForExtraRelationChance = null;
+			float relationWithExtraPawnChanceFactor = 1f;
+			Predicate<Pawn> validatorPreGear = null;
+			Predicate<Pawn> validatorPostGear = null;
+			IEnumerable<TraitDef> forcedTraits = null;
+			IEnumerable<TraitDef> prohibitedTraits = null;
+			float? minChanceToRedressWorldPawn = null;
+			float? fixedBiologicalAge = null;
+			float? fixedChronologicalAge = null;
+			Gender? fixedGender = null;
+			string fixedLastName = PregnancyUtility.RandomLastName(geneticMother, birtherThing as Pawn, father);
+			string fixedBirthName = null;
+			RoyalTitleDef fixedTitle = null;
+			Ideo fixedIdeo = null;
+			bool forceNoIdeo = true;
+			bool forceNoBackstory = false;
+			bool forbidAnyTitle = false;
+			bool forceDead = positivityIndex == -1;
+			List<GeneDef> forcedXenogenes = null;
+			XenotypeDef baseliner = XenotypeDefOf.Baseliner;
+			Pawn pawn = PawnGenerator.GeneratePawn(new PawnGenerationRequest(kind, faction, context, tile, forceGenerateNewPawn, allowDead, allowDowned, canGeneratePawnRelations, mustBeCapableOfViolence, colonistRelationChanceFactor, forceAddFreeWarmLayerIfNeeded, allowGay, allowPregnant, allowFood, allowAddictions, inhabitant, certainlyBeenInCryptosleep, forceRedressWorldPawnIfFormerColonist, worldPawnFactionDoesntMatter, biocodeWeaponChance, biocodeApparelChance, extraPawnForExtraRelationChance, relationWithExtraPawnChanceFactor, validatorPreGear, validatorPostGear, forcedTraits, prohibitedTraits, minChanceToRedressWorldPawn, fixedBiologicalAge, fixedChronologicalAge, fixedGender, fixedLastName, fixedBirthName, fixedTitle, fixedIdeo, forceNoIdeo, forceNoBackstory, forbidAnyTitle, forceDead, forcedXenogenes, (genes != null) ? genes : PregnancyUtility.GetInheritedGenes(father, geneticMother), baseliner, null, null, 0f, DevelopmentalStage.Newborn, null, null, null, false));
+        
+         * ... Truncated
+         */
 
         /// <summary>
         /// Custom method that intercepts the PawnGenerationRequest and modifies it if the pawn to be generated is a clone.
