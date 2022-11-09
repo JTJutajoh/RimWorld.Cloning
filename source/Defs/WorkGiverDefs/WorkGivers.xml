@@ -42,4 +42,17 @@
     <canBeDoneByMechs>false</canBeDoneByMechs>
   </WorkGiverDef>
 
+  <WorkGiverDef>
+    <defName>HaulToCloneExtractor</defName>
+    <label>carry to clone vat</label>
+    <giverClass>Dark.Cloning.WorkGiver_HaulToCloneExtractor</giverClass>
+    <workType>Hauling</workType>
+    <verb>fill</verb>
+    <gerund>filling</gerund>
+    <priorityInType>107</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+
 </Defs>

@@ -186,7 +186,7 @@ namespace Dark.Cloning
             this.innerContainer.ThingOwnerTick();
             if (this.IsHashIntervalTick(250))
                 this.PowerTraderComp.PowerOutput = -this.PowerComp.Props.PowerConsumption * ( this.Working ? this.WorkingPowerUsageFactor : 1f );
-            if (this.Working && this.PowerTraderComp.PowerOn)
+            if (this.Working && this.PowerTraderComp.PowerOn && ArchitesRequiredNow <= 0)
             {
                 this.TickEffects();
                 if (this.PowerOn)
@@ -336,8 +336,7 @@ namespace Dark.Cloning
             this.xenotypeDef = null;
             this.xenotypeName = null;
             this.iconDef = null;
-            if (this.ContainedPawn == null)
-                return;
+            this.architesRequired = 0;
             this.innerContainer.TryDropAll(this.def.hasInteractionCell ? this.InteractionCell : this.Position, this.Map, ThingPlaceMode.Near);
             donorGenepack?.Destroy();
             donorGenepack = null;
@@ -413,12 +412,27 @@ namespace Dark.Cloning
                 return;
             Pawn containedPawn = this.ContainedPawn;
             IntVec3 intVec3 = this.def.hasInteractionCell ? this.InteractionCell : this.Position;
+            if (this.architesRequired > 0)
+            {
+                for (int i = this.innerContainer.Count - 1; i >= 0; i--)
+                {
+                    if (this.innerContainer[i].def == ThingDefOf.ArchiteCapsule)
+                    {
+                        Thing thing = this.innerContainer[i].SplitOff(Mathf.Min(this.innerContainer[i].stackCount, this.architesRequired));
+                        this.architesRequired -= thing.stackCount;
+                        thing.Destroy(DestroyMode.Vanish);
+                        if (this.architesRequired <= 0)
+                            break;
+                    }
+                }
+            }
             switch (currentMode)
             {
                 case CloneExtractorModes.Embryo:
                     ProduceEmbryo(containedPawn, intVec3);
                     donorGenepack?.Destroy();
                     donorGenepack = null;
+
                     break;
                 case CloneExtractorModes.Brain:
                     ProduceBrainScan(containedPawn, intVec3);
@@ -529,7 +543,7 @@ namespace Dark.Cloning
             {
                 yield return gizmo;
             }
-            if (base.Working)
+            if (base.Working || this.innerContainer.Count > 0)
             {
                 Command_Action command_Action = new Command_Action();
                 command_Action.defaultLabel = "CommandCancelExtraction".Translate();
@@ -541,109 +555,112 @@ namespace Dark.Cloning
                 };
                 command_Action.activateSound = SoundDefOf.Designate_Cancel;
                 yield return command_Action;
-                if (DebugSettings.ShowDevGizmos)
-                {
-                    Command_Action command_Action2 = new Command_Action();
-                    command_Action2.defaultLabel = "DEV: Finish extraction";
-                    command_Action2.action = delegate
-                    {
-                        Finish();
-                    };
-                    yield return command_Action2;
-                }
-                yield break;
             }
-            if (selectedPawn != null)
+            if (DebugSettings.ShowDevGizmos && base.Working)
             {
-                Command_Action command_Action3 = new Command_Action();
-                command_Action3.defaultLabel = "CommandCancelLoad".Translate();
-                command_Action3.defaultDesc = "CommandCancelLoadDesc".Translate();
-                command_Action3.icon = CancelIcon;
-                command_Action3.activateSound = SoundDefOf.Designate_Cancel;
-                command_Action3.action = delegate
+                Command_Action command_Action2 = new Command_Action();
+                command_Action2.defaultLabel = "DEV: Finish extraction";
+                command_Action2.action = delegate
                 {
-                    innerContainer.TryDropAll(base.Position, base.Map, ThingPlaceMode.Near);
-                    if (selectedPawn.CurJobDef == JobDefOf.EnterBuilding)
-                    {
-                        selectedPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
-                    }
-                    selectedPawn = null;
-                    startTick = -1;
-                    sustainerWorking = null;
+                    Finish();
                 };
-                yield return command_Action3;
-                yield break;
+                yield return command_Action2;
             }
-
-            // Button to switch modes
-            Command_Action toggleModeCommandAction = new Command_Action();
-            toggleModeCommandAction.defaultLabel = "Cloning_CloneExtractorModeSwitch".Translate();
-            toggleModeCommandAction.defaultDesc = "Cloning_InsertPersonBrainScanDesc".Translate();
-            toggleModeCommandAction.icon = GeneSetHolderBase.GeneticInfoTex.Texture; //TODO: Replace this gizmo texture
-            toggleModeCommandAction.action = delegate
+            if (!base.Working)
             {
-                List<FloatMenuOption> floatMenuOptions = new List<FloatMenuOption>();
-                floatMenuOptions.Add(new FloatMenuOption("Cloning_EmbryoMode".Translate(), delegate
+                if (selectedPawn != null)
                 {
-                    currentMode = CloneExtractorModes.Embryo;
-                }
-                ));
-                floatMenuOptions.Add(new FloatMenuOption("Cloning_BrainScanMode".Translate(), delegate
-                {
-                    currentMode = CloneExtractorModes.Brain;
-                }
-                ));
-
-                if (!floatMenuOptions.Any())
-                {
-                    floatMenuOptions.Add(new FloatMenuOption("NoExtractablePawns".Translate(), null));
-                }
-                Find.WindowStack.Add(new FloatMenu(floatMenuOptions));
-            };
-            if (this.Working)
-            {
-                toggleModeCommandAction.Disable("Cloning_ExtractorWorking".Translate().CapitalizeFirst());
-            }
-            yield return toggleModeCommandAction;
-
-            Command_Action command_Action4 = new Command_Action();
-            command_Action4.defaultLabel = "InsertPerson".Translate() + "...";
-            command_Action4.defaultDesc = "InsertPersonGeneExtractorDesc".Translate();
-            command_Action4.icon = InsertPawnTex;
-            command_Action4.action = delegate
-            {
-                List<FloatMenuOption> list = new List<FloatMenuOption>();
-                foreach (Pawn item in base.Map.mapPawns.AllPawnsSpawned)
-                {
-                    Pawn pawn = item;
-                    AcceptanceReport acceptanceReport = CanAcceptPawn(item);
-                    if (!acceptanceReport.Accepted)
+                    Command_Action command_Action3 = new Command_Action();
+                    command_Action3.defaultLabel = "CommandCancelLoad".Translate();
+                    command_Action3.defaultDesc = "CommandCancelLoadDesc".Translate();
+                    command_Action3.icon = CancelIcon;
+                    command_Action3.activateSound = SoundDefOf.Designate_Cancel;
+                    command_Action3.action = delegate
                     {
-                        if (!acceptanceReport.Reason.NullOrEmpty())
+                        innerContainer.TryDropAll(base.Position, base.Map, ThingPlaceMode.Near);
+                        if (selectedPawn.CurJobDef == JobDefOf.EnterBuilding)
                         {
-                            list.Add(new FloatMenuOption(item.LabelShortCap + ": " + acceptanceReport.Reason, null, pawn, Color.white));
+                            selectedPawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
+                        }
+                        selectedPawn = null;
+                        startTick = -1;
+                        sustainerWorking = null;
+                    };
+                    yield return command_Action3;
+                    yield break;
+                }
+
+                // Button to switch modes
+                Command_Action toggleModeCommandAction = new Command_Action();
+                toggleModeCommandAction.defaultLabel = "Cloning_CloneExtractorModeSwitch".Translate();
+                toggleModeCommandAction.defaultDesc = "Cloning_InsertPersonBrainScanDesc".Translate();
+                toggleModeCommandAction.icon = GeneSetHolderBase.GeneticInfoTex.Texture; //TODO: Replace this gizmo texture
+                toggleModeCommandAction.action = delegate
+                {
+                    List<FloatMenuOption> floatMenuOptions = new List<FloatMenuOption>();
+                    floatMenuOptions.Add(new FloatMenuOption("Cloning_EmbryoMode".Translate(), delegate
+                    {
+                        currentMode = CloneExtractorModes.Embryo;
+                    }
+                    ));
+                    floatMenuOptions.Add(new FloatMenuOption("Cloning_BrainScanMode".Translate(), delegate
+                    {
+                        currentMode = CloneExtractorModes.Brain;
+                    }
+                    ));
+
+                    if (!floatMenuOptions.Any())
+                    {
+                        floatMenuOptions.Add(new FloatMenuOption("NoExtractablePawns".Translate(), null));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(floatMenuOptions));
+                };
+                if (this.Working)
+                {
+                    toggleModeCommandAction.Disable("Cloning_ExtractorWorking".Translate().CapitalizeFirst());
+                }
+                yield return toggleModeCommandAction;
+
+                Command_Action command_Action4 = new Command_Action();
+                command_Action4.defaultLabel = "InsertPerson".Translate() + "...";
+                command_Action4.defaultDesc = "InsertPersonGeneExtractorDesc".Translate();
+                command_Action4.icon = InsertPawnTex;
+                command_Action4.action = delegate
+                {
+                    List<FloatMenuOption> list = new List<FloatMenuOption>();
+                    foreach (Pawn item in base.Map.mapPawns.AllPawnsSpawned)
+                    {
+                        Pawn pawn = item;
+                        AcceptanceReport acceptanceReport = CanAcceptPawn(item);
+                        if (!acceptanceReport.Accepted)
+                        {
+                            if (!acceptanceReport.Reason.NullOrEmpty())
+                            {
+                                list.Add(new FloatMenuOption(item.LabelShortCap + ": " + acceptanceReport.Reason, null, pawn, Color.white));
+                            }
+                        }
+                        else
+                        {
+                            list.Add(new FloatMenuOption(item.LabelShortCap + ", " + pawn.genes.XenotypeLabelCap, delegate
+                            {
+                                currentMode = CloneExtractorModes.Embryo;
+                                SelectPawn(pawn);
+                            }, pawn, Color.white));
                         }
                     }
-                    else
+                    if (!list.Any())
                     {
-                        list.Add(new FloatMenuOption(item.LabelShortCap + ", " + pawn.genes.XenotypeLabelCap, delegate
-                        {
-                            currentMode = CloneExtractorModes.Embryo;
-                            SelectPawn(pawn);
-                        }, pawn, Color.white));
+                        list.Add(new FloatMenuOption("NoExtractablePawns".Translate(), null));
                     }
-                }
-                if (!list.Any())
+                    Find.WindowStack.Add(new FloatMenu(list));
+                };
+                if (!PowerOn)
                 {
-                    list.Add(new FloatMenuOption("NoExtractablePawns".Translate(), null));
+                    command_Action4.Disable("NoPower".Translate().CapitalizeFirst());
                 }
-                Find.WindowStack.Add(new FloatMenu(list));
-            };
-            if (!PowerOn)
-            {
-                command_Action4.Disable("NoPower".Translate().CapitalizeFirst());
+                yield return command_Action4;
+
             }
-            yield return command_Action4;
         }
 
         public override void Draw()
