@@ -40,10 +40,16 @@ namespace Dark.Cloning
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
             {
-                if (codes[i].Calls(anchorMethod))
+                /*
+                if (Event.current.type == EventType.Layout)
+                {
+	                GeneUIUtility.scrollHeight = num;
+                }
+                */
+                if (codes[i].Calls(anchorMethod)) //Widgets.EndScrollView();
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg, 1) // Thing target
-                    // Make sure this isn't included in the if block just before the anchor method call, by changing the IL labels to match the label of the anchor method (Since it is outside of the if block)
+                    // Make sure this isn't included in the if block just before the anchor method call by changing the IL labels to match the label of the anchor method (Since it is outside of the if block)
                     { labels = codes[i].labels}; 
                     yield return new CodeInstruction(OpCodes.Ldarg, 0); // Rect rect
                     yield return new CodeInstruction(OpCodes.Ldloc, 1); // float curY
@@ -54,6 +60,10 @@ namespace Dark.Cloning
                     codes[i].labels = new List<Label>();
                 }
                 yield return codes[i];
+                /*
+                Widgets.EndScrollView();
+	            GUI.EndGroup();
+                */
             }
         }
         /* Original (unpatched Vanilla 1.4) method:
@@ -104,10 +114,6 @@ namespace Dark.Cloning
         /// and then if it is it calls GeneUIUtility.DrawSection (Using the static delegate <see cref="DrawSection"/>) 
         /// to draw them the same way as vanilla
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="rect"></param>
-        /// <param name="curY"></param>
-        /// <param name="containingRect"></param>
         static void DrawXenogenesForEmbryo(Thing target, Rect rect, float curY, Rect containingRect)
         {
             if (target is HumanEmbryo embryo)
@@ -122,15 +128,16 @@ namespace Dark.Cloning
                 // The target is a clone embryo, draw its xenogenes
                 List<GeneDef> xenogenes = cloneComp.cloneData.forcedXenogenes.GenesListForReading;
 
-                void drawer(int i, Rect r)
-                {
+                void drawer(int i, Rect r) =>
                     GeneUIUtility.DrawGeneDef(xenogenes[i], r, GeneType.Xenogene, null, true, true, false);
-                }
 
+                // Store it in a tmp var because you can't pass the value of a FieldInfo by ref
                 float tmpXenogenesHeight = (float)xenogenesHeight.GetValue(null);
                 DrawSection(rect, true, xenogenes.Count, ref curY, ref tmpXenogenesHeight, drawer, containingRect);
+                // Apply the tmp value that was passed by ref to the original field
                 xenogenesHeight.SetValue(null, tmpXenogenesHeight);
 
+                // This was already called before in the vanilla method, but it should cause no harm to call it again. Will simply override the new value of scrollHeight
                 if (Event.current.type == EventType.Layout)
                 {
                     scrollHeight.SetValue(null, curY);
