@@ -25,7 +25,7 @@ namespace Dark.Cloning
         static void Postfix(Pawn pawn, bool __state)
         {
             // Clone has grown to 13 (adulthood) and had their body type changed from child. Override it to match their donor parent
-            if (__state && CloneUtils.HasCloneGene(pawn))
+            if (__state && pawn.IsClone())
             {
                 // Get the clone's parent by getting their parent of the same gender, since we force clones to match donor genders.
                 //HACK: This will cause an incompatibility with any mods that change gender if the donor's gender changes before the clone reaches 13. Not sure how to approach fixing this. Maybe it doesn't need fixing?

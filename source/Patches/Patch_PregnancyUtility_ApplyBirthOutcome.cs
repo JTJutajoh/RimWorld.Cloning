@@ -31,6 +31,12 @@ namespace Dark.Cloning
         static MethodInfo anchorMethod = typeof(PawnGenerator).GetMethod("GeneratePawn", new Type[] { typeof(PawnGenerationRequest) });
 
         /// <summary>
+        /// Static reference to the cloneData from an embryo,
+        /// so that it can be passed on to the instance of the clone Gene on the newly-generated pawn
+        /// </summary>
+        static CloneData cloneData;
+
+        /// <summary>
         /// Transpiler that intercepts the PawnGenerationRequest right after it is created and before it is used by GeneratePawn. <br />
         /// Loads a few extra arguments onto the stack, and then calls
         /// <see cref="GeneratePawn(PawnGenerationRequest, Thing, List{GeneDef}, Pawn, Pawn)"/>, which takes those extra arguments
@@ -54,6 +60,10 @@ namespace Dark.Cloning
 
                     // Then call my custom method instead of the original one.
                     yield return CodeInstruction.Call(typeof(Patch_PregnancyUtility_ApplyBirthOutcome), "GeneratePawn");
+                    // The current (original) instruction calls GeneratePawn, which returns the new Pawn (putting it on the stack). 
+                    // We want to access the pawn that was just created, so if we call a method that takes a Pawn as an argument it should work
+                    // And if that method returns the Pawn again, it goes back on the stack and the method can resume normally
+                    //yield return CodeInstruction.Call(typeof(Patch_PregnancyUtility_ApplyBirthOutcome), "ModifyPawn");
                 }
 
                 // And resume emitting the original code (Including the original call to GeneratePawn, using my now-modified request that's on the stack)
@@ -120,6 +130,16 @@ namespace Dark.Cloning
          */
 
         /// <summary>
+        /// A method that takes the pawn immediately after it was generated, and returns it again
+        /// Disabled, not necessary but maybe in the future.
+        /// </summary>
+        static Pawn ModifyPawn(Pawn pawn)
+        {
+            // Disabled at the moment because I might not need it, but it might be useful in the future so I'll leave it here
+            return pawn;
+        }
+
+        /// <summary>
         /// Custom method that intercepts the PawnGenerationRequest and modifies it if the pawn to be generated is a clone.
         /// </summary>
         /// <param name="request">The original request to be modified</param>
@@ -130,64 +150,46 @@ namespace Dark.Cloning
         /// <returns>The modified PawnGenerationRequest, ready to be pushed back onto the stack and sent to GeneratePawn</returns>
         static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, List<GeneDef> genes, Pawn geneticMother, Pawn father)
         {
-            if (!CloneUtils.HasCloneGene(genes)) return request;
-
-            // First copy basic data from the donor 
-            Pawn donor = geneticMother ?? father; // Including the father might be overkill, but let's just be safe
-            if (donor == null)
-            {
-                Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn (both parents were null).");
-                return request;
-            }
-
-            request.FixedGender = donor.gender;
-            request.CanGeneratePawnRelations = false;
-
-            // Now, add the previously-chosen xenotype to the new pawn
-            // Try to get a reference to the embryo
+            // Try to get a reference to the cloneData from the embryo or the pregnancy hediff, which is where the cloneData is stored if there is any
             CloneData cloneData = null;
+
+            // GrowthVats keep the embryo Thing in their innerContainer until birth
             if (birtherThing is Building_GrowthVat growthVat)
             {
                 HumanEmbryo embryo = growthVat.selectedEmbryo;
-                cloneData = embryo.TryGetComp<Comp_CloneEmbryo>().cloneData;
+                if (!embryo.IsClone(out Comp_CloneEmbryo cloneComp))
+                    return request; // Not a clone
+                cloneData = cloneComp.cloneData;
             }
+            // Pregnant pawns do not keep the embryo Thing and instead transfer its data to a series of hediffs
             else if (birtherThing is Pawn birtherPawn)
             {
-                cloneData =  CloneUtils.GetCloneHediffCompFromPregnancy(birtherPawn).cloneData;
+                Hediff hediff = birtherPawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnancyLaborPushing);
+                if (!hediff.IsClonePregnancy(out HediffComp_Pregnant_Clone cloneComp))
+                    return request; // Not a clone pregnancy
+                cloneData =  cloneComp.cloneData;
             }
-            request.ForcedXenogenes = cloneData?.forcedXenogenes.GenesListForReading;
 
-            /* Disabled in favor of assigning a custom xenotype for every clone
-            if (donor.genes.UniqueXenotype)
+            // The above checks should ensure this never happens, but just to be safe
+            if (cloneData == null)
+                return request;
+
+            request.CanGeneratePawnRelations = false;
+
+            // First copy basic data from the donor 
+            Pawn donor = cloneData.donorPawn;
+            if (donor == null)
             {
-                request.ForcedCustomXenotype = CloneUtils.CopyCustomXenotypeFrom(donor);
+                Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn from its cloneData.");
+                return request;
             }
-            else
-            {
-                if (donor.genes.Xenotype == null) Log.Error("Tried to copy non-custom xenotype from donor parent, but it was null.");
-                else request.ForcedXenotype = donor.genes.Xenotype;
-            }*/
+
+            request.FixedGender = cloneData.fixedGender;
+
+            // Now, add the previously-chosen xenotype to the new pawn
+            request.ForcedXenogenes = cloneData.forcedXenogenes.GenesListForReading;
 
             GeneUtils.TryAddMutationsToRequest(ref request);
-
-            /* Disabled, xenogenes are assigned by the user when the clone is created
-            if (CloningSettings.cloneXenogenes && donor.genes.Xenogenes.Count > 0)
-            {
-                if (request.ForcedXenogenes == null)
-                {
-                    request.ForcedXenogenes = new List<GeneDef>();
-                }
-                foreach (Gene gene in donor.genes.Xenogenes)
-                {
-                    if (gene.def.displayCategory == GeneCategoryDefOf.Archite && !CloningSettings.cloneArchiteGenes) continue; // Skip archite genes unless setting to copy them is enabled
-
-                    if (!request.ForcedXenogenes.Contains(gene.def))
-                    {
-                        request.ForcedXenogenes.Add(gene.def);
-                    }
-                }
-            }*/
-            
 
             return request;
         }
@@ -198,23 +200,25 @@ namespace Dark.Cloning
         /// </summary>
         static void Postfix(ref Thing __result, Pawn geneticMother, Pawn father)
         {
-            if (!( __result is Pawn pawn )) return; // If the clone was stillborn.
-            if (CloneUtils.HasCloneGene(pawn)) return; // Not a clone, ignore
+            if (!( __result is Pawn pawn )) // If the clone was stillborn.
+                return;
+            if (!pawn.IsClone(out var cloneGene)) // Not a clone, ignore
+                return;
+
+            CloneData cloneData = cloneGene.cloneData;
 
             // Copy basic things from the parent.
-            Pawn donor = geneticMother != null ? geneticMother : father;
-            if (donor != null) // Shouldn't ever happen but let's just be safe
+            Pawn donor = cloneData.donorPawn;
+
+            pawn.story.headType = cloneData.headType;
+            pawn.story.skinColorOverride = cloneData.skinColorOverride;
+            pawn.story.furDef = cloneData.furDef;
+            if (CloningSettings.inheritHair)
             {
-                pawn.story.headType = donor.story.headType;
-                pawn.story.skinColorOverride = donor.story.skinColorOverride;
-                pawn.story.furDef = donor.story.furDef;
-                if (CloningSettings.inheritHair)
-                {
-                    pawn.story.hairDef = donor.story.hairDef;
-                    pawn.style.beardDef = donor.style.beardDef;
-                }
-                pawn.style.Notify_StyleItemChanged();
+                pawn.story.hairDef = cloneData.hairDef;
+                pawn.style.beardDef = cloneData.beardDef;
             }
+            pawn.style.Notify_StyleItemChanged();
 
             //FIXME: Disabled temporarily because it causes babies to die
             //if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));

@@ -20,17 +20,17 @@ namespace Dark.Cloning
             //SOMEDAY: Maybe find an alternative to this, since this patch causes it to do this search twice
             HumanEmbryo embryo = (HumanEmbryo)ingredients.FirstOrDefault((Thing t) => t.def == ThingDefOf.HumanEmbryo);
             
-            if (!CloneUtils.HasCloneGene(embryo)) return;
+            if (!embryo.IsClone(out Comp_CloneEmbryo cloneComp)) return;
 
-            __state = embryo?.TryGetComp<Comp_CloneEmbryo>()?.cloneData;
+            __state = cloneComp?.cloneData;
         }
 
         static void Postfix(ref CloneData __state, Pawn pawn)
         {
             if (__state == null) return;
 
-            HediffComp_Pregnant_Clone cloneComp = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnantHuman)?.TryGetComp<HediffComp_Pregnant_Clone>();
-            if (cloneComp != null)
+            Hediff pregnantHediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnantHuman);
+            if (pregnantHediff.IsClonePregnancy(out HediffComp_Pregnant_Clone cloneComp))
             {
                 cloneComp.cloneData = __state;
             }

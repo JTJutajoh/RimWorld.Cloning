@@ -118,11 +118,7 @@ namespace Dark.Cloning
         {
             if (target is HumanEmbryo embryo)
             {
-                if (!CloneUtils.HasCloneGene(embryo))
-                    return;
-
-                Comp_CloneEmbryo cloneComp = embryo.TryGetComp<Comp_CloneEmbryo>();
-                if (cloneComp == null || !cloneComp.IsClone())
+                if (!embryo.IsClone(out Comp_CloneEmbryo cloneComp))
                     return;
 
                 // The target is a clone embryo, draw its xenogenes

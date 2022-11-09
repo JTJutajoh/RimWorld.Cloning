@@ -6,7 +6,7 @@
     <label>clone</label>
     <labelShortAdj>clone</labelShortAdj>
     <description>Cloned individuals always possess this gene, marking them as clones. This gene by itself does nothing.</description>
-    <!--<geneClass></geneClass>-->
+    <geneClass>Dark.Cloning.CloneGene</geneClass>
     <iconPath>UI/Icons/Genes/Gene_Clone</iconPath>
     <displayCategory>Miscellaneous</displayCategory>
     <displayOrderInCategory>1000</displayOrderInCategory>
