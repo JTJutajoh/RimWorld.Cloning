@@ -172,7 +172,13 @@ namespace Dark.Cloning
 
             // The above checks should ensure this never happens, but just to be safe
             if (cloneData == null)
+            {
+                Log.Warning($"Embryo/pregnancy hediff looked like a clone, but had no cloneData");
                 return request;
+            }
+
+            // Store the data in a static reference so that the postfix can pick it up and apply it to the clone Gene instance on the pawn after it is generated
+            Patch_PregnancyUtility_ApplyBirthOutcome.cloneData = cloneData;
 
             request.CanGeneratePawnRelations = false;
 
@@ -187,7 +193,13 @@ namespace Dark.Cloning
             request.FixedGender = cloneData.fixedGender;
 
             // Now, add the previously-chosen xenotype to the new pawn
-            request.ForcedXenogenes = cloneData.forcedXenogenes.GenesListForReading;
+            //request.ForcedXenogenes = cloneData.forcedXenogenes.GenesListForReading;
+
+            CustomXenotype customXenotype = new CustomXenotype();
+            customXenotype.genes = cloneData.forcedXenogenes.GenesListForReading;
+            customXenotype.name = cloneData.xenotypeName;
+            customXenotype.iconDef = cloneData.iconDef;
+            request.ForcedCustomXenotype = customXenotype;
 
             GeneUtils.TryAddMutationsToRequest(ref request);
 
@@ -207,21 +219,32 @@ namespace Dark.Cloning
 
             CloneData cloneData = cloneGene.cloneData;
 
-            // Copy basic things from the parent.
-            Pawn donor = cloneData.donorPawn;
+            if (Patch_PregnancyUtility_ApplyBirthOutcome.cloneData == null)
+            {
+                Log.Error($"Clone gene on pawn {pawn.LabelCap} but the statically-stored cloneData in {nameof(Patch_PregnancyUtility_ApplyBirthOutcome)} has no data.");
+                return;
+            }
 
-            pawn.story.headType = cloneData.headType;
-            pawn.story.skinColorOverride = cloneData.skinColorOverride;
-            pawn.story.furDef = cloneData.furDef;
+            cloneGene.cloneData = Patch_PregnancyUtility_ApplyBirthOutcome.cloneData;
+
+            // Copy basic things from the parent.
+            Pawn donor = cloneGene.cloneData.donorPawn;
+
+            pawn.story.headType = cloneGene.cloneData.headType;
+            pawn.story.skinColorOverride = cloneGene.cloneData.skinColorOverride;
+            pawn.story.furDef = cloneGene.cloneData.furDef;
             if (CloningSettings.inheritHair)
             {
-                pawn.story.hairDef = cloneData.hairDef;
-                pawn.style.beardDef = cloneData.beardDef;
+                pawn.story.hairDef = cloneGene.cloneData.hairDef;
+                pawn.style.beardDef = cloneGene.cloneData.beardDef;
             }
             pawn.style.Notify_StyleItemChanged();
 
             //FIXME: Disabled temporarily because it causes babies to die
             //if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+
+            // Clear the static reference for the next time this patch is run
+            Patch_PregnancyUtility_ApplyBirthOutcome.cloneData = null;
         }
     }
 }

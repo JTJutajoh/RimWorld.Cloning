@@ -334,11 +334,12 @@ namespace Dark.Cloning
             if (this.ContainedPawn == null)
                 return;
             this.innerContainer.TryDropAll(this.def.hasInteractionCell ? this.InteractionCell : this.Position, this.Map, ThingPlaceMode.Near);
+            donorGenepack?.Destroy();
         }
 
         private HumanEmbryo ProduceEmbryo(Pawn donor, IntVec3 intVec3)
         {
-            HumanEmbryo embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, GeneUtils.GetAllGenesInPacks(genepacksToRecombine));
+            HumanEmbryo embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, GeneUtils.GetAllGenesInPacks(genepacksToRecombine), xenotypeName, iconDef);
 
             // Gene sickness Hediff
             if (CloningSettings.cloningCooldown) 
@@ -394,6 +395,7 @@ namespace Dark.Cloning
             {
                 case CloneExtractorModes.Embryo:
                     ProduceEmbryo(containedPawn, intVec3);
+                    donorGenepack?.Destroy();
                     break;
                 case CloneExtractorModes.Brain:
                     ProduceBrainScan(containedPawn, intVec3);
@@ -436,6 +438,7 @@ namespace Dark.Cloning
             cachedComplexity = null;
             iconDef = XenotypeIconDefOf.Basic;
             architesRequired = 0;
+            //donorGenepack?.Destroy();
             innerContainer.TryDropAll(def.hasInteractionCell ? InteractionCell : base.Position, base.Map, ThingPlaceMode.Near);
         }
 
@@ -658,6 +661,7 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref architesRequired, "architesRequired", 0);
             Scribe_Values.Look(ref xenotypeName, "xenotypeName");
             Scribe_Defs.Look(ref iconDef, "iconDef");
+            Scribe_References.Look(ref donorGenepack, "donorGenepack");
             if (Scribe.mode == LoadSaveMode.PostLoadInit && iconDef == null)
             {
                 iconDef = XenotypeIconDefOf.Basic;

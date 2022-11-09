@@ -12,26 +12,6 @@ namespace Dark.Cloning
 {
     public static class CloneUtils
     {
-        /*
-        public static bool HasCloneGene(List<GeneDef> genes)
-        {
-            if (genes == null || genes.Count < 1) return false;
-            return genes.Contains(CloneDefOf.Clone);
-        }
-        public static bool HasCloneGene(GeneSet genes)
-        {
-            return HasCloneGene(genes.GenesListForReading);
-        }
-        public static bool HasCloneGene(HumanEmbryo embryo)
-        {
-            return HasCloneGene(embryo.GeneSet);
-        }
-        public static bool HasCloneGene(Pawn pawn)
-        {
-            return pawn.genes.HasGene(CloneDefOf.Clone);
-        }
-        */
-
         public static bool IsClone(this Pawn pawn)
         {
             return pawn.genes.HasGene(CloneDefOf.Clone);
@@ -62,7 +42,7 @@ namespace Dark.Cloning
             return hediffComp != null;
         }
 
-        public static void CopyGenesFromParent(ref GeneSet genes, HumanEmbryo embryo)
+        public static void CopyEndogenesFromParent(ref GeneSet genes, HumanEmbryo embryo)
         {
             CompHasPawnSources sources = embryo.TryGetComp<CompHasPawnSources>();
             Pawn parent = sources.pawnSources[0];
@@ -81,21 +61,11 @@ namespace Dark.Cloning
             }
         }
 
-        public static CustomXenotype CopyCustomXenotypeFrom(Pawn pawn)
-        {
-            CustomXenotype result = new CustomXenotype();
-
-            result.name = pawn.genes.xenotypeName;
-            result.iconDef = pawn.genes.iconDef;
-
-            return result;
-        }
-
         /// <summary>
 		/// Modified version of vanilla's ProduceEmbryo. Made static so it can be reused.<br />
         /// Handles marking the produced embryo as a clone so that TryPopulateGenes() correctly adds clone genes
 		/// </summary>
-		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, GeneSet forcedXenogenes = null)
+		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, GeneSet forcedXenogenes, string xenotypeName, XenotypeIconDef iconDef)
         {
             HumanEmbryo humanEmbryo = (HumanEmbryo)ThingMaker.MakeThing(ThingDefOf.HumanEmbryo, null);
 
@@ -103,7 +73,9 @@ namespace Dark.Cloning
             
             EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
 
-            CloneData cloneData = new CloneData(donor, forcedXenogenes);
+            CloneData cloneData = new CloneData(donor, forcedXenogenes, xenotypeName, iconDef);
+            //SOMEDAY: Instead of silently adding the clone gene to embryos, force it in the clone creation dialog
+            cloneData.forcedXenogenes.AddGene(CloneDefOf.Clone); 
 
             Comp_CloneEmbryo cloneComp = humanEmbryo.TryGetComp<Comp_CloneEmbryo>();
             if (cloneComp == null)

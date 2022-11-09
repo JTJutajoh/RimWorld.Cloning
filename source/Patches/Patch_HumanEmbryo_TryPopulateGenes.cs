@@ -21,9 +21,7 @@ namespace Dark.Cloning
             
             GeneSet clonedGenes = new GeneSet();
 
-            clonedGenes.AddGene(CloneDefOf.Clone);
-
-            CloneUtils.CopyGenesFromParent(ref clonedGenes, __instance);
+            CloneUtils.CopyEndogenesFromParent(ref clonedGenes, __instance);
 
             GeneUtils.ApplyRandomMutations(ref clonedGenes);
             

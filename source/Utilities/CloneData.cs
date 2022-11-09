@@ -15,6 +15,10 @@ namespace Dark.Cloning
     public class CloneData : IExposable
     {
         public GeneSet forcedXenogenes;
+        public CustomXenotype customXenotype;
+        public XenotypeDef xenotype;
+        public bool UniqueXenotype => customXenotype != null;
+
         public Pawn donorPawn;
         public Gender? fixedGender;
         public HeadTypeDef headType;
@@ -23,10 +27,24 @@ namespace Dark.Cloning
         public HairDef hairDef;
         public BeardDef beardDef;
 
-        public CloneData(Pawn donorPawn, GeneSet forcedXenogenes)
+        public CloneData() { }
+        public CloneData(Pawn donorPawn, GeneSet forcedXenogenes, CustomXenotype customXenotype)
         {
             this.donorPawn = donorPawn;
             this.forcedXenogenes = forcedXenogenes;
+            this.customXenotype = customXenotype;
+
+            this.fixedGender = this.donorPawn?.gender;
+            this.headType = this.donorPawn?.story?.headType;
+            this.skinColorOverride = this.donorPawn?.story?.skinColorOverride;
+            this.furDef = this.donorPawn?.story?.furDef;
+            this.hairDef = this.donorPawn?.story?.hairDef;
+            this.beardDef = this.donorPawn?.style?.beardDef;
+        }
+        public CloneData(Pawn donorPawn, XenotypeDef xenotypeDef)
+        {
+            this.donorPawn = donorPawn;
+            this.xenotype = xenotypeDef;
 
             this.fixedGender = this.donorPawn?.gender;
             this.headType = this.donorPawn?.story?.headType;
@@ -38,9 +56,17 @@ namespace Dark.Cloning
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref forcedXenogenes, "forcedXenogenes");
-            Scribe_References.Look(ref donorPawn, "donorPawn");
-            Scribe_Values.Look(ref fixedGender, "fixedGender");
+            Scribe_Deep.Look(ref this.forcedXenogenes, "forcedXenogenes");
+            Scribe_References.Look(ref this.donorPawn, "donorPawn");
+            Scribe_Values.Look(ref this.fixedGender, "fixedGender");
+            Scribe_Values.Look(ref this.skinColorOverride, "skinColorOverride");
+            Scribe_Defs.Look(ref this.headType, "headType");
+            Scribe_Defs.Look(ref this.furDef, "furDef");
+            Scribe_Defs.Look(ref this.hairDef, "hairDef");
+            Scribe_Defs.Look(ref this.beardDef, "beardDef");
+
+            Scribe_Values.Look(ref this.xenotypeName, "xenotypeName");
+            Scribe_Defs.Look(ref this.iconDef, "iconDef");
         }
     }
 }
