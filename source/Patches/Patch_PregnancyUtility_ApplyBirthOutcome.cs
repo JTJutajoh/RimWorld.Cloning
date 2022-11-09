@@ -195,11 +195,14 @@ namespace Dark.Cloning
             // Now, add the previously-chosen xenotype to the new pawn
             //request.ForcedXenogenes = cloneData.forcedXenogenes.GenesListForReading;
 
-            CustomXenotype customXenotype = new CustomXenotype();
-            customXenotype.genes = cloneData.forcedXenogenes.GenesListForReading;
-            customXenotype.name = cloneData.xenotypeName;
-            customXenotype.iconDef = cloneData.iconDef;
-            request.ForcedCustomXenotype = customXenotype;
+            if (cloneData.UniqueXenotype)
+            {
+                request.ForcedCustomXenotype = cloneData.customXenotype;
+            }
+            else
+            {
+                request.ForcedXenotype = cloneData.xenotype;
+            }
 
             GeneUtils.TryAddMutationsToRequest(ref request);
 

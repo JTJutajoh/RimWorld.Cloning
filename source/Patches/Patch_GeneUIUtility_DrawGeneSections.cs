@@ -122,7 +122,8 @@ namespace Dark.Cloning
                     return;
 
                 // The target is a clone embryo, draw its xenogenes
-                List<GeneDef> xenogenes = cloneComp.cloneData.forcedXenogenes.GenesListForReading;
+
+                List<GeneDef> xenogenes = cloneComp.cloneData.xenogenes;
 
                 void drawer(int i, Rect r) =>
                     GeneUIUtility.DrawGeneDef(xenogenes[i], r, GeneType.Xenogene, null, true, true, false);

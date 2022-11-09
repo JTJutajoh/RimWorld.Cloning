@@ -42,6 +42,8 @@ namespace Dark.Cloning
 
         public XenotypeIconDef iconDef;
 
+        public XenotypeDef xenotypeDef;
+
         [Unsaved(false)]
         private List<Genepack> tmpGenepacks = new List<Genepack>();
 
@@ -331,6 +333,9 @@ namespace Dark.Cloning
             this.startTick = -1;
             this.selectedPawn = (Pawn)null;
             this.sustainerWorking = (Sustainer)null;
+            this.xenotypeDef = null;
+            this.xenotypeName = null;
+            this.iconDef = null;
             if (this.ContainedPawn == null)
                 return;
             this.innerContainer.TryDropAll(this.def.hasInteractionCell ? this.InteractionCell : this.Position, this.Map, ThingPlaceMode.Near);
@@ -339,7 +344,23 @@ namespace Dark.Cloning
 
         private HumanEmbryo ProduceEmbryo(Pawn donor, IntVec3 intVec3)
         {
-            HumanEmbryo embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, GeneUtils.GetAllGenesInPacks(genepacksToRecombine), xenotypeName, iconDef);
+            HumanEmbryo embryo;
+            if (xenotypeDef != null)
+            {
+                embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, xenotypeDef);
+            }
+            else
+            {
+                CustomXenotype customXenotype = new CustomXenotype();
+                customXenotype.name = this.xenotypeName;
+                customXenotype.iconDef = this.iconDef;
+                customXenotype.genes = GeneUtils.GetAllGenesInPacks(genepacksToRecombine);
+                embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, customXenotype);
+            }
+            
+            this.xenotypeDef = null;
+            this.xenotypeName = null;
+            this.iconDef = null;
 
             // Gene sickness Hediff
             if (CloningSettings.cloningCooldown) 
@@ -442,13 +463,14 @@ namespace Dark.Cloning
             innerContainer.TryDropAll(def.hasInteractionCell ? InteractionCell : base.Position, base.Map, ThingPlaceMode.Near);
         }
 
-        public void Start(List<Genepack> packs, Pawn pawn, int architesRequired, string xenotypeName, XenotypeIconDef iconDef)
+        public void Start(List<Genepack> packs, Pawn pawn, int architesRequired, string xenotypeName, XenotypeIconDef iconDef, XenotypeDef xenotypeDef)
         {
             Reset();
             genepacksToRecombine = packs;
             this.architesRequired = architesRequired;
             this.xenotypeName = xenotypeName;
             this.iconDef = iconDef;
+            this.xenotypeDef = xenotypeDef;
             this.selectedPawn = pawn;
             AcceptPawn(selectedPawn);
         }

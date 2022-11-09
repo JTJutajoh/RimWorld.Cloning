@@ -65,7 +65,8 @@ namespace Dark.Cloning
 		/// Modified version of vanilla's ProduceEmbryo. Made static so it can be reused.<br />
         /// Handles marking the produced embryo as a clone so that TryPopulateGenes() correctly adds clone genes
 		/// </summary>
-		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, GeneSet forcedXenogenes, string xenotypeName, XenotypeIconDef iconDef)
+         
+        public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, CloneData cloneData)
         {
             HumanEmbryo humanEmbryo = (HumanEmbryo)ThingMaker.MakeThing(ThingDefOf.HumanEmbryo, null);
 
@@ -73,9 +74,6 @@ namespace Dark.Cloning
             
             EmbryoTracker.Track(humanEmbryo); // Mark this embryo as a clone by adding its hash to a static list stored in EmbryoTracker, to be checked later by harmony patches within HumanEmbryo
 
-            CloneData cloneData = new CloneData(donor, forcedXenogenes, xenotypeName, iconDef);
-            //SOMEDAY: Instead of silently adding the clone gene to embryos, force it in the clone creation dialog
-            cloneData.forcedXenogenes.AddGene(CloneDefOf.Clone); 
 
             Comp_CloneEmbryo cloneComp = humanEmbryo.TryGetComp<Comp_CloneEmbryo>();
             if (cloneComp == null)
@@ -90,6 +88,22 @@ namespace Dark.Cloning
             humanEmbryo.TryPopulateGenes();
 
             return humanEmbryo;
+        }
+
+		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, CustomXenotype customXenotype)
+        {
+            //SOMEDAY: Instead of silently adding the clone gene to embryos, force it in the clone creation dialog
+            customXenotype.genes.Add(CloneDefOf.Clone);
+            CloneData cloneData = new CloneData(donor, customXenotype);
+
+            return ProduceCloneEmbryo(donor, cloneData);
+        }
+
+        public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, XenotypeDef xenotypeDef)
+        {
+            CloneData cloneData = new CloneData(donor, xenotypeDef);
+
+            return ProduceCloneEmbryo(donor, cloneData);
         }
     }
 }

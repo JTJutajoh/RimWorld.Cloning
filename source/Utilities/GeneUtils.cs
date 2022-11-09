@@ -142,9 +142,9 @@ namespace Dark.Cloning
         /// <summary>
         /// Helper method to get all of the genes in a list of genepacks. Does not check for duplicates
         /// </summary>
-        public static GeneSet GetAllGenesInPacks(List<Genepack> genepacks)
+        public static List<GeneDef> GetAllGenesInPacks(List<Genepack> genepacks)
         {
-            GeneSet geneSet = new GeneSet();
+            List<GeneDef> geneSet = new List<GeneDef>();
             for (int i = 0; i < genepacks.Count; i++)
             {
                 if (genepacks[i].GeneSet != null)
@@ -152,7 +152,7 @@ namespace Dark.Cloning
                     List<GeneDef> genes = genepacks[i].GeneSet.GenesListForReading;
                     for (int j = 0; j < genes.Count; j++)
                     {
-                        geneSet.AddGene(genes[j]);
+                        geneSet.Add(genes[j]);
                     }
                 }
             }

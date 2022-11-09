@@ -14,10 +14,11 @@ namespace Dark.Cloning
     /// </summary>
     public class CloneData : IExposable
     {
-        public GeneSet forcedXenogenes;
         public CustomXenotype customXenotype;
         public XenotypeDef xenotype;
         public bool UniqueXenotype => customXenotype != null;
+
+        public List<GeneDef> xenogenes => UniqueXenotype ? customXenotype.genes : xenotype.genes;
 
         public Pawn donorPawn;
         public Gender? fixedGender;
@@ -28,10 +29,9 @@ namespace Dark.Cloning
         public BeardDef beardDef;
 
         public CloneData() { }
-        public CloneData(Pawn donorPawn, GeneSet forcedXenogenes, CustomXenotype customXenotype)
+        public CloneData(Pawn donorPawn, CustomXenotype customXenotype)
         {
             this.donorPawn = donorPawn;
-            this.forcedXenogenes = forcedXenogenes;
             this.customXenotype = customXenotype;
 
             this.fixedGender = this.donorPawn?.gender;
@@ -56,7 +56,9 @@ namespace Dark.Cloning
 
         public void ExposeData()
         {
-            Scribe_Deep.Look(ref this.forcedXenogenes, "forcedXenogenes");
+            Scribe_Deep.Look(ref this.customXenotype, "customXenotype");
+            Scribe_Defs.Look(ref xenotype, "xenotype");
+            
             Scribe_References.Look(ref this.donorPawn, "donorPawn");
             Scribe_Values.Look(ref this.fixedGender, "fixedGender");
             Scribe_Values.Look(ref this.skinColorOverride, "skinColorOverride");
@@ -64,9 +66,6 @@ namespace Dark.Cloning
             Scribe_Defs.Look(ref this.furDef, "furDef");
             Scribe_Defs.Look(ref this.hairDef, "hairDef");
             Scribe_Defs.Look(ref this.beardDef, "beardDef");
-
-            Scribe_Values.Look(ref this.xenotypeName, "xenotypeName");
-            Scribe_Defs.Look(ref this.iconDef, "iconDef");
         }
     }
 }

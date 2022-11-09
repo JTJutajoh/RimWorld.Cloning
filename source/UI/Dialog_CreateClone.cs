@@ -17,6 +17,8 @@ namespace Dark.Cloning
 
 		private Pawn donorPawn;
 
+		public XenotypeDef xenotypeDef;
+
 		private List<Genepack> libraryGenepacks = new List<Genepack>();
 
 		private List<Genepack> donorGenepacks = new List<Genepack>();
@@ -67,13 +69,32 @@ namespace Dark.Cloning
 			}
 			libraryGenepacks.AddRange(cloneExtractor.GetGenepacks(includePowered: true, includeUnpowered: true));
 			unpoweredGenepacks.AddRange(cloneExtractor.GetGenepacks(includePowered: false, includeUnpowered: true));
-			xenotypeName = donorPawn.genes.UniqueXenotype ? donorPawn.genes.xenotypeName : donorPawn.genes.XenotypeLabel;
 			closeOnAccept = false;
 			forcePause = true;
 			absorbInputAroundWindow = true;
 			searchWidgetOffsetX = GeneCreationDialogBase.ButSize.x * 2f + 4f;
 			libraryGenepacks.SortGenepacks();
 			unpoweredGenepacks.SortGenepacks();
+
+			GetPawnXenotype();
+		}
+
+		private void GetPawnXenotype()
+		{
+			if (donorPawn.genes.UniqueXenotype)
+            {
+				xenotypeName = donorPawn.genes.xenotypeName;
+				iconDef = donorPawn.genes.iconDef;
+            }
+			else
+            {
+				xenotypeDef = donorPawn.genes.Xenotype;
+				xenotypeName = donorPawn.genes.XenotypeLabel;
+				//FIXME: Can't get the iconDef of a XenotypeDef, so the xenotype icon in the bottom corner will be wrong. 
+				// Maybe do a crazy hack of creating a new XenotypeIconDef on the fly and assigning its icon path? This probably won't work for some reason
+				// The other alternative I can think of is to either patch or override (if possible) the method that draws the icon in GeneCreationDialogBase to be able to show the correct icon
+				//iconDef = donorPawn.genes.iconDef;
+			}
 		}
 
 		public override void PostOpen()
@@ -113,7 +134,7 @@ namespace Dark.Cloning
         private void StartAssembly()
 		{
 			started = true;
-			cloneExtractor.Start(selectedGenepacks, donorPawn, arc, xenotypeName?.Trim(), iconDef);
+			cloneExtractor.Start(selectedGenepacks, donorPawn, arc, xenotypeName?.Trim(), iconDef, xenotypeDef);
 			SoundDefOf.StartRecombining.PlayOneShotOnCamera();
 			Close(doCloseSound: false);
 		}
