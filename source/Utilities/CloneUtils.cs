@@ -24,22 +24,24 @@ namespace Dark.Cloning
 
         public static bool IsClone(this HumanEmbryo embryo)
         {
-            return embryo.TryGetComp<Comp_CloneEmbryo>() != null;
+            var cloneComp = embryo.TryGetComp<Comp_CloneEmbryo>();
+            return cloneComp != null && cloneComp.cloneData != null;
         }
         public static bool IsClone(this HumanEmbryo embryo, out Comp_CloneEmbryo cloneComp)
         {
             cloneComp = embryo.TryGetComp<Comp_CloneEmbryo>();
-            return cloneComp != null;
+            return cloneComp != null && cloneComp.cloneData != null;
         }
 
         public static bool IsClonePregnancy(this Hediff hediff)
         {
-            return hediff.TryGetComp<HediffComp_Pregnant_Clone>() != null;
+            var hediffComp = hediff.TryGetComp<HediffComp_Pregnant_Clone>();
+            return hediffComp != null && hediffComp.cloneData != null;
         }
-        public static bool IsClonePregnancy(this Hediff hediff_Pregnant, out HediffComp_Pregnant_Clone hediffComp)
+        public static bool IsClonePregnancy(this Hediff hediff, out HediffComp_Pregnant_Clone hediffComp)
         {
-            hediffComp = hediff_Pregnant.TryGetComp<HediffComp_Pregnant_Clone>();
-            return hediffComp != null;
+            hediffComp = hediff.TryGetComp<HediffComp_Pregnant_Clone>();
+            return hediffComp != null && hediffComp.cloneData != null;
         }
 
         public static void CopyEndogenesFromParent(ref GeneSet genes, HumanEmbryo embryo)
