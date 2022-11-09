@@ -92,6 +92,7 @@
     <Compile Include="AI\WorkGiver_CarryToCloneExtractor.cs" />
     <Compile Include="AI\WorkGiver_CarryToCloneVat.cs" />
     <Compile Include="AI\WorkGiver_HaulToCloneVat.cs" />
+    <Compile Include="Utilities\Mutations.cs" />
     <Compile Include="WorldComponents\CloneTrackerWorldComponent.cs" />
   </ItemGroup>
   <ItemGroup>

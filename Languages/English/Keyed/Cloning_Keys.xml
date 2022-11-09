@@ -21,7 +21,7 @@
   <Cloning_Settings_CloneXenogenes_Tooltip>If enabled, clones will also inherit the donor pawn's entire xenogene set.</Cloning_Settings_CloneXenogenes_Tooltip>
   <Cloning_Settings_CloneArchiteGenes>Clones inherit archite genes</Cloning_Settings_CloneArchiteGenes>
   <Cloning_Settings_CloneTraits>Clone traits</Cloning_Settings_CloneTraits>
-  <Cloning_Settings_MutationsXenogenes_Tooltip>If enabled, mutations are added as xenogenes, meaning they are not inherited if the clone has a child.</Cloning_Settings_MutationsXenogenes_Tooltip>
+  <Cloning_Settings_MutationsXenogenes_Tooltip>If enabled, mutations are added as xenogenes, meaning they are not inherited if the clone has a child and they can be removed by gene-modding the clone later on.</Cloning_Settings_MutationsXenogenes_Tooltip>
   <Cloning_Settings_GeneListHeader>Genes eligible to be added by mutations</Cloning_Settings_GeneListHeader>
   <Enabled>Enabled</Enabled>
   <Disabled>Disabled</Disabled>
@@ -66,7 +66,7 @@
   <CancelLoadPawnDesc>Cancel loading this with the selected people</CancelLoadPawnDesc>
   <CancelScanApplication>Cancel scan application</CancelScanApplication>
   <CancelScanApplicationDesc>Stops the current process of applying a brain scan to the contained pawn before completion.</CancelScanApplicationDesc>
-  <DonorGenes>Donor Xenotype</DonorGenes>
+  <DonorGenes>Donor Xenotype Xenogenes</DonorGenes>
   <FromDonorXenotype>Added by donor xenotype. Remove the entire xenotype to remove.</FromDonorXenotype>
   <ClickToRemove>Click to add or remove all of donor's xenogenes</ClickToRemove>
   <IsEndogeneTooltip>Germline gene from donor, cannot remove</IsEndogeneTooltip>

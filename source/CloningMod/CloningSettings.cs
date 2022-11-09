@@ -25,7 +25,7 @@ namespace Dark.Cloning
         static readonly IntRange defaultNumMutations = new IntRange(1, 3);
         public static IntRange numMutations = new IntRange(1, 3);
         public static bool addMutationsAsXenogenes = false;
-        public static Dictionary<string, int> genesEligibleForMutation = GeneUtils.defaultGenesEligible;
+        public static Dictionary<string, int> genesEligibleForMutation = Mutations.defaultGenesEligible;
 
 
         // Internal UI values
@@ -80,7 +80,7 @@ namespace Dark.Cloning
 
             listingStandard.ColumnWidth = inRect.width / 2f * 0.98f;
             listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref CloningSettings.inheritHair);
-            listingStandard.CheckboxLabeled("Cloning_Settings_CloneXenogenes".Translate(), ref CloningSettings.cloneXenogenes, "Cloning_Settings_CloneXenogenes_Tooltip".Translate());
+            
             if (CloningSettings.cloneXenogenes)
             {
                 listingStandard.DoIndent();
@@ -114,8 +114,8 @@ namespace Dark.Cloning
 
             listingStandard.ColumnWidth = inRect.width / 2f * 0.95f;
 
-            listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref CloningSettings.doRandomMutations);
             listingStandard.Label("Cloning_Mutations_Description".Translate());
+            listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref CloningSettings.doRandomMutations);
             if (CloningSettings.doRandomMutations)
             {
                 listingStandard.CheckboxLabeled("Cloning_Settings_MutationsXenogenes".Translate(), ref CloningSettings.addMutationsAsXenogenes, "Cloning_Settings_MutationsXenogenes_Tooltip".Translate());
@@ -174,16 +174,16 @@ namespace Dark.Cloning
                     foreach (GeneDef geneDef in GeneUtils.AllGenesCache.Values)
                     {
                         if (geneDef.defName == CloneDefOf.Clone.defName) continue;
-                        GeneUtils.SetEligible(geneDef.defName, true);
+                        Mutations.SetEligible(geneDef.defName, true);
                     }
                 }
                 selectButtonRect.position = new Vector2(selectButtonRect.x - ( selectButtonWidth + 6f ), selectButtonRect.y);
                 if (Widgets.ButtonText(selectButtonRect, "Cloning_Settings_Reset".Translate()))
                 {
                     CloningSettings.genesEligibleForMutation.Clear();
-                    foreach (string geneDefault in GeneUtils.defaultGenesEligible.Keys)
+                    foreach (string geneDefault in Mutations.defaultGenesEligible.Keys)
                     {
-                        CloningSettings.genesEligibleForMutation.Add(geneDefault, GeneUtils.defaultGenesEligible[geneDefault]);
+                        CloningSettings.genesEligibleForMutation.Add(geneDefault, Mutations.defaultGenesEligible[geneDefault]);
                     }
                 }
                 #endregion Selection Buttons
@@ -227,7 +227,7 @@ namespace Dark.Cloning
         {
             foreach (string gene in GeneUtils.AllGeneCategoriesCache[category])
             {
-                GeneUtils.SetEligible(gene, newEnabled);
+                Mutations.SetEligible(gene, newEnabled);
             }
         }
 
@@ -243,7 +243,7 @@ namespace Dark.Cloning
                 return;
             }
 
-            bool eligible = GeneUtils.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
+            bool eligible = Mutations.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
 
             // Actually draw the gene, using vanilla's built-in static method for drawing genes from a def. This comes with the benefit of having the tooltip with all the gene's info
             GeneUIUtility.DrawGeneDef(GeneUtils.GeneNamed(gene), buttonRect, GeneType.Endogene, eligible ? "Enabled".Translate() : "Disabled".Translate(), true, false);
@@ -271,7 +271,7 @@ namespace Dark.Cloning
             // Lastly, handle clicking on this gene, by flipflopping its eligibility status
             if (Widgets.ButtonInvisible(buttonRect))
             {
-                GeneUtils.SetEligible(gene, !eligible);
+                Mutations.SetEligible(gene, !eligible);
                 eligible = !eligible;
             }
         }
@@ -376,7 +376,7 @@ namespace Dark.Cloning
             {
                 if (genesEligibleForMutation == null || genesEligibleForMutation.Count <= 0)
                 {
-                    genesEligibleForMutation = GeneUtils.defaultGenesEligible;
+                    genesEligibleForMutation = Mutations.defaultGenesEligible;
                 }
             }
 

@@ -22,8 +22,6 @@ namespace Dark.Cloning
             GeneSet clonedGenes = new GeneSet();
 
             CloneUtils.CopyEndogenesFromParent(ref clonedGenes, __instance);
-
-            GeneUtils.ApplyRandomMutations(ref clonedGenes);
             
             clonedGenes.SortGenes();
 

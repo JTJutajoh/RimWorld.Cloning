@@ -183,13 +183,6 @@ namespace Dark.Cloning
             request.CanGeneratePawnRelations = false;
 
             // First copy basic data from the donor 
-            Pawn donor = cloneData.donorPawn;
-            if (donor == null)
-            {
-                Log.Error("Tried to modify the clone's PawnGenerationRequest, but was unable to determine the donor pawn from its cloneData.");
-                return request;
-            }
-
             request.FixedGender = cloneData.fixedGender;
 
             // Now, add the previously-chosen xenotype to the new pawn
@@ -204,7 +197,7 @@ namespace Dark.Cloning
                 request.ForcedXenotype = cloneData.xenotype;
             }
 
-            GeneUtils.TryAddMutationsToRequest(ref request);
+            Mutations.TryAddMutationsToRequest(ref request);
 
             return request;
         }
