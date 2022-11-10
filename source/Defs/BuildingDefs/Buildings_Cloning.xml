@@ -39,6 +39,7 @@
       <WorkToBuild>11000</WorkToBuild>
       <Mass>115</Mass>
       <Flammability>0.5</Flammability>
+      <AssemblySpeedFactor>0.3</AssemblySpeedFactor>
     </statBases>
     <costList>
       <Steel>500</Steel>
