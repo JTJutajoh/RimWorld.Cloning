@@ -105,6 +105,7 @@
     <Content Include="Defs\RecipeDefs\Recipes_ClonerMechSerum.xml" />
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
     <Content Include="Defs\WorkGiverDefs\WorkGivers.xml" />
+    <Content Include="News\UpdateFeatures.xml" />
     <Content Include="Patches\CloneCompPatches.xml" />
     <Content Include="To Do.txt" />
   </ItemGroup>
