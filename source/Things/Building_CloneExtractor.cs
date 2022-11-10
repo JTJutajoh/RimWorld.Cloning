@@ -385,7 +385,7 @@ namespace Dark.Cloning
         }
 
         //TODO: Remove brain scanning drop
-        private void ProduceBrainScan(Pawn donor, IntVec3 intVec3)
+        /*private void ProduceBrainScan(Pawn donor, IntVec3 intVec3)
         {
             BrainScan brainScan = (BrainScan)ThingMaker.MakeThing(CloneDefOf.BrainScan);
             BrainUtil.ScanPawn(ContainedPawn, brainScan);
@@ -401,7 +401,7 @@ namespace Dark.Cloning
                         (TargetInfo) (Thing) brainScan
                     }
                 ), MessageTypeDefOf.PositiveEvent);
-        }
+        }*/
 
         private void Finish()
         {
@@ -435,7 +435,7 @@ namespace Dark.Cloning
 
                     break;
                 case CloneExtractorModes.Brain:
-                    ProduceBrainScan(containedPawn, intVec3);
+                    //ProduceBrainScan(containedPawn, intVec3);
                     break;
                 default:
                     Log.Error("Clone Extractor failed, invalid mode");
@@ -518,11 +518,12 @@ namespace Dark.Cloning
                     currentMode = CloneExtractorModes.Embryo;
                     SelectPawn(selPawn);
                 }), selPawn, this);
-                yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this) + " " + "Mode_BrainScan".Translate(), delegate
+                //TODO: Brain scanning float menu option disabled on Clone Extractor
+                /*yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption("EnterBuilding".Translate(this) + " " + "Mode_BrainScan".Translate(), delegate
                 {
                     currentMode = CloneExtractorModes.Brain;
                     SelectPawn(selPawn);
-                }), selPawn, this);
+                }), selPawn, this);*/
             }
             else if (base.SelectedPawn == selPawn && !selPawn.IsPrisonerOfColony)
             {
@@ -591,7 +592,8 @@ namespace Dark.Cloning
                 }
 
                 // Button to switch modes
-                Command_Action toggleModeCommandAction = new Command_Action();
+                //TODO: Clone Extractor mode switch gizmo disabled until brain scanning is ready
+                /*Command_Action toggleModeCommandAction = new Command_Action();
                 toggleModeCommandAction.defaultLabel = "Cloning_CloneExtractorModeSwitch".Translate();
                 toggleModeCommandAction.defaultDesc = "Cloning_InsertPersonBrainScanDesc".Translate();
                 toggleModeCommandAction.icon = GeneSetHolderBase.GeneticInfoTex.Texture; //TODO: Replace this gizmo texture
@@ -619,7 +621,7 @@ namespace Dark.Cloning
                 {
                     toggleModeCommandAction.Disable("Cloning_ExtractorWorking".Translate().CapitalizeFirst());
                 }
-                yield return toggleModeCommandAction;
+                yield return toggleModeCommandAction;*/
 
                 Command_Action command_Action4 = new Command_Action();
                 command_Action4.defaultLabel = "InsertPerson".Translate() + "...";
@@ -686,7 +688,6 @@ namespace Dark.Cloning
                     str1 += "\n";
                 string str2 = str1 + "Cloning_ExtractingCloneFrom".Translate(this.ContainedPawn.Named("PAWN")).Resolve() + "\n";
                 str1 = !this.PowerOn ? (string)( str2 + "ExtractionPausedNoPower".Translate() ) : str2 + "DurationLeft".Translate((NamedArgument)this.ticksRemaining.ToStringTicksToPeriod()).Resolve();
-                str1 = str1 + currentMode;
             }
             return str1;
         }

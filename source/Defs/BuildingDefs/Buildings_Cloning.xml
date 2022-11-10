@@ -63,7 +63,7 @@
     </comps>
   </ThingDef>
 
-  <ThingDef ParentName="BuildingBase">
+  <!--<ThingDef ParentName="BuildingBase">
     <defName>CloneStorageVat</defName>
     <label>clone storage vat</label>
     <description>A vat for indefinitely storing clones and applying clone-related operations such as brain scans. Suspends the containing pawn in cryptosleep.</description>
@@ -98,8 +98,7 @@
     <drawerType>MapMeshAndRealTime</drawerType>
     <fillPercent>0.5</fillPercent>
     <canOverlapZones>false</canOverlapZones>
-    <!--Disabled, pending deletion-->
-    <!--<designationCategory>Biotech</designationCategory>-->
+    <designationCategory>Biotech</designationCategory>
     <uiOrder>2102</uiOrder>
     <hasInteractionCell>true</hasInteractionCell>
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
@@ -122,6 +121,6 @@
       </li>
       <li Class="CompProperties_Flickable"/>
     </comps>
-  </ThingDef>
+  </ThingDef>-->
 
 </Defs>

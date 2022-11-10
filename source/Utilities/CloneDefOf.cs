@@ -14,8 +14,8 @@ namespace Dark.Cloning
         public static GeneDef Clone;
         public static JobDef ScanCorpse;
         public static ThingDef CloneExtractor;
-        public static ThingDef CloneStorageVat;
-        public static ThingDef BrainScan;
+        //public static ThingDef CloneStorageVat;
+        //public static ThingDef BrainScan;
 
         static CloneDefOf()
         {

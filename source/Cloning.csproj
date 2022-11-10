@@ -104,12 +104,13 @@
     <Content Include="Defs\JobDefs\Jobs_Misc.xml" />
     <Content Include="Defs\RecipeDefs\Recipes_ClonerMechSerum.xml" />
     <Content Include="Defs\ResearchProjectDefs\ResearchProjects_Cloning.xml" />
-    <Content Include="Defs\ThingDefs_Items\Items_Exotic.xml" />
     <Content Include="Defs\WorkGiverDefs\WorkGivers.xml" />
     <Content Include="Patches\CloneCompPatches.xml" />
     <Content Include="To Do.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Defs\ThingDefs_Items\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rmdir "$(SolutionDir)$(ProjectName)/Defs" /s /q

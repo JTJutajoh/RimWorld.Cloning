@@ -45,8 +45,6 @@ namespace Dark.Cloning
         /// </summary>
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            Log.Message("Cloning Patching...");
-
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
             {                

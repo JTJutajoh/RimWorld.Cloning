@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Dark.Cloning
 {
-    public class BrainScan : ThingWithComps
+    /*public class BrainScan : ThingWithComps
     {
         public Thing implantTarget;
 
@@ -134,6 +134,6 @@ namespace Dark.Cloning
 
             return result;
         }
-    }
+    }*/
 
 }

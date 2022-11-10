@@ -9,7 +9,7 @@ using Verse.AI;
 
 namespace Dark.Cloning
 {
-    class WorkGiver_CarryToCloneVat : WorkGiver_CarryToBuilding
+    /*class WorkGiver_CarryToCloneVat : WorkGiver_CarryToBuilding
 	{
 		public override ThingRequest ThingRequest => ThingRequest.ForDef(CloneDefOf.CloneStorageVat);
 
@@ -17,5 +17,5 @@ namespace Dark.Cloning
 		{
 			return !ModsConfig.BiotechActive;
 		}
-	}
+	}*/
 }

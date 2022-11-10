@@ -9,7 +9,7 @@ using Verse.AI;
 
 namespace Dark.Cloning
 {
-    class WorkGiver_HaulToCloneVat : WorkGiver_Scanner
+    /*class WorkGiver_HaulToCloneVat : WorkGiver_Scanner
     {
         public override ThingRequest PotentialWorkThingRequest => ThingRequest.ForDef(CloneDefOf.CloneStorageVat);
 
@@ -73,5 +73,5 @@ namespace Dark.Cloning
 			}
 			return true;
 		}
-	}
+	}*/
 }

@@ -4,7 +4,9 @@
   <ThingDef ParentName="MechSerumBase">
     <defName>MechSerumCloner</defName>
     <label>cloning mech serum</label>
-    <description>A one-use super-dose of mechanites tuned to collect enough genetic material from the dead to miraculously create a new clone embryo. Administered to a corpse, mechanites break down whatever remains of the body and turn it into a living embryo that can be grown into a perfect copy.</description>
+    <description>A one-use super-dose of mechanites tuned to collect enough genetic material from the dead to miraculously create a new clone embryo. Administered to a corpse, mechanites break down whatever remains of the body and turn it into a living embryo that can be grown into a perfect copy, including all of the original person's germline genes.
+
+Does not clone xenogenes.</description>
     <graphicData>
       <texPath>Things/Item/Special/ClonerMechSerum</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -38,7 +40,7 @@
     </comps>
   </ThingDef>
 
-  <ThingDef>
+  <!--<ThingDef>
     <defName>BrainScan</defName>
     <label>brain scan</label>
     <description>A hard-copy backup of a person's entire consciousness, ready to be applied to a new host. This process essentially kills the personality that was there before application, completely overwriting it with the one stored on this backup.</description>
@@ -73,6 +75,6 @@
     <descriptionHyperlinks>
       <ThingDef>CloneExtractor</ThingDef>
     </descriptionHyperlinks>
-  </ThingDef>
+  </ThingDef>-->
   
 </Defs>

@@ -38,6 +38,7 @@ namespace Dark.Cloning
 
             Harmony.DEBUG = false;
 
+            Log.Message("[Dark.Cloning] Harmony patches patching...");
             harmony.PatchAll();
         }
     }

@@ -12,7 +12,8 @@ using UnityEngine;
 namespace Dark.Cloning
 {
 	// Based on the vanilla GrowthVat class, with different behavior
-	public class Building_CloneStorageVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder, IOpenable
+	//TODO: Clone Storage Vat disabled. Possibly pending deletion
+	/*public class Building_CloneStorageVat : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder, IOpenable
 	{
 		public BrainScan selectedBrainScan;
 
@@ -590,5 +591,5 @@ namespace Dark.Cloning
         {
 			EjectPawn();
         }
-    }
+    }*/
 }

@@ -10,7 +10,7 @@ namespace Dark.Cloning
 {
     public static class BrainUtil
     {
-        public static void ScanPawn(Pawn pawn, BrainScan brainScan)
+        /*public static void ScanPawn(Pawn pawn, BrainScan brainScan)
         {
             brainScan.sourceLabel = pawn?.Name?.ToStringFull ?? null;
             brainScan.sourceName = pawn?.Name ?? null;
@@ -90,7 +90,7 @@ namespace Dark.Cloning
 
             // Social relations
             //TODO: Copy social relations
-        }
+        }*/
     }
 
     public class SkillRecordBackup : IExposable

@@ -38,7 +38,7 @@
     </comps>
   </ThingDef>
 
-  <ThingDef>
+  <!--<ThingDef>
     <defName>BrainScan</defName>
     <label>brain scan</label>
     <description>A hard-copy backup of a person's entire consciousness, ready to be applied to a new host. This process essentially kills the personality that was there before application, completely overwriting it with the one stored on this backup.</description>
@@ -73,6 +73,6 @@
     <descriptionHyperlinks>
       <ThingDef>CloneExtractor</ThingDef>
     </descriptionHyperlinks>
-  </ThingDef>
+  </ThingDef>-->
   
 </Defs>
