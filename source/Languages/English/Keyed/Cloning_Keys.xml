@@ -67,8 +67,11 @@
   <CancelScanApplication>Cancel scan application</CancelScanApplication>
   <CancelScanApplicationDesc>Stops the current process of applying a brain scan to the contained pawn before completion.</CancelScanApplicationDesc>
   <DonorGenes>Donor Xenotype Xenogenes</DonorGenes>
-  <FromDonorXenotype>Added by donor xenotype. Remove the entire xenotype to remove.</FromDonorXenotype>
+  <FromDonorXenotype>Added by donor xenotype, cannot be removed individually.
+
+Removing this gene will remove all other genes added by the donor's xenotype</FromDonorXenotype>
   <ClickToRemove>Click to add or remove all of donor's xenogenes</ClickToRemove>
   <IsEndogeneTooltip>Germline gene from donor, cannot remove</IsEndogeneTooltip>
   <CloneEmbryoInspectString>Clone embryo</CloneEmbryoInspectString>
+  <DonorXenotypeIncluded>Donor's xenotype genes being included</DonorXenotypeIncluded>
 </LanguageData>
