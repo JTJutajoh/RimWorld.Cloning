@@ -4,7 +4,9 @@
   <ThingDef ParentName="MechSerumBase">
     <defName>MechSerumCloner</defName>
     <label>cloning mech serum</label>
-    <description>A one-use super-dose of mechanites tuned to collect enough genetic material from the dead to miraculously create a new clone embryo. Administered to a corpse, mechanites break down whatever remains of the body and turn it into a living embryo that can be grown into a perfect copy.</description>
+    <description>A one-use super-dose of mechanites tuned to collect enough genetic material from the dead to miraculously create a new clone embryo. Administered to a corpse, mechanites break down whatever remains of the body and turn it into a living embryo that can be grown into a perfect copy, including all of the original person's germline genes.
+
+Does not clone xenogenes.</description>
     <graphicData>
       <texPath>Things/Item/Special/ClonerMechSerum</texPath>
       <graphicClass>Graphic_Single</graphicClass>
