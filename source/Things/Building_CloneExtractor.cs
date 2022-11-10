@@ -460,7 +460,7 @@ namespace Dark.Cloning
             if (this.innerContainer.TryAddOrTransfer((Thing)pawn))
             {
                 this.startTick = Find.TickManager.TicksGame;
-                this.ticksRemaining = TicksToMakeEmbryo;
+                this.ticksRemaining = Mathf.RoundToInt((float)Mathf.RoundToInt(GeneTuning.ComplexityToCreationHoursCurve.Evaluate(TotalGCX) * 2500f) / this.GetStatValue(StatDefOf.AssemblySpeedFactor));
             }
             if (num == 0)
                 return;
