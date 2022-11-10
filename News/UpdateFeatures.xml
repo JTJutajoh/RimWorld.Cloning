@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <HugsLib.UpdateFeatureDef Abstract="true" Name="Cloning.UpdateFeatureBase">
+    <modNameReadable>Biotech Cloning</modNameReadable>
+    <modIdentifier>Dark.Cloning</modIdentifier>
+    <linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2881790485</linkUrl>
+  </HugsLib.UpdateFeatureDef>
+
+  <HugsLib.UpdateFeatureDef ParentName="Cloning.UpdateFeatureBase">
+    <defName>Dark.Cloning_0.2</defName>
+    <assemblyVersion>0.2</assemblyVersion>
+    <content>An overhaul of the cloning system that should have better compatibility and most importantly, includes a way to clone xenogenes.
+|
+|
+|Save Compatibility:
+|This update SHOULD be compatible with saves using the previous version.
+|• Clones made with the previous version of the mod will have the Clone gene as the wrong gene type.
+    ○ This should have no significant impact on gameplay aside from the fact that the clone's natural children will inherit the Clone gene, which may log warnings.
+    ○ If you have issues with this, use dev mode to remove the Clone gene.
+|• Embryos created with the previous version that have not been gestated yet will not inherit their clone data properly.
+    ○ This includes embryos currently growing in a growth vat.
+    ○ The entire system for clone inheritance was changed behind the scenes, pre-existing embryos will not have any clone data associated with them.
+|
+|
+
+|img:updateimages/GeneProcessorLinking
+|Build Gene Processors near the Clone Extractor to raise the maximum genetic complexity you can apply to new clones, just like the Gene Assembler.
+|
+|
+|When extracting a clone embryo using the Clone Extractor, a new dialog will be shown where you can choose the xenogenes of the resulting clone.
+|Clone Creation Dialog:
+|img:updateimages/CloneCreationDialog_0_2
+|Breakdown:
+|• TOP: List of all genes to be cloned.
+Includes:
+  ○ Germline genes inherited from the donor
+    ◦ These cannot be changed.
+  ○ Xenogenes inherited from the donor
+    ◦ Shown slightly darker and with a lock symbol.
+    ◦ You may click any one of these to remove the entire xenotype's xenogenes.
+    ◦ Removing one xenogene from the donor removes them all.
+  ○ Xenogenes added from genepacks
+|• MIDDLE: Xenogenes from the donor pawn's xenotype
+  ○ By default, these will all be included in the top section, leaving this section blank unless you remove them from the clone.
+|• BOTTOM: Genepacks stored in nearby gene banks
+NOTE: Clicking on even one of these to add it to the clone's xenotype will cause the xenotype of the resulting clone to be a unique, new xenotype. This change is only undone if you back out of the Clone Creation Dialog and start again 
+|
+|You may choose to have the cloned pawn inherit all of the donor's xenogenes, or none of them. You cannot pick individual genes and choose from them.
+You can, however, include xenogenes from genepacks in nearby gene banks, just like the vanilla Biotech gene assembler. Use this to design your perfect clone supersoldiers.
+|If no additional xenogenes are added, the resulting clone will have the exact same xenotype as the donor pawn (A Hussar donor will result in a Hussar clone).
+|
+|
+|As always, this mod is still a beta, report any bugs you encounter on the Steam workshop page.
+Please read the mod description on the Steam Workshop, including the Known Issues list.
+    </content>
+    <targetAudience>AllPlayers</targetAudience>
+  </HugsLib.UpdateFeatureDef>
+  
+</Defs>
