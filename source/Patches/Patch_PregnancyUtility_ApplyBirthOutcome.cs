@@ -213,6 +213,12 @@ namespace Dark.Cloning
 
             CloneData cloneData = cloneGene.cloneData;
 
+            if (cloneData == null)
+            {
+                Log.Warning($"Tried to get cloneData from Clone gene on pawn {pawn.LabelCap}, but it was null.");
+                return;
+            }
+
             if (Patch_PregnancyUtility_ApplyBirthOutcome.cloneData == null)
             {
                 Log.Error($"Clone gene on pawn {pawn.LabelCap} but the statically-stored cloneData in {nameof(Patch_PregnancyUtility_ApplyBirthOutcome)} has no data.");
