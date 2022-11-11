@@ -140,7 +140,7 @@ namespace Dark.Cloning
         private void StartAssembly()
 		{
 			started = true;
-			cloneExtractor.Start(selectedGenepacks, donorPawn, arc, xenotypeName?.Trim(), iconDef, !UniqueXenotype ? xenotypeDef : null);
+			cloneExtractor.Start(selectedGenepacks, donorPawn, CloningSettings.architeGenesFree ? 0 : arc, xenotypeName?.Trim(), iconDef, !UniqueXenotype ? xenotypeDef : null);
 			SoundDefOf.StartRecombining.PlayOneShotOnCamera();
 			Close(doCloseSound: false);
 		}
@@ -739,7 +739,7 @@ namespace Dark.Cloning
 				Messages.Message("MessageNoSelectedGenepacks".Translate(), null, MessageTypeDefOf.RejectInput, historical: false);
 				return false;
 			}*/
-			if (arc > 0 && !ResearchProjectDefOf.Archogenetics.IsFinished)
+			if (arc > 0 && !ResearchProjectDefOf.Archogenetics.IsFinished && !CloningSettings.architeGenesFree)
 			{
 				Messages.Message("AssemblingRequiresResearch".Translate(ResearchProjectDefOf.Archogenetics), null, MessageTypeDefOf.RejectInput, historical: false);
 				return false;
@@ -824,6 +824,28 @@ namespace Dark.Cloning
 				highlightAllDonorGenes = true;
 			else
 				highlightAllDonorGenes = false;
+        }
+
+        protected override void OnGenesChanged()
+        {
+            base.OnGenesChanged();
+
+			if (CloningSettings.xenotypeGenesFree)
+            {
+				foreach (Genepack genepack in donorGenepacks)
+				{
+					this.gcx -= genepack.GeneSet.ComplexityTotal;
+					this.gcx = Mathf.Max(this.gcx, 0); // Just to be safe, make sure it can't go negative for some reason
+				}
+            }
+			if (CloningSettings.architeGenesFree)
+            {
+				foreach (Genepack genepack in donorGenepacks)
+                {
+					this.arc -= genepack.GeneSet.ArchitesTotal;
+					this.arc = Mathf.Max(this.arc, 0);
+                }
+            }
         }
     }
 }

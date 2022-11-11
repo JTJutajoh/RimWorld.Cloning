@@ -71,7 +71,7 @@ namespace Dark.Cloning
             }
         }
 
-        private int TotalGCX //TODO: Make TotalGCX into a static utility instead
+        private int TotalGCX
         {
             get
             {

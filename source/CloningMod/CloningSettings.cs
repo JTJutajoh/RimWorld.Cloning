@@ -14,9 +14,9 @@ namespace Dark.Cloning
     {
         public static bool cloningCooldown = true;
         public static bool inheritHair = true;
-        public static bool cloneXenogenes = false;
-        public static bool cloneArchiteGenes = false;
         public static bool cloneTraits = false;
+        public static bool xenotypeGenesFree = false;
+        public static bool architeGenesFree = false;
         static readonly IntRange defaultCloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
         public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7,14);
 
@@ -36,7 +36,8 @@ namespace Dark.Cloning
         public enum SettingsTab
         {
             Main,
-            Mutations
+            Mutations,
+            Cheats
         }
         SettingsTab currentTab;
 
@@ -53,6 +54,9 @@ namespace Dark.Cloning
                 case SettingsTab.Mutations:
                     DoMutationsTabContents(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
                     break;
+                case SettingsTab.Cheats:
+                    DoCheatsTabContents(inRect.BottomPartPixels(inRect.height - tabHeight - 24f));
+                    break;
                 default:
                     break;
             }
@@ -62,7 +66,8 @@ namespace Dark.Cloning
         {
             List<KeyValuePair<SettingsTab, string>> tabsList = new List<KeyValuePair<SettingsTab, string>> {
                 new KeyValuePair<SettingsTab, string>(SettingsTab.Main, "Cloning_Settings_Tab_Main".Translate() ),
-                new KeyValuePair<SettingsTab, string>(SettingsTab.Mutations, "Cloning_Settings_Tab_Mutations".Translate())
+                new KeyValuePair<SettingsTab, string>(SettingsTab.Mutations, "Cloning_Settings_Tab_Mutations".Translate()),
+                new KeyValuePair<SettingsTab, string>(SettingsTab.Cheats, "Cloning_Settings_Tab_Cheats".Translate())
             };
             List<TabRecord> tabs = new List<TabRecord>();
 
@@ -80,16 +85,6 @@ namespace Dark.Cloning
 
             listingStandard.ColumnWidth = inRect.width / 2f * 0.98f;
             listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref CloningSettings.inheritHair);
-            
-            if (CloningSettings.cloneXenogenes)
-            {
-                listingStandard.DoIndent();
-                listingStandard.CheckboxLabeled("Cloning_Settings_CloneArchiteGenes".Translate(), ref CloningSettings.cloneArchiteGenes);
-                listingStandard.DoOutdent();
-            }
-            else
-                listingStandard.Gap(Text.CalcHeight("Cloning_Settings_CloneXenogenes".Translate(), listingStandard.ColumnWidth));
-            //listingStandard.CheckboxLabeled("Cloning_Settings_CloneTraits".Translate(), ref Settings.cloneTraits);
 
             listingStandard.NewColumn();
 
@@ -203,6 +198,19 @@ namespace Dark.Cloning
                 UIUtility.EndScrollView(scrollList, ref scrollHeight);
                 #endregion Mutations Gene list
             }
+            listingStandard.End();
+        }
+
+        void DoCheatsTabContents(Rect inRect)
+        {
+            Listing_Standard listingStandard = new Listing_Standard();
+            listingStandard.Begin(inRect);
+
+            listingStandard.ColumnWidth /= 2;
+
+            listingStandard.CheckboxLabeled("Cloning_Settings_XenotypeGenesFree".Translate(), ref xenotypeGenesFree, "Cloning_Settings_XenotypeGenesFree_Tooltip".Translate());
+            listingStandard.CheckboxLabeled("Cloning_Settings_ArchitesFree".Translate(), ref architeGenesFree, "Cloning_Settings_ArchitesFree_Tooltip".Translate());
+
             listingStandard.End();
         }
 
@@ -366,10 +374,10 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref randomMutationChance, "randomMutationChance", 0.3f);
             Scribe_Values.Look(ref numMutations, "numMutations", defaultNumMutations);
             Scribe_Values.Look(ref addMutationsAsXenogenes, "addMutationsAsXenogenes", false);
-            Scribe_Values.Look(ref cloneXenogenes, "cloneXenogenes", false);
-            Scribe_Values.Look(ref cloneArchiteGenes, "cloneArchiteGenes", false);
             Scribe_Values.Look(ref cloneTraits, "cloneTraits", false);
             Scribe_Collections.Look(ref genesEligibleForMutation, "genesEligibleForMutation", LookMode.Value);
+            Scribe_Values.Look(ref xenotypeGenesFree, "xenotypeGenesFree", false);
+            Scribe_Values.Look(ref architeGenesFree, "architeGenesFree", false);
 
             // Check if the dictionary loaded was empty, and load the default instead
             if (Scribe.mode == LoadSaveMode.LoadingVars)

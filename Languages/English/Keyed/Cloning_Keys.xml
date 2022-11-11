@@ -74,4 +74,9 @@ Removing this gene will remove all other genes added by the donor's xenotype</Fr
   <IsEndogeneTooltip>Germline gene from donor, cannot remove</IsEndogeneTooltip>
   <CloneEmbryoInspectString>Clone embryo</CloneEmbryoInspectString>
   <DonorXenotypeIncluded>Donor's xenotype genes being included</DonorXenotypeIncluded>
+  <Cloning_Settings_Tab_Cheats>Cheats</Cloning_Settings_Tab_Cheats>
+  <Cloning_Settings_XenotypeGenesFree>Free xenotype xenogene cloning</Cloning_Settings_XenotypeGenesFree>
+  <Cloning_Settings_XenotypeGenesFree_Tooltip>If enabled, the donor pawn's xenogenes will not contribute to the genetic complexity of the clone. Meaning you can include the donor pawn's entire xenotype for free. Not very balanced. Note that this does not change how the xenogenes effect the time it takes for a clone to be created.</Cloning_Settings_XenotypeGenesFree_Tooltip>
+  <Cloning_Settings_ArchitesFree>Free xenotype archite gene cloning</Cloning_Settings_ArchitesFree>
+  <Cloning_Settings_ArchitesFree_Tooltip>If enabled, archite genes in the donor pawn can be cloned for free without needing archites. Very unbalanced.</Cloning_Settings_ArchitesFree_Tooltip>
 </LanguageData>
