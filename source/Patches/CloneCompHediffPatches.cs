@@ -30,7 +30,8 @@ namespace Dark.Cloning
             if (__state == null) return;
 
             Hediff pregnantHediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnantHuman);
-            if (pregnantHediff.IsClonePregnancy(out HediffComp_Pregnant_Clone cloneComp))
+            var cloneComp = pregnantHediff.TryGetComp<HediffComp_Pregnant_Clone>();
+            if (cloneComp != null)
             {
                 cloneComp.cloneData = __state;
             }
