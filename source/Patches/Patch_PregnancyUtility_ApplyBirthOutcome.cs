@@ -130,6 +130,8 @@ namespace Dark.Cloning
         /// <summary>
         /// A method that takes the pawn immediately after it was generated, and returns it again
         /// Disabled, not necessary but maybe in the future.
+        /// Commented-out code in the transpiler injects this method immediately after the pawn is generated, before the rest of the method is run
+        /// For now, though, the postfix is good enough
         /// </summary>
         static Pawn ModifyPawn(Pawn pawn)
         {
