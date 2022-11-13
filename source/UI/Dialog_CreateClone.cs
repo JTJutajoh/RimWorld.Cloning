@@ -342,39 +342,39 @@ namespace Dark.Cloning
 		private bool DrawDonorGenepack(Genepack genepack, ref float curX, float curY, float packWidth, float packHeight, bool adding, Rect containingRect)
 		{
 			bool result = false;
-			Rect rect = new Rect(curX, curY, packWidth, packHeight);
+			Rect packRect = new Rect(curX, curY, packWidth, packHeight);
 			if (genepack.GeneSet == null || genepack.GeneSet.GenesListForReading.NullOrEmpty())
 			{
 				Text.Anchor = TextAnchor.MiddleCenter;
 				GUI.color = ColoredText.SubtleGrayColor;
-				Widgets.Label(rect, "(" + "NoneLower".Translate() + ")");
+				Widgets.Label(packRect, "(" + "NoneLower".Translate() + ")");
 				GUI.color = Color.white;
 				Text.Anchor = TextAnchor.UpperLeft;
 				return result;
 			}
-			if (!containingRect.Overlaps(rect))
+			if (!containingRect.Overlaps(packRect))
 			{
-				curX = rect.xMax + 4f;
+				curX = packRect.xMax + 4f;
 				return false;
 			}
 			if (selectedGenepacks.Contains(genepack))
             {
 				// Draw an empty box instead if this genepack is currently being included
 
-				Widgets.DrawHighlight(rect);
+				Widgets.DrawHighlight(packRect);
 
 				Text.Anchor = TextAnchor.MiddleCenter;
 				GUI.color = ColoredText.SubtleGrayColor;
-				Widgets.Label(rect, "(" + "DonorXenotypeIncluded".Translate() + ")");
+				Widgets.Label(packRect, "(" + "DonorXenotypeIncluded".Translate() + ")");
 				GUI.color = Color.white;
 				Text.Anchor = TextAnchor.UpperLeft;
 
 				return false;
             }
 
-			Widgets.DrawHighlight(rect);
+			Widgets.DrawHighlight(packRect);
 			GUI.color = GeneCreationDialogBase.OutlineColorUnselected;
-			Widgets.DrawBox(rect);
+			Widgets.DrawBox(packRect);
 			GUI.color = Color.white;
 			curX += 4f;
 			float startX = curX;
@@ -411,22 +411,23 @@ namespace Dark.Cloning
 					curY += GeneCreationDialogBase.GeneSize.y + 4f;
                 }
 			}
-			bool mouseOver = Mouse.IsOver(rect);
+			Widgets.InfoCardButton(packRect.xMax - 24f, packRect.y + 2f, genepack);
+			bool mouseOver = Mouse.IsOver(packRect);
 			if ( mouseOver)
 			{
-				Widgets.DrawHighlight(rect);
+				Widgets.DrawHighlight(packRect);
 			}
 				
 			if (!adding)
 			{
-				Widgets.DrawHighlight(rect);
+				Widgets.DrawHighlight(packRect);
 			}
 			
-			if (Widgets.ButtonInvisible(rect))
+			if (Widgets.ButtonInvisible(packRect))
 			{
 				result = true;
 			}
-			curX = Mathf.Max(curX, rect.xMax + 14f);
+			curX = Mathf.Max(curX, packRect.xMax + 14f);
 			return result;
 		}
 
