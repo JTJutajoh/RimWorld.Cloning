@@ -88,7 +88,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipes\Recipe_ExtractClone.cs" />
     <Compile Include="CloningMod\CloningSettings.cs" />
-    <Compile Include="Patches\Patch_HumanEmbryo_TryPopulateGenes.cs" />
     <Compile Include="Utilities\CloneUtils.cs" />
     <Compile Include="AI\WorkGiver_CarryToCloneExtractor.cs" />
     <Compile Include="AI\WorkGiver_CarryToCloneVat.cs" />
@@ -98,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="Patches\ModCompatPatches.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Defs\GeneDefs\GeneDefs_Clone.xml" />

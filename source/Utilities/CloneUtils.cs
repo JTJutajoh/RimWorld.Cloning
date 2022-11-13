@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using RimWorld;
 using Verse;
 using HarmonyLib;
@@ -12,6 +13,9 @@ namespace Dark.Cloning
 {
     public static class CloneUtils
     {
+        //TODO: If the devs add a public property, replace this
+        static FieldInfo HumanEmbryo_geneSet = AccessTools.Field(typeof(HumanEmbryo), "geneSet");
+
         public static bool IsClone(this Pawn pawn)
         {
             return pawn.genes.HasGene(CloneDefOf.Clone);
@@ -44,6 +48,7 @@ namespace Dark.Cloning
             return hediffComp != null && hediffComp.cloneData != null;
         }
 
+        [Obsolete]
         public static void CopyEndogenesFromParent(ref GeneSet genes, HumanEmbryo embryo)
         {
             CompHasPawnSources sources = embryo.TryGetComp<CompHasPawnSources>();
@@ -63,11 +68,22 @@ namespace Dark.Cloning
             }
         }
 
+        public static void CopyEndogenesFrom(Pawn pawn, out GeneSet genes)
+        {
+            genes = new GeneSet();
+            foreach (Gene gene in pawn.genes.Endogenes)
+            {
+                if (gene.def == CloneDefOf.Clone) continue;
+
+                genes.AddGene(gene.def);
+            }
+            genes.SortGenes();
+        }
+
         /// <summary>
 		/// Modified version of vanilla's ProduceEmbryo. Made static so it can be reused.<br />
         /// Handles marking the produced embryo as a clone so that TryPopulateGenes() correctly adds clone genes
 		/// </summary>
-         
         public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, CloneData cloneData)
         {
             HumanEmbryo humanEmbryo = (HumanEmbryo)ThingMaker.MakeThing(ThingDefOf.HumanEmbryo, null);
@@ -82,20 +98,21 @@ namespace Dark.Cloning
                 Log.Error($"HumanEmbryo {humanEmbryo.LabelCap} missing a {nameof(Comp_CloneEmbryo)}. Did a malformed patch from another mod overwrite it?");
             else
                 cloneComp.cloneData = cloneData;
-            
-            // Now call the vanilla method taht would normally populate the embryo's genes based on the parents
-            //but, since we marked this embryo as being a clone by giving it non-null cloneData, the patch will
-            //instead take over and copy the genes from the cloneData we just assigned the embryo
-            //HACK: Look into using AccessTools to set the embryo's geneSet field directly instead of using this indirect harmony patch method
-            humanEmbryo.TryPopulateGenes();
+
+            //SOMEDAY: Instead of silently adding the clone gene to embryos, force it in the clone creation dialog
+            cloneComp.cloneData.xenogenes.Add(CloneDefOf.Clone);
+
+            // Instead of calling TryPopulateGenes, let's do this manually
+            CopyEndogenesFrom(donor, out GeneSet clonedGenes);
+
+            //TODO: If the devs add a public property, replace this
+            HumanEmbryo_geneSet.SetValue(humanEmbryo, clonedGenes); 
 
             return humanEmbryo;
         }
 
 		public static HumanEmbryo ProduceCloneEmbryo(Pawn donor, CustomXenotype customXenotype)
         {
-            //SOMEDAY: Instead of silently adding the clone gene to embryos, force it in the clone creation dialog
-            customXenotype.genes.Add(CloneDefOf.Clone);
             CloneData cloneData = new CloneData(donor, customXenotype);
 
             return ProduceCloneEmbryo(donor, cloneData);
