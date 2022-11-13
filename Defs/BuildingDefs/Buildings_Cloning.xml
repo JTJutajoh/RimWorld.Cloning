@@ -61,6 +61,10 @@
       </li>
       <li Class="CompProperties_Flickable"/>
     </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ShowFacilitiesConnections</li>
+    </placeWorkers>
+    <drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
   </ThingDef>
 
   <!--<ThingDef ParentName="BuildingBase">
