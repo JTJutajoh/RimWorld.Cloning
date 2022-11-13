@@ -10,7 +10,8 @@ using Verse.AI;
 namespace Dark.Cloning
 {
     /// <summary>
-    /// Based on vanilla Building_CloneExtractor
+    /// Based on vanilla Building_CloneExtractor, with a lot of copied functionality from Building_GeneAssembler<br />
+    /// Kind of an unholy frankenstein of a class. A refactor would be nice someday
     /// </summary>
     [StaticConstructorOnStartup]
     public class Building_CloneExtractor : Building_Enterable, IThingHolderWithDrawnPawn, IThingHolder
@@ -26,7 +27,7 @@ namespace Dark.Cloning
         private Effecter progressBar;
         private const int TicksToApplyScan = 30000;
         private const int TicksToMakeEmbryo = 30000;
-        private float WorkingPowerUsageFactor = 8f;
+        //private float WorkingPowerUsageFactor = 8f;
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
         public List<Thing> ConnectedFacilities => this.TryGetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading;
@@ -185,7 +186,7 @@ namespace Dark.Cloning
             base.Tick();
             this.innerContainer.ThingOwnerTick();
             if (this.IsHashIntervalTick(250))
-                this.PowerTraderComp.PowerOutput = -this.PowerComp.Props.PowerConsumption * ( this.Working ? this.WorkingPowerUsageFactor : 1f );
+                this.PowerTraderComp.PowerOutput = (this.Working ? -this.PowerComp.Props.PowerConsumption : -this.PowerComp.Props.idlePowerDraw);
             if (this.Working && this.PowerTraderComp.PowerOn && ArchitesRequiredNow <= 0)
             {
                 this.TickEffects();

@@ -51,7 +51,8 @@
     <comps>
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
-        <basePowerConsumption>100</basePowerConsumption>
+        <basePowerConsumption>1000</basePowerConsumption>
+        <idlePowerDraw>100</idlePowerDraw>
       </li>
       <li Class="CompProperties_AffectedByFacilities">
         <linkableFacilities>
