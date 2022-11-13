@@ -65,7 +65,8 @@ namespace Dark.Cloning
 		private void ScanCorpse()
 		{
 			Pawn innerPawn = Corpse.InnerPawn;
-			Thing embryo = CloneUtils.ProduceCloneEmbryo(innerPawn, new CloneData()); //FIXME: Using default constructor for CloneData, won't work.
+			CloneData cloneData = new CloneData(innerPawn);
+			Thing embryo = CloneUtils.ProduceCloneEmbryo(innerPawn, cloneData);
 			if (!GenPlace.TryPlaceThing(embryo, Corpse.Position, Corpse.Map, ThingPlaceMode.Near, null, (IntVec3 x) => x.InBounds(Corpse.Map) && x.Standable(Corpse.Map) && !x.Fogged(Corpse.Map), default(Rot4)))
 			{
 				Log.Error("Could not drop embryo near " + pawn.Position);

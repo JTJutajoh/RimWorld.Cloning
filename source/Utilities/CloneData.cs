@@ -53,6 +53,26 @@ namespace Dark.Cloning
             this.hairDef = this.donorPawn?.story?.hairDef;
             this.beardDef = this.donorPawn?.style?.beardDef;
         }
+        public CloneData(Pawn donorPawn)
+        {
+            this.donorPawn = donorPawn;
+
+            if (donorPawn.genes.UniqueXenotype)
+            {
+                this.customXenotype = donorPawn.genes.CustomXenotype;
+            }
+            else
+            {
+                this.xenotype = donorPawn.genes.Xenotype;
+            }
+
+            this.fixedGender = this.donorPawn?.gender;
+            this.headType = this.donorPawn?.story?.headType;
+            this.skinColorOverride = this.donorPawn?.story?.skinColorOverride;
+            this.furDef = this.donorPawn?.story?.furDef;
+            this.hairDef = this.donorPawn?.story?.hairDef;
+            this.beardDef = this.donorPawn?.style?.beardDef;
+        }
 
         public void ExposeData()
         {
