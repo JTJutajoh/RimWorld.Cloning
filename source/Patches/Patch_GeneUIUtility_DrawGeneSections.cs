@@ -128,19 +128,13 @@ namespace Dark.Cloning
             }
             else if (target == null && genesOverride != null)
             {
-                //HACK: Displaying pregnancy xenogenes on the ITab would require a creative solution since the target argument is null for pregnancies, so the cloneData cannot be fetched directly. For now, it simply displays a message that xenogenes cannot be displayed, so that players don't think they disappeared
-                Widgets.Label(10f, ref curY, rect.width, "Xenogenes".Translate().CapitalizeFirst(), "XenogenesDesc".Translate());
+                Pawn mother = Find.Selector.SingleSelectedThing as Pawn;
+                var hediff = mother.health.hediffSet.GetFirstHediff<HediffWithParents>();
 
-                Rect rect2 = new Rect(rect.x, curY, rect.width, (float)xenogenesHeight.GetValue(null));
-                Text.Anchor = TextAnchor.UpperCenter;
-                GUI.color = ColoredText.SubtleGrayColor;
-                rect2.height = Text.LineHeight;
-                Widgets.Label(rect2, "(" + "CannotShowPregnancyGenes".Translate() + ")");
-                GUI.color = Color.white;
-                Text.Anchor = TextAnchor.UpperLeft;
-                curY += 90f;
+                if (hediff == null || !hediff.IsClonePregnancy(out HediffComp_Pregnant_Clone hediffComp))
+                    return;
 
-                //DrawXenogenesSection(rect, curY, containingRect, hediffComp.cloneData);
+                DrawXenogenesSection(rect, curY, containingRect, hediffComp.cloneData);
             }
         }
 
