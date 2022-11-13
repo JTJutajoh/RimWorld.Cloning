@@ -66,6 +66,7 @@
     <Compile Include="Genes\CloneGene.cs" />
     <Compile Include="HediffComps\HediffComp_Pregnant_Clone.cs" />
     <Compile Include="Patches\Patch_EmbryoBirth.cs" />
+    <Compile Include="Patches\Patch_GrowthVat_EmbryoColor.cs" />
     <Compile Include="Patches\Patch_JobDriver_HaulToContainer_MakeNewToils.cs" />
     <Compile Include="Patches\CloneCompHediffPatches.cs" />
     <Compile Include="Patches\Patch_GeneUIUtility_DrawGeneSections.cs" />

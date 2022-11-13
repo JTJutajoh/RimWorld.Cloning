@@ -54,8 +54,9 @@ namespace Dark.Cloning
                     yield return new CodeInstruction(OpCodes.Ldarg, 0); // Rect rect
                     yield return new CodeInstruction(OpCodes.Ldloc, 1); // float curY
                     yield return new CodeInstruction(OpCodes.Ldloc, 2); // Rect containingRect
+                    yield return new CodeInstruction(OpCodes.Ldarg, 2); // GeneSet genesOverride
 
-                    yield return CodeInstruction.Call(typeof(Patch_GeneUIUtility_DrawGeneSections), "DrawXenogenesForEmbryo");
+                    yield return CodeInstruction.Call(typeof(Patch_GeneUIUtility_DrawGeneSections), "DrawXenogenesFor");
                     // Clear the labels for the next instruction so we don't end up with a duplicate label. It doesn't break without this, but just to be technically correct
                     codes[i].labels = new List<Label>();
                 }
@@ -114,7 +115,7 @@ namespace Dark.Cloning
         /// and then if it is it calls GeneUIUtility.DrawSection (Using the static delegate <see cref="DrawSection"/>) 
         /// to draw them the same way as vanilla
         /// </summary>
-        static void DrawXenogenesForEmbryo(Thing target, Rect rect, float curY, Rect containingRect)
+        static void DrawXenogenesFor(Thing target, Rect rect, float curY, Rect containingRect, GeneSet genesOverride)
         {
             if (target is HumanEmbryo embryo)
             {
@@ -123,22 +124,43 @@ namespace Dark.Cloning
 
                 // The target is a clone embryo, draw its xenogenes
 
-                List<GeneDef> xenogenes = cloneComp.cloneData.xenogenes;
+                DrawXenogenesSection(rect, curY, containingRect, cloneComp.cloneData);
+            }
+            else if (target == null && genesOverride != null)
+            {
+                //HACK: Displaying pregnancy xenogenes on the ITab would require a creative solution since the target argument is null for pregnancies, so the cloneData cannot be fetched directly. For now, it simply displays a message that xenogenes cannot be displayed, so that players don't think they disappeared
+                Widgets.Label(10f, ref curY, rect.width, "Xenogenes".Translate().CapitalizeFirst(), "XenogenesDesc".Translate());
 
-                void drawer(int i, Rect r) =>
-                    GeneUIUtility.DrawGeneDef(xenogenes[i], r, GeneType.Xenogene, null, true, true, false);
+                Rect rect2 = new Rect(rect.x, curY, rect.width, (float)xenogenesHeight.GetValue(null));
+                Text.Anchor = TextAnchor.UpperCenter;
+                GUI.color = ColoredText.SubtleGrayColor;
+                rect2.height = Text.LineHeight;
+                Widgets.Label(rect2, "(" + "CannotShowPregnancyGenes".Translate() + ")");
+                GUI.color = Color.white;
+                Text.Anchor = TextAnchor.UpperLeft;
+                curY += 90f;
 
-                // Store it in a tmp var because you can't pass the value of a FieldInfo by ref
-                float tmpXenogenesHeight = (float)xenogenesHeight.GetValue(null);
-                DrawSection(rect, true, xenogenes.Count, ref curY, ref tmpXenogenesHeight, drawer, containingRect);
-                // Apply the tmp value that was passed by ref to the original field
-                xenogenesHeight.SetValue(null, tmpXenogenesHeight);
+                //DrawXenogenesSection(rect, curY, containingRect, hediffComp.cloneData);
+            }
+        }
 
-                // This was already called before in the vanilla method, but it should cause no harm to call it again. Will simply override the new value of scrollHeight
-                if (Event.current.type == EventType.Layout)
-                {
-                    scrollHeight.SetValue(null, curY);
-                }
+        static void DrawXenogenesSection(Rect rect, float curY, Rect containingRect, CloneData cloneData)
+        {
+            List<GeneDef> xenogenes = cloneData.xenogenes;
+
+            void drawer(int i, Rect r) =>
+                GeneUIUtility.DrawGeneDef(xenogenes[i], r, GeneType.Xenogene, null, true, true, false);
+
+            // Store it in a tmp var because you can't pass the value of a FieldInfo by ref
+            float tmpXenogenesHeight = (float)xenogenesHeight.GetValue(null);
+            DrawSection(rect, true, xenogenes.Count, ref curY, ref tmpXenogenesHeight, drawer, containingRect);
+            // Apply the tmp value that was passed by ref to the original field
+            xenogenesHeight.SetValue(null, tmpXenogenesHeight);
+
+            // This was already called before in the vanilla method, but it should cause no harm to call it again. Will simply override the new value of scrollHeight
+            if (Event.current.type == EventType.Layout)
+            {
+                scrollHeight.SetValue(null, curY);
             }
         }
     }
