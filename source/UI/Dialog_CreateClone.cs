@@ -225,7 +225,7 @@ namespace Dark.Cloning
 						for (int j = 0; j < genepack.GeneSet.GenesListForReading.Count; j++)
 						{
 							float width = 34f + GeneCreationDialogBase.GeneSize.x + 12f;
-							if (DrawGeneasGenepack(genepack.GeneSet.GenesListForReading[j], ref curX, curY, width, GeneType.Xenogene, true, containingRect, true))
+							if (DrawGeneasGenepack(genepack.GeneSet.GenesListForReading[j], ref curX, curY, width, GeneType.Xenogene, true, containingRect, true, genepack))
 							{
 								this.selectedGenepacks.Remove(genepack);
 								OnGenesChanged();
@@ -498,19 +498,19 @@ namespace Dark.Cloning
 			}
 		}
 
-		private bool DrawGeneasGenepack(GeneDef gene, ref float curX, float curY, float packWidth, GeneType geneType, bool locked, Rect containingRect, bool fromDonor=false)
+		private bool DrawGeneasGenepack(GeneDef gene, ref float curX, float curY, float packWidth, GeneType geneType, bool locked, Rect containingRect, bool fromDonor=false, Thing infoCardFor=null)
         {
 			bool result = false;
-			Rect rect = new Rect(curX, curY, packWidth, GeneCreationDialogBase.GeneSize.y + 8f);
-			if (!containingRect.Overlaps(rect))
+			Rect packRect = new Rect(curX, curY, packWidth, GeneCreationDialogBase.GeneSize.y + 8f);
+			if (!containingRect.Overlaps(packRect))
 			{
 				//curX = rect.xMax + 4f;
 			}
 			if (geneType == GeneType.Xenogene)
 			{
-				Widgets.DrawHighlight(rect);
+				Widgets.DrawHighlight(packRect);
 				GUI.color = GeneCreationDialogBase.OutlineColorUnselected;
-				Widgets.DrawBox(rect);
+				Widgets.DrawBox(packRect);
 				GUI.color = Color.white;
 				curX += 4f;
 				GeneUIUtility.DrawBiostats(gene.biostatCpx, gene.biostatMet, gene.biostatArc, ref curX, curY, 4f);
@@ -534,7 +534,10 @@ namespace Dark.Cloning
 			GeneUIUtility.DrawGeneDef(gene, geneRect, geneType, extraTooltip, doBackground: false, clickable: false, overridden);
 
 			if (geneType == GeneType.Xenogene)
-				Widgets.DrawRectFast(rect, new Color(0.2f, 0.2f, 0.25f, 0.4f));
+				Widgets.DrawRectFast(packRect, new Color(0.2f, 0.2f, 0.25f, 0.4f));
+
+			if (infoCardFor != null)
+				Widgets.InfoCardButton(packRect.xMax - 24f, packRect.y + 2f, infoCardFor);
 
 			result = Widgets.ButtonInvisible(geneRect);
 			curX += GeneCreationDialogBase.GeneSize.x + 4f;
@@ -542,19 +545,20 @@ namespace Dark.Cloning
 			if (geneType == GeneType.Endogene)
 				curX -= 300f; // Pack endogenes closer together
 
-			curX = Mathf.Max(curX, rect.xMax + 14f);
+			curX = Mathf.Max(curX, packRect.xMax + 14f);
 
-			if (Mouse.IsOver(rect) && geneType == GeneType.Xenogene)
+			if (Mouse.IsOver(packRect) && geneType == GeneType.Xenogene)
 			{
 				if (fromDonor)
 					mouseOverAnyDonorGene = true;
 				else
-					Widgets.DrawHighlight(rect);
+					Widgets.DrawHighlight(packRect);
 			}
 			if (highlightAllDonorGenes && fromDonor)
-				Widgets.DrawHighlight(rect);
+				Widgets.DrawHighlight(packRect);
 
-			Widgets.DrawTexturePart(new Rect(geneRect.xMax - 24f, geneRect.yMin, 24f, 24f), new Rect(0f, 0f, 1f, 1f), locked ? GeneCreationDialogBase.LockedTex : GeneCreationDialogBase.UnlockedTex);
+			float lockY = geneType == GeneType.Xenogene ? packRect.yMax - 24f : packRect.yMin;
+			Widgets.DrawTexturePart(new Rect(packRect.xMin, lockY, 24f, 24f), new Rect(0f, 0f, 1f, 1f), locked ? GeneCreationDialogBase.LockedTex : GeneCreationDialogBase.UnlockedTex);
 
 			return result;
 		}
