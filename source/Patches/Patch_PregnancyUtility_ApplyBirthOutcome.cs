@@ -34,7 +34,7 @@ namespace Dark.Cloning
         /// Static reference to the cloneData from an embryo,
         /// so that it can be passed on to the instance of the clone Gene on the newly-generated pawn
         /// </summary>
-        static CloneData cloneData;
+        static CloneData staticCloneData;
 
         /// <summary>
         /// Transpiler that intercepts the PawnGenerationRequest right after it is created and before it is used by GeneratePawn. <br />
@@ -167,7 +167,7 @@ namespace Dark.Cloning
                 Hediff hediff = birtherPawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnancyLaborPushing);
                 if (!hediff.IsClonePregnancy(out HediffComp_Pregnant_Clone cloneComp))
                     return request; // Not a clone pregnancy
-                cloneData =  cloneComp.cloneData;
+                cloneData = cloneComp.cloneData;
             }
 
             // The above checks should ensure this never happens, but just to be safe
@@ -178,7 +178,7 @@ namespace Dark.Cloning
             }
 
             // Store the data in a static reference so that the postfix can pick it up and apply it to the clone Gene instance on the pawn after it is generated
-            Patch_PregnancyUtility_ApplyBirthOutcome.cloneData = cloneData;
+            Patch_PregnancyUtility_ApplyBirthOutcome.staticCloneData = cloneData;
 
             request.CanGeneratePawnRelations = false;
 
@@ -213,21 +213,19 @@ namespace Dark.Cloning
             if (!pawn.IsClone(out var cloneGene)) // Not a clone, ignore
                 return;
 
-            CloneData cloneData = cloneGene.cloneData;
-
-            if (cloneData == null)
-            {
-                Log.Warning($"Tried to get cloneData from Clone gene on pawn {pawn.LabelCap}, but it was null.");
-                return;
-            }
-
-            if (Patch_PregnancyUtility_ApplyBirthOutcome.cloneData == null)
+            if (staticCloneData == null)
             {
                 Log.Error($"Clone gene on pawn {pawn.LabelCap} but the statically-stored cloneData in {nameof(Patch_PregnancyUtility_ApplyBirthOutcome)} has no data.");
                 return;
             }
 
-            cloneGene.cloneData = Patch_PregnancyUtility_ApplyBirthOutcome.cloneData;
+            cloneGene.cloneData = staticCloneData;
+
+            if (cloneGene.cloneData == null)
+            {
+                Log.Warning($"Tried to set cloneData on Clone gene on pawn {pawn.LabelCap}, but it was null.");
+                return;
+            }
 
             // Copy basic things from the parent.
             Pawn donor = cloneGene.cloneData.donorPawn;
@@ -246,7 +244,7 @@ namespace Dark.Cloning
             //if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
 
             // Clear the static reference for the next time this patch is run
-            Patch_PregnancyUtility_ApplyBirthOutcome.cloneData = null;
+            staticCloneData = null;
         }
     }
 }
