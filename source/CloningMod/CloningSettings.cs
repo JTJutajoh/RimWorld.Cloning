@@ -36,6 +36,7 @@ namespace Dark.Cloning
         public static IntRange numMutations = new IntRange(1, 3);
         public static bool addMutationsAsXenogenes = false;
         public static Dictionary<string, int> genesEligibleForMutation = Mutations.defaultGenesEligible;
+        public static List<string> genesForced = new List<string>();
 
 
         // Internal UI values
@@ -299,6 +300,18 @@ namespace Dark.Cloning
                 Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
             }
 
+            Rect forcedRect = new Rect(buttonRect.x, buttonRect.y + rowHeight - 24f, buttonRect.width, 24f);
+            //bool forced = CloningSettings.genesForced.Contains(gene);
+            //Widgets.CheckboxLabeled(forcedRect, "Cloning_Settings_Forced".Translate(), ref forced);
+            //if (forced)
+            //{
+            //    CloningSettings.genesForced.Add(gene);
+            //}
+            //else
+            //{
+            //    CloningSettings.genesForced.Remove(gene);
+            //}
+
             // Lastly, handle clicking on this gene, by flipflopping its eligibility status
             if (Widgets.ButtonInvisible(buttonRect))
             {
@@ -376,10 +389,11 @@ namespace Dark.Cloning
         {
             float rowHeight = 86f;
             float geneWidth = 72f;
+            float rowGap = 16f;
 
             Rect collapseBarRect = DrawCategoryCollapsibleHeader(geneCategory, scrollList);
 
-            RectRow row = new RectRow(4f, collapseBarRect.yMax, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, 4f);
+            RectRow row = new RectRow(4f, collapseBarRect.yMax, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, rowGap);
             row.RowGapExtra = 36f;
 
             if (!IsCategoryCollapsed(geneCategory))
@@ -399,6 +413,7 @@ namespace Dark.Cloning
             Scribe_Values.Look(ref addMutationsAsXenogenes, "addMutationsAsXenogenes", false);
             Scribe_Values.Look(ref cloneTraits, "cloneTraits", false);
             Scribe_Collections.Look(ref genesEligibleForMutation, "genesEligibleForMutation", LookMode.Value);
+            Scribe_Collections.Look(ref genesForced, "genesForced", LookMode.Value);
             Scribe_Values.Look(ref xenotypeGenesFree, "xenotypeGenesFree", false);
             Scribe_Values.Look(ref architeGenesFree, "architeGenesFree", false);
             Scribe_Values.Look(ref cloneRelationshipDefName, "cloneRelationship");

@@ -16,6 +16,7 @@
   <Cloning_Settings_MutationChance>Mutation Chance</Cloning_Settings_MutationChance>
   <Cloning_Settings_MaxMutations>Number of mutations</Cloning_Settings_MaxMutations>
   <Cloning_Settings_MutationGeneWeight>Weight</Cloning_Settings_MutationGeneWeight>
+  <Cloning_Settings_Forced>Forced</Cloning_Settings_Forced>
   <Cloning_Settings_MutationsXenogenes>Mutations are xenogenes</Cloning_Settings_MutationsXenogenes>
   <Cloning_Settings_CloneXenogenes>Clones inherit xenogenes</Cloning_Settings_CloneXenogenes>
   <Cloning_Settings_CloneXenogenes_Tooltip>If enabled, clones will also inherit the donor pawn's entire xenogene set.</Cloning_Settings_CloneXenogenes_Tooltip>
