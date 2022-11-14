@@ -62,8 +62,12 @@ namespace Dark.Cloning
 
             if (donorPawn.genes.UniqueXenotype)
             {
+                //TODO: When unstable hits main, switch to this commented code
                 //this.customXenotype = donorPawn.genes.CustomXenotype;
-                //FIXME: Used an unstable property here, dummy
+                this.customXenotype = new CustomXenotype();
+                this.customXenotype.name = donorPawn.genes.xenotypeName;
+                this.customXenotype.iconDef = donorPawn.genes.iconDef;
+                this.customXenotype.genes = GeneUtils.GetGenesAsDefs(donorPawn.genes.GenesListForReading);
             }
             else
             {
