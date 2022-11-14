@@ -83,4 +83,5 @@ Removing this gene will remove all other genes added by the donor's xenotype</Fr
   <Cloning_Settings_ArchitesFree>Free xenotype archite gene cloning</Cloning_Settings_ArchitesFree>
   <Cloning_Settings_ArchitesFree_Tooltip>If enabled, archite genes in the donor pawn can be cloned for free without needing archites. Very unbalanced.</Cloning_Settings_ArchitesFree_Tooltip>
   <CannotShowPregnancyGenes>Cannot display pregnancy xenogenes</CannotShowPregnancyGenes>
+  <MaxGCX>Max Genetic Complexity</MaxGCX>
 </LanguageData>

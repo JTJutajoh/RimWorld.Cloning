@@ -690,6 +690,8 @@ namespace Dark.Cloning
                 string str2 = str1 + "Cloning_ExtractingCloneFrom".Translate(this.ContainedPawn.Named("PAWN")).Resolve() + "\n";
                 str1 = !this.PowerOn ? (string)( str2 + "ExtractionPausedNoPower".Translate() ) : str2 + "DurationLeft".Translate((NamedArgument)this.ticksRemaining.ToStringTicksToPeriod()).Resolve();
             }
+            str1 += "\n";
+            str1 += "MaxGCX".Translate() + ": " + this.MaxComplexity();
             return str1;
         }
 
