@@ -27,7 +27,7 @@ namespace Dark.Cloning
             // Clone has grown to 13 (adulthood) and had their body type changed from child. Override it to match their donor parent
             if (__state && pawn.IsClone(out CloneGene cloneGene))
             {
-                pawn.story.bodyType = cloneGene.cloneData.bodyType;
+                pawn.story.bodyType = cloneGene.cloneData?.bodyType ?? pawn.story.bodyType;
                 /*if (Settings.inheritHair)
                 {
                     pawn.story.hairDef = donor.story.hairDef;
