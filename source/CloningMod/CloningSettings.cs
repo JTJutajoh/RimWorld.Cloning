@@ -36,7 +36,8 @@ namespace Dark.Cloning
         public static IntRange numMutations = new IntRange(1, 3);
         public static bool addMutationsAsXenogenes = false;
         public static Dictionary<string, int> genesEligibleForMutation = Mutations.defaultGenesEligible;
-        public static List<string> genesForced = new List<string>();
+        internal static readonly List<string> defaultGenesForced = new List<string>() { "Sterile" };
+        public static List<string> genesForced = defaultGenesForced.ListFullCopy<string>();
 
 
         // Internal UI values
@@ -131,7 +132,7 @@ namespace Dark.Cloning
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.ColumnWidth = inRect.width / 2f * 0.95f;
+            listingStandard.ColumnWidth = inRect.width / 3f;
 
             listingStandard.Label("Cloning_Mutations_Description".Translate());
             listingStandard.CheckboxLabeled("Cloning_Settings_DoMutations".Translate(), ref CloningSettings.doRandomMutations);
@@ -152,6 +153,8 @@ namespace Dark.Cloning
                 if (CloningSettings.numMutations.max == 0) CloningSettings.numMutations.max = CloningSettings.numMutations.min;
 
                 listingStandard.DoBlankColumn(12f);
+
+                listingStandard.ColumnWidth = inRect.width / 3f * 1.8f;
 
                 #region Mutations Gene list
 
@@ -275,6 +278,8 @@ namespace Dark.Cloning
                 return;
             }
 
+            Widgets.DrawRectFast(buttonRect, new Color(0, 0, 0, 0.3f));
+
             bool eligible = Mutations.IsEligible(gene); // Cache this so we don't force GeneUtils to do a .Contains several times for each gene.
 
             // Actually draw the gene, using vanilla's built-in static method for drawing genes from a def. This comes with the benefit of having the tooltip with all the gene's info
@@ -290,33 +295,41 @@ namespace Dark.Cloning
             Rect checkboxRect = new Rect(buttonRect.xMin + 4f, buttonRect.yMin + 4f, checkboxSize, checkboxSize);
             Widgets.DrawTexturePart(checkboxRect, new Rect(0, 0, 1, 1), Widgets.GetCheckboxTexture(eligible));
 
-            // Draw the weight slider and its label
-            if (eligible)
-            {
-                Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
-                genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
-
-                Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight, buttonRect.width, 24f);
-                Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
-            }
-
-            Rect forcedRect = new Rect(buttonRect.x, buttonRect.y + rowHeight - 24f, buttonRect.width, 24f);
-            //bool forced = CloningSettings.genesForced.Contains(gene);
-            //Widgets.CheckboxLabeled(forcedRect, "Cloning_Settings_Forced".Translate(), ref forced);
-            //if (forced)
-            //{
-            //    CloningSettings.genesForced.Add(gene);
-            //}
-            //else
-            //{
-            //    CloningSettings.genesForced.Remove(gene);
-            //}
-
             // Lastly, handle clicking on this gene, by flipflopping its eligibility status
             if (Widgets.ButtonInvisible(buttonRect))
             {
                 Mutations.SetEligible(gene, !eligible);
                 eligible = !eligible;
+            }
+
+            Rect forcedRect = new Rect(buttonRect.x, buttonRect.y + rowHeight, buttonRect.width, 24f);
+            bool forced = CloningSettings.genesForced.Contains(gene);
+            Widgets.Label(forcedRect, "Cloning_Settings_Forced".Translate());
+            Widgets.CheckboxDraw(forcedRect.xMax - 24f, forcedRect.yMax - 24f, CloningSettings.genesForced.Contains(gene), false);
+            //Widgets.CheckboxLabeled(forcedRect, "Cloning_Settings_Forced".Translate(), ref forced);
+            if (Widgets.ButtonInvisible(forcedRect))
+            {
+                Log.Message("Button clicked");
+                if (!CloningSettings.genesForced.Contains(gene))
+                {
+                    Log.Message("Adding");
+                    CloningSettings.genesForced.Add(gene);
+                }
+                else
+                {
+                    Log.Message("Removing");
+                    CloningSettings.genesForced.Remove(gene);
+                }
+            }
+
+            // Draw the weight slider and its label
+            if (eligible && !forced)
+            {
+                Rect sliderRect = new Rect(buttonRect.x, buttonRect.y + rowHeight + 48f, buttonRect.width, 24f);
+                genesEligibleForMutation[gene] = Mathf.RoundToInt(Widgets.HorizontalSlider(sliderRect, genesEligibleForMutation[gene], 0, 10));
+
+                Rect sliderLabelRect = new Rect(buttonRect.x + 4f, buttonRect.y + rowHeight + 24f, buttonRect.width, 24f);
+                Widgets.Label(sliderLabelRect, "Cloning_Settings_MutationGeneWeight".Translate() + ": " + genesEligibleForMutation[gene]);
             }
         }
 
@@ -389,12 +402,12 @@ namespace Dark.Cloning
         {
             float rowHeight = 86f;
             float geneWidth = 72f;
-            float rowGap = 16f;
+            float rowGap = 12f;
 
             Rect collapseBarRect = DrawCategoryCollapsibleHeader(geneCategory, scrollList);
 
             RectRow row = new RectRow(4f, collapseBarRect.yMax, rowHeight, UIDirection.RightThenDown, scrollRect.width - 12f, rowGap);
-            row.RowGapExtra = 36f;
+            row.RowGapExtra = 56f;
 
             if (!IsCategoryCollapsed(geneCategory))
                 DrawGenes(GeneUtils.AllGeneCategoriesCache[geneCategory], scrollList, row, scrollRect, geneWidth, rowHeight);
@@ -424,6 +437,10 @@ namespace Dark.Cloning
                 if (genesEligibleForMutation == null || genesEligibleForMutation.Count <= 0)
                 {
                     genesEligibleForMutation = Mutations.defaultGenesEligible;
+                }
+                if (genesForced == null || genesForced.Count <= 0)
+                {
+                    genesForced = CloningSettings.defaultGenesForced;
                 }
             }
 

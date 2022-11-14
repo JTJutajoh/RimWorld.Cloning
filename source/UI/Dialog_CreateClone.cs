@@ -201,20 +201,43 @@ namespace Dark.Cloning
 			}
 			else
 			{
+				float endogeneWidth = GeneCreationDialogBase.GeneSize.x;
+				float xenogeneWidth = 34f + GeneCreationDialogBase.GeneSize.x + 12f;
 				// Draw endogenes
 				if (endogenes != null)
 				{
 					for (int i = 0; i < endogenes.Count; i++)
 					{
-						float width = GeneCreationDialogBase.GeneSize.x + 12f;
-						DrawGeneasGenepack(endogenes[i].def, ref curX, curY, width, GeneType.Endogene, true, containingRect);
-						if (curX + width > rect.width - 16f)
+						DrawGeneasGenepack(endogenes[i].def, ref curX, curY, endogeneWidth, GeneType.Endogene, true, containingRect);
+						if (curX + endogeneWidth > rect.width - 16f)
 						{
 							curX = 4f;
 							curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
 						}
 					}
 				}
+
+				// Draw forced genes
+				DrawGeneasGenepack(CloneDefOf.Clone, ref curX, curY, endogeneWidth, GeneType.Xenogene, true, containingRect, tooltipOverride: "CloneGeneTooltipOverride".Translate(), forced:true);
+				if (curX + endogeneWidth > rect.width - 16f)
+				{
+					curX = 4f;
+					curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
+				}
+				if (CloningSettings.genesForced != null && CloningSettings.genesForced.Count > 0)
+                {
+                    for (int i = 0; i < CloningSettings.genesForced.Count; i++)
+                    {
+						GeneDef geneDef = GeneUtils.GeneNamed(CloningSettings.genesForced[i]);
+						DrawGeneasGenepack(geneDef, ref curX, curY, endogeneWidth, GeneType.Xenogene, true, containingRect, tooltipOverride: "GeneForcedInSettings".Translate(), forced: true);
+						if (curX + endogeneWidth > rect.width - 16f)
+						{
+							curX = 4f;
+							curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
+						}
+					}
+                }
+
 				// Draw xenogenes
 				for (int i = 0; i < selectedGenepacks.Count; i++)
 				{
@@ -224,13 +247,12 @@ namespace Dark.Cloning
 					{
 						for (int j = 0; j < genepack.GeneSet.GenesListForReading.Count; j++)
 						{
-							float width = 34f + GeneCreationDialogBase.GeneSize.x + 12f;
-							if (DrawGeneasGenepack(genepack.GeneSet.GenesListForReading[j], ref curX, curY, width, GeneType.Xenogene, true, containingRect, true, genepack))
+							if (DrawGeneasGenepack(genepack.GeneSet.GenesListForReading[j], ref curX, curY, xenogeneWidth, GeneType.Xenogene, true, containingRect, true, genepack))
 							{
 								this.selectedGenepacks.Remove(genepack);
 								OnGenesChanged();
 							}
-							if (curX + width > rect.width - 16f)
+							if (curX + xenogeneWidth > rect.width - 16f)
 							{
 								curX = 4f;
 								curY += GeneCreationDialogBase.GeneSize.y + 8f + 14f;
@@ -499,7 +521,7 @@ namespace Dark.Cloning
 			}
 		}
 
-		private bool DrawGeneasGenepack(GeneDef gene, ref float curX, float curY, float packWidth, GeneType geneType, bool locked, Rect containingRect, bool fromDonor=false, Thing infoCardFor=null)
+		private bool DrawGeneasGenepack(GeneDef gene, ref float curX, float curY, float packWidth, GeneType geneType, bool locked, Rect containingRect, bool fromDonor=false, Thing infoCardFor=null, string tooltipOverride=null, bool forced=false)
         {
 			bool result = false;
 			Rect packRect = new Rect(curX, curY, packWidth, GeneCreationDialogBase.GeneSize.y + 8f);
@@ -507,7 +529,7 @@ namespace Dark.Cloning
 			{
 				//curX = rect.xMax + 4f;
 			}
-			if (geneType == GeneType.Xenogene)
+			if (geneType == GeneType.Xenogene && !forced)
 			{
 				Widgets.DrawHighlight(packRect);
 				GUI.color = GeneCreationDialogBase.OutlineColorUnselected;
@@ -529,7 +551,16 @@ namespace Dark.Cloning
 				extraTooltip = ( "GeneWillBeRandomChosen".Translate() + ":\n" + randomChosenGroups[gene].Select((GeneDef x) => x.label).ToLineList("  - ", capitalizeItems: true) ).Colorize(ColoredText.TipSectionTitleColor);
 			}
 
-			string tooltip = geneType == GeneType.Xenogene ? "FromDonorXenotype".Translate() : "IsEndogeneTooltip".Translate();
+			string tooltip;
+			if (tooltipOverride == null)
+            {
+				tooltip = geneType == GeneType.Xenogene ? "FromDonorXenotype".Translate() : "IsEndogeneTooltip".Translate();
+			}
+			else
+            {
+				tooltip = tooltipOverride;
+            }
+			
 			extraTooltip = extraTooltip + "\n\n" + tooltip;
 
 			GeneUIUtility.DrawGeneDef(gene, geneRect, geneType, extraTooltip, doBackground: false, clickable: false, overridden);
@@ -548,7 +579,7 @@ namespace Dark.Cloning
 
 			curX = Mathf.Max(curX, packRect.xMax + 14f);
 
-			if (Mouse.IsOver(packRect) && geneType == GeneType.Xenogene)
+			if (!forced && Mouse.IsOver(packRect) && geneType == GeneType.Xenogene)
 			{
 				if (fromDonor)
 					mouseOverAnyDonorGene = true;

@@ -356,6 +356,7 @@ namespace Dark.Cloning
                 customXenotype.name = this.xenotypeName;
                 customXenotype.iconDef = this.iconDef;
                 customXenotype.genes = GeneUtils.GetAllGenesInPacks(genepacksToRecombine);
+                customXenotype.genes.AddRange(GeneUtils.GetGeneDefsNamed(CloningSettings.genesForced));
                 embryo = CloneUtils.ProduceCloneEmbryo(this.ContainedPawn, customXenotype);
             }
             

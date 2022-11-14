@@ -75,7 +75,8 @@
 
 Removing this gene will remove all other genes added by the donor's xenotype</FromDonorXenotype>
   <ClickToRemove>Click to add or remove all of donor's xenogenes</ClickToRemove>
-  <IsEndogeneTooltip>Germline gene from donor, cannot remove</IsEndogeneTooltip>
+  <IsEndogeneTooltip>Cannot be removed.
+Germline gene from donor.</IsEndogeneTooltip>
   <CloneEmbryoInspectString>Clone embryo</CloneEmbryoInspectString>
   <DonorXenotypeIncluded>Donor's xenotype genes being included</DonorXenotypeIncluded>
   <Cloning_Settings_Tab_Cheats>Cheats</Cloning_Settings_Tab_Cheats>
@@ -85,4 +86,8 @@ Removing this gene will remove all other genes added by the donor's xenotype</Fr
   <Cloning_Settings_ArchitesFree_Tooltip>If enabled, archite genes in the donor pawn can be cloned for free without needing archites. Very unbalanced.</Cloning_Settings_ArchitesFree_Tooltip>
   <CannotShowPregnancyGenes>Cannot display pregnancy xenogenes</CannotShowPregnancyGenes>
   <MaxGCX>Max Genetic Complexity</MaxGCX>
+  <GeneForcedInSettings>Cannot be removed.
+Gene is set to Forced in mod settings, so all clones automatically inherit it. Can be changed in mod settings</GeneForcedInSettings>
+  <CloneGeneTooltipOverride>Cannot be removed.
+All clones must have the Clone gene, this is what enables them to actually be clones.</CloneGeneTooltipOverride>
 </LanguageData>

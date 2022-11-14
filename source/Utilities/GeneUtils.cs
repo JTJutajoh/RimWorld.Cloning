@@ -163,5 +163,15 @@ namespace Dark.Cloning
             }
             return result;
         }
+
+        public static List<GeneDef> GetGeneDefsNamed(List<string> genes)
+        {
+            var result = new List<GeneDef>();
+            foreach (string gene in genes)
+            {
+                result.Add(GeneNamed(gene));
+            }
+            return result;
+        }
     }
 }
