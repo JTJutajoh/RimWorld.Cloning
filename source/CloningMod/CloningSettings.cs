@@ -18,7 +18,16 @@ namespace Dark.Cloning
         public static bool xenotypeGenesFree = false;
         public static bool architeGenesFree = false;
         static readonly IntRange defaultCloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
-        public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7,14);
+        public static IntRange CloneExtractorRegrowingDurationDaysRange = new IntRange(7, 14);
+
+        internal static readonly List<string> cloneRelationOptions = new List<string>()
+        {
+            null,
+            "Child",
+            //"Sibling" // Sibling disabled because it's an implied relation, which requires a lot more heavy lifting to generate on the fly
+        };
+        private static string cloneRelationshipDefName = "Child";
+        public static PawnRelationDef CloneRelationship => cloneRelationshipDefName != null ? DefDatabase<PawnRelationDef>.GetNamed(cloneRelationshipDefName) : null;
 
         public static bool doRandomMutations = true;
         public static float randomMutationChance = 0.3f;
@@ -86,9 +95,23 @@ namespace Dark.Cloning
             listingStandard.ColumnWidth = inRect.width / 2f * 0.98f;
             listingStandard.CheckboxLabeled("Cloning_Settings_InheritHair".Translate(), ref CloningSettings.inheritHair);
 
-            listingStandard.NewColumn();
+            string buttonText = cloneRelationshipDefName == null ? (string)"CloneRelationship_None".Translate() : CloneRelationship.label + "/" + CloneRelationship.labelFemale;
+            if (listingStandard.ButtonTextLabeled("Cloning_Settings_CloneRelationship".Translate(), buttonText, tooltip:"Cloning_Settings_CloneRelationship_Tooltip".Translate()))
+            {
+                var floatList = new List<FloatMenuOption>();
+                foreach (var relationship in cloneRelationOptions)
+                {
+                    PawnRelationDef def = null;
+                    if (relationship != null)
+                        def = DefDatabase<PawnRelationDef>.GetNamed(relationship);
 
-            #region Cooldown Settings
+                    string label = def != null ? def.label + "/" + def.labelFemale : (string)"CloneRelationship_None".Translate();
+                    floatList.Add(new FloatMenuOption(label, () => { cloneRelationshipDefName = relationship; }));
+                }
+                Find.WindowStack.Add(new FloatMenu(floatList));
+            }
+
+            listingStandard.NewColumn();
 
             listingStandard.CheckboxLabeled("Cloning_Settings_CloningCooldown".Translate(), ref CloningSettings.cloningCooldown);
             if (CloningSettings.cloningCooldown)
@@ -97,7 +120,6 @@ namespace Dark.Cloning
                 listingStandard.IntRange(ref CloneExtractorRegrowingDurationDaysRange, 0, 60);
             }
 
-            #endregion Cooldown Settings
             listingStandard.End();
         }
 
@@ -378,6 +400,7 @@ namespace Dark.Cloning
             Scribe_Collections.Look(ref genesEligibleForMutation, "genesEligibleForMutation", LookMode.Value);
             Scribe_Values.Look(ref xenotypeGenesFree, "xenotypeGenesFree", false);
             Scribe_Values.Look(ref architeGenesFree, "architeGenesFree", false);
+            Scribe_Values.Look(ref cloneRelationshipDefName, "cloneRelationship");
 
             // Check if the dictionary loaded was empty, and load the default instead
             if (Scribe.mode == LoadSaveMode.LoadingVars)

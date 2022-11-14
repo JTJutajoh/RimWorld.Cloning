@@ -135,7 +135,10 @@ namespace Dark.Cloning
         /// </summary>
         static Pawn ModifyPawn(Pawn pawn)
         {
-            // Disabled at the moment because I might not need it, but it might be useful in the future so I'll leave it here
+            if (!pawn.IsClone(out CloneGene cloneGene))
+            {
+                
+            }
             return pawn;
         }
 

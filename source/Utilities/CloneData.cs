@@ -59,7 +59,8 @@ namespace Dark.Cloning
 
             if (donorPawn.genes.UniqueXenotype)
             {
-                this.customXenotype = donorPawn.genes.CustomXenotype;
+                //this.customXenotype = donorPawn.genes.CustomXenotype;
+                //FIXME: Used an unstable property here, dummy
             }
             else
             {

@@ -28,6 +28,9 @@
   <Cloning_Settings_SelectAll>All</Cloning_Settings_SelectAll>
   <Cloning_Settings_SelectNone>None</Cloning_Settings_SelectNone>
   <Cloning_Settings_Reset>Default</Cloning_Settings_Reset>
+  <Cloning_Settings_CloneRelationship>Clone relationship to donor</Cloning_Settings_CloneRelationship>
+  <Cloning_Settings_CloneRelationship_Tooltip>Setting for what social relationship clones will have to the donor pawn. Set to None if you want the donor to be uncaring about what happens to the clone.</Cloning_Settings_CloneRelationship_Tooltip>
+  <CloneRelationship_None>None</CloneRelationship_None>
   <Cloning_Letter_MutationLabel>Clone Mutation</Cloning_Letter_MutationLabel>
   <Cloning_Letter_MutationText>A clone embryo has finished gestating and gained these genetic mutations:</Cloning_Letter_MutationText>
   <Cloning_CloneExtractionComplete>Clone embryo extraction complete for {PAWN_nameDef}.</Cloning_CloneExtractionComplete>
