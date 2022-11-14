@@ -23,10 +23,11 @@ namespace Dark.Cloning
         internal static readonly List<string> cloneRelationOptions = new List<string>()
         {
             null,
+            "CloneChild",
             "Child",
             //"Sibling" // Sibling disabled because it's an implied relation, which requires a lot more heavy lifting to generate on the fly
         };
-        private static string cloneRelationshipDefName = "Child";
+        private static string cloneRelationshipDefName = "CloneChild";
         public static PawnRelationDef CloneRelationship => cloneRelationshipDefName != null ? DefDatabase<PawnRelationDef>.GetNamed(cloneRelationshipDefName) : null;
 
         public static bool doRandomMutations = true;

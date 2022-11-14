@@ -25,17 +25,9 @@ namespace Dark.Cloning
         static void Postfix(Pawn pawn, bool __state)
         {
             // Clone has grown to 13 (adulthood) and had their body type changed from child. Override it to match their donor parent
-            if (__state && pawn.IsClone())
+            if (__state && pawn.IsClone(out CloneGene cloneGene))
             {
-                // Get the clone's parent by getting their parent of the same gender, since we force clones to match donor genders.
-                //HACK: This will cause an incompatibility with any mods that change gender if the donor's gender changes before the clone reaches 13. Not sure how to approach fixing this. Maybe it doesn't need fixing?
-                Pawn donor = pawn.gender == Gender.Female ? pawn.GetMother() : pawn.GetFather(); 
-                if (donor == null)
-                {
-                    Log.Warning($"Failed to find {pawn.LabelCap}'s parent donor on reaching adulthood, cannot copy bodytype. Did the donor's gender change since clone birth?");
-                    return;
-                }
-                pawn.story.bodyType = donor.story.bodyType;
+                pawn.story.bodyType = cloneGene.cloneData.bodyType;
                 /*if (Settings.inheritHair)
                 {
                     pawn.story.hairDef = donor.story.hairDef;

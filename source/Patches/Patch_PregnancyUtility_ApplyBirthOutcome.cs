@@ -232,6 +232,11 @@ namespace Dark.Cloning
 
             // Copy basic things from the parent.
             Pawn donor = cloneGene.cloneData.donorPawn;
+            if (CloningSettings.CloneRelationship != null && CloningSettings.CloneRelationship != PawnRelationDefOf.Child)
+            {
+                donor.relations.AddDirectRelation(CloningSettings.CloneRelationship, pawn);
+            }
+            
 
             pawn.story.headType = cloneGene.cloneData.headType;
             pawn.story.skinColorOverride = cloneGene.cloneData.skinColorOverride;

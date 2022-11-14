@@ -16,6 +16,8 @@ namespace Dark.Cloning
         public static ThingDef CloneExtractor;
         //public static ThingDef CloneStorageVat;
         //public static ThingDef BrainScan;
+        public static PawnRelationDef CloneDonor;
+        public static PawnRelationDef CloneChild;
 
         static CloneDefOf()
         {

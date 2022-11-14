@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <PawnRelationDef>
+    <workerClass>Dark.Cloning.PawnRelationWorker_CloneDonor</workerClass>
+    <defName>CloneDonor</defName>
+    <label>clone donor</label>
+    <importance>195</importance>
+    <diedThought>MyCloneDonorDied</diedThought>
+    <diedThoughtFemale>MyCloneDonorDied</diedThoughtFemale>
+    <killedThought>KilledMyCloneDonor</killedThought>
+    <killedThoughtFemale>KilledMyCloneDonor</killedThoughtFemale>
+    <lostThought>MyCloneDonorLost</lostThought>
+    <lostThoughtFemale>MyCloneDonorLost</lostThoughtFemale>
+    <opinionOffset>10</opinionOffset>
+    <generationChanceFactor>0</generationChanceFactor>
+    <romanceChanceFactor>1.3</romanceChanceFactor>
+    <incestOpinionOffset>-10</incestOpinionOffset>
+    <inbredChanceOnChild>1</inbredChanceOnChild>
+    <implied>true</implied>
+    <familyByBloodRelation>true</familyByBloodRelation>
+  </PawnRelationDef>
+
+  <PawnRelationDef>
+    <workerClass>Dark.Cloning.PawnRelationWorker_CloneChild</workerClass>
+    <defName>CloneChild</defName>
+    <label>clone</label>
+    <labelFemale>clone</labelFemale>
+    <importance>190</importance>
+    <diedThought>MyCloneChildDied</diedThought>
+    <diedThoughtFemale>MyCloneChildDied</diedThoughtFemale>
+    <killedThought>KilledMyCloneChild</killedThought>
+    <killedThoughtFemale>KilledMyCloneChild</killedThoughtFemale>
+    <lostThought>MyCloneChildLost</lostThought>
+    <lostThoughtFemale>MyCloneChildLost</lostThoughtFemale>
+    <opinionOffset>10</opinionOffset>
+    <generationChanceFactor>0</generationChanceFactor>
+    <romanceChanceFactor>1.3</romanceChanceFactor>
+    <incestOpinionOffset>-10</incestOpinionOffset>
+    <inbredChanceOnChild>1</inbredChanceOnChild>
+    <implied>false</implied>
+    <familyByBloodRelation>true</familyByBloodRelation>
+  </PawnRelationDef>
+  
+</Defs>

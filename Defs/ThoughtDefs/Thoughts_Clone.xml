@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThoughtDef ParentName="LostMemoryFamily">
+    <defName>MyCloneChildLost</defName>
+    <stages>
+      <li>
+        <label>my clone {0} lost</label>
+        <description>My clone has gone lost. I hope they will get back to us someday.</description>
+        <baseMoodEffect>-10</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef ParentName="LostMemoryFamily">
+    <defName>MyCloneDonorLost</defName>
+    <stages>
+      <li>
+        <label>my clone donor {0} lost</label>
+        <description>My clone donor has gone lost. I hope they will get back to us someday.</description>
+        <baseMoodEffect>-6</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef ParentName="DeathMemoryFamily">
+    <defName>MyCloneChildDied</defName>
+    <stages>
+      <li>
+        <label>my clone {0} died</label>
+        <description>My clone is dead. My own flesh and blood...</description>
+        <baseMoodEffect>-10</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef ParentName="DeathMemoryFamily">
+    <defName>MyCloneDonorDied</defName>
+    <stages>
+      <li>
+        <label>my clone donor {0} died</label>
+        <description>My clone donor died. They're gone forever.</description>
+        <baseMoodEffect>-4</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>KilledMyCloneDonor</defName>
+    <thoughtClass>Thought_MemorySocial</thoughtClass>
+    <durationDays>120</durationDays>
+    <stackLimit>300</stackLimit>
+    <stackLimitForSameOtherPawn>10</stackLimitForSameOtherPawn>
+    <stages>
+      <li>
+        <label>killed my clone donor</label>
+        <baseOpinionOffset>-30</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>KilledMyCloneChild</defName>
+    <thoughtClass>Thought_MemorySocial</thoughtClass>
+    <durationDays>120</durationDays>
+    <stackLimit>300</stackLimit>
+    <stackLimitForSameOtherPawn>10</stackLimitForSameOtherPawn>
+    <stages>
+      <li>
+        <label>killed my son</label>
+        <baseOpinionOffset>-30</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

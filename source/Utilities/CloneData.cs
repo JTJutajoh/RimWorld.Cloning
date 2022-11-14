@@ -27,6 +27,7 @@ namespace Dark.Cloning
         public FurDef furDef;
         public HairDef hairDef;
         public BeardDef beardDef;
+        public BodyTypeDef bodyType;
 
         public CloneData() { }
         public CloneData(Pawn donorPawn, CustomXenotype customXenotype)
@@ -40,6 +41,7 @@ namespace Dark.Cloning
             this.furDef = this.donorPawn?.story?.furDef;
             this.hairDef = this.donorPawn?.story?.hairDef;
             this.beardDef = this.donorPawn?.style?.beardDef;
+            this.bodyType = this.donorPawn?.story?.bodyType;
         }
         public CloneData(Pawn donorPawn, XenotypeDef xenotypeDef)
         {
@@ -52,6 +54,7 @@ namespace Dark.Cloning
             this.furDef = this.donorPawn?.story?.furDef;
             this.hairDef = this.donorPawn?.story?.hairDef;
             this.beardDef = this.donorPawn?.style?.beardDef;
+            this.bodyType = this.donorPawn?.story?.bodyType;
         }
         public CloneData(Pawn donorPawn)
         {
@@ -73,6 +76,7 @@ namespace Dark.Cloning
             this.furDef = this.donorPawn?.story?.furDef;
             this.hairDef = this.donorPawn?.story?.hairDef;
             this.beardDef = this.donorPawn?.style?.beardDef;
+            this.bodyType = this.donorPawn?.story?.bodyType;
         }
 
         public void ExposeData()
@@ -87,6 +91,7 @@ namespace Dark.Cloning
             Scribe_Defs.Look(ref this.furDef, "furDef");
             Scribe_Defs.Look(ref this.hairDef, "hairDef");
             Scribe_Defs.Look(ref this.beardDef, "beardDef");
+            Scribe_Defs.Look(ref this.bodyType, "bodyType");
         }
     }
 }

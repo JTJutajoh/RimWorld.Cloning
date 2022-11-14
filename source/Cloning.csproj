@@ -70,6 +70,8 @@
     <Compile Include="Patches\Patch_JobDriver_HaulToContainer_MakeNewToils.cs" />
     <Compile Include="Patches\CloneCompHediffPatches.cs" />
     <Compile Include="Patches\Patch_GeneUIUtility_DrawGeneSections.cs" />
+    <Compile Include="PawnRelationsWorkers\PawnRelationWorker_CloneChild.cs" />
+    <Compile Include="PawnRelationsWorkers\PawnRelationWorker_CloneDonor.cs" />
     <Compile Include="ThingComps\Comp_CloneEmbryo.cs" />
     <Compile Include="Things\BrainScan.cs" />
     <Compile Include="Things\Building_CloneExtractor.cs" />
@@ -98,6 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="Defs\PawnRelationDefs\PawnRelations_Clone.xml" />
+    <Content Include="Defs\ThoughtDefs\Thoughts_Clone.xml" />
     <Content Include="Patches\ModCompatPatches.xml" />
   </ItemGroup>
   <ItemGroup>
