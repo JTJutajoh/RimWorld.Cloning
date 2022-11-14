@@ -232,9 +232,13 @@ namespace Dark.Cloning
 
             // Copy basic things from the parent.
             Pawn donor = cloneGene.cloneData.donorPawn;
-            if (CloningSettings.CloneRelationship != null && CloningSettings.CloneRelationship != PawnRelationDefOf.Child)
+            if (donor != null && CloningSettings.CloneRelationship != null && CloningSettings.CloneRelationship != PawnRelationDefOf.Child)
             {
                 donor.relations.AddDirectRelation(CloningSettings.CloneRelationship, pawn);
+            }
+            else if (donor == null)
+            {
+                Log.Warning($"Tried to add clone relation for new clone {pawn.LabelCap}, but cloneData had null donor reference. Did the donor pawn get cleaned up?");
             }
             
 
