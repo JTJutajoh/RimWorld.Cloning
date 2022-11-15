@@ -65,6 +65,11 @@ namespace Dark.Cloning
 		private void ScanCorpse()
 		{
 			Pawn innerPawn = Corpse.InnerPawn;
+			if (innerPawn == null)
+            {
+				Log.Error("Error scanning corpse. Corpse does not contain a pawn.");
+				return;
+            }
 			CloneData cloneData = new CloneData(innerPawn);
 			Thing embryo = CloneUtils.ProduceCloneEmbryo(innerPawn, cloneData);
 			if (!GenPlace.TryPlaceThing(embryo, Corpse.Position, Corpse.Map, ThingPlaceMode.Near, null, (IntVec3 x) => x.InBounds(Corpse.Map) && x.Standable(Corpse.Map) && !x.Fogged(Corpse.Map), default(Rot4)))
@@ -78,6 +83,7 @@ namespace Dark.Cloning
 			{
 				MoteMaker.MakeAttachedOverlay(innerPawn, thingDef, Vector3.zero);
 			}
+			//TODO: Make the corpse drop its apparel before destroying it
 			Item.SplitOff(1).Destroy();
 			Corpse.Destroy();
 		}

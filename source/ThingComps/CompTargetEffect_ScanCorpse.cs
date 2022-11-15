@@ -9,6 +9,10 @@ using Verse.AI;
 
 namespace Dark.Cloning
 {
+    /// <summary>
+    /// Comp responsible for issuing the job to use the cloning mech serum on a corpse
+    /// Basically identical to the resurrector mech serum version in vanilla, except it issues a custom job def
+    /// </summary>
     public class CompTargetEffect_ScanCorpse : CompTargetEffect
     {
         public CompProperties_TargetEffectScanCorpse Props => (CompProperties_TargetEffectScanCorpse)props;
