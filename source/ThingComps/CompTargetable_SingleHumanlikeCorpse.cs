@@ -9,6 +9,10 @@ using Verse.AI;
 
 namespace Dark.Cloning
 {
+	/// <summary>
+	/// Used by mech cloning serum.<br />
+	/// Custom version of vanilla's comp, this one allows ONLY corpses to be targeted, regardless of desiccation.
+	/// </summary>
     class CompTargetable_SingleHumanlikeCorpse : CompTargetable
     {
 		protected override bool PlayerChoosesTarget => true;
