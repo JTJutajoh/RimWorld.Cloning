@@ -23,6 +23,7 @@ namespace Dark.Cloning
     [HarmonyPatch(typeof(GeneUIUtility), "DrawGeneSections")]
     static class Patch_GeneUIUtility_DrawGeneSections
     {
+        // We want to inject a list of genes into the scrollview at the end, so anchor on EndScrollView
         static MethodInfo anchorMethod = typeof(Widgets).GetMethod("EndScrollView");
 
         /// <summary>
@@ -33,6 +34,7 @@ namespace Dark.Cloning
         // endogenesHeight because for some dumb reason vanilla uses xenogenes for embryos even though they're actually endogenes
         //GeneUIUtility.DrawGenesInfo just sums the two together so it shouldn't matter which is used here, as long as it's the opposite of what vanilla uses for embryo endogenes
         static FieldInfo xenogenesHeight = AccessTools.Field(typeof(GeneUIUtility), "endogenesHeight");
+        // Used to expand the scrollview to fit the extra genes we're drawing
         static FieldInfo scrollHeight = AccessTools.Field(typeof(GeneUIUtility), "scrollHeight");
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -40,7 +42,7 @@ namespace Dark.Cloning
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
             {
-                /*
+                /* From original method:
                 if (Event.current.type == EventType.Layout)
                 {
 	                GeneUIUtility.scrollHeight = num;
@@ -49,8 +51,9 @@ namespace Dark.Cloning
                 if (codes[i].Calls(anchorMethod)) //Widgets.EndScrollView();
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg, 1) // Thing target
-                    // Make sure this isn't included in the if block just before the anchor method call by changing the IL labels to match the label of the anchor method (Since it is outside of the if block)
-                    { labels = codes[i].labels}; 
+                    // Make sure this isn't included in the if block just before the anchor method call by
+                    //changing the IL labels to match the label of the anchor method (Since it is outside of the if block)
+                    {labels = codes[i].labels}; 
                     yield return new CodeInstruction(OpCodes.Ldarg, 0); // Rect rect
                     yield return new CodeInstruction(OpCodes.Ldloc, 1); // float curY
                     yield return new CodeInstruction(OpCodes.Ldloc, 2); // Rect containingRect
@@ -61,8 +64,8 @@ namespace Dark.Cloning
                     codes[i].labels = new List<Label>();
                 }
                 yield return codes[i];
-                /*
-                Widgets.EndScrollView();
+                /* From original Method:
+                Widgets.EndScrollView(); <-- Our anchor method
 	            GUI.EndGroup();
                 */
             }
@@ -126,6 +129,7 @@ namespace Dark.Cloning
 
                 DrawXenogenesSection(rect, curY, containingRect, cloneComp.cloneData);
             }
+            // In the case of a pregnancy being the target, "target" will be null and genesOverride will be non-null. This is the only way to tell if it's a pregnancy. Thanks Tynan.
             else if (target == null && genesOverride != null)
             {
                 Pawn mother = Find.Selector.SingleSelectedThing as Pawn;
@@ -138,8 +142,13 @@ namespace Dark.Cloning
             }
         }
 
+        /// <summary>
+        /// Mostly copied from vanilla's method of drawing sections, but modified for this patch
+        /// </summary>
         static void DrawXenogenesSection(Rect rect, float curY, Rect containingRect, CloneData cloneData)
         {
+            if (cloneData == null)
+                return;
             List<GeneDef> xenogenes = cloneData.xenogenes;
 
             void drawer(int i, Rect r) =>
