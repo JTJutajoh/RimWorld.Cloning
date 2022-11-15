@@ -14,15 +14,9 @@ namespace Dark.Cloning
 
         public CloneData cloneData;
 
-        public bool IsClone()
-        {
-            if (cloneData == null) return false;
-            else return true;
-        }
-
         public override string CompInspectStringExtra()
         {
-            return IsClone() ? "CloneEmbryoInspectString".Translate() : null;
+            return cloneData != null ? "CloneEmbryoInspectString".Translate() : null;
         }
 
         public override void PostExposeData()
