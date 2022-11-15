@@ -18,17 +18,15 @@ namespace Dark.Cloning
     {
         static bool Prefix(Building_GrowthVat __instance, ref Color __result)
         {
-            bool skipVanilla = false;
-
             HumanEmbryo humanEmbryo = __instance.selectedEmbryo;
-            // Check if this embryo is a clone and only run the logic if so
+            // Check if this embryo is a clone and only run the logic if so, and do a bunch of nullchecks while we're at it
             if (humanEmbryo != null && humanEmbryo.IsClone(out Comp_CloneEmbryo cloneComp) && cloneComp != null && cloneComp.cloneData != null && cloneComp.cloneData.skinColorOverride != null)
             {
-                __result = cloneComp.cloneData.skinColorOverride ?? Color.white;
-                skipVanilla = true;
+                __result = (Color)cloneComp.cloneData.skinColorOverride;
+                return false; // Skip the vanilla method
             }
 
-            return !skipVanilla;
+            return true; // Run the vanilla method
         }
     }
 }
