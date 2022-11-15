@@ -65,7 +65,6 @@
     <Compile Include="AI\WorkGiver_HaulToCloneExtractor.cs" />
     <Compile Include="Genes\CloneGene.cs" />
     <Compile Include="HediffComps\HediffComp_Pregnant_Clone.cs" />
-    <Compile Include="Patches\Patch_EmbryoBirth.cs" />
     <Compile Include="Patches\Patch_GrowthVat_EmbryoColor.cs" />
     <Compile Include="Patches\Patch_JobDriver_HaulToContainer_MakeNewToils.cs" />
     <Compile Include="Patches\CloneCompHediffPatches.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="CloningMod\CloningMod.cs" />
     <Compile Include="Patches\Patch_Notify_LifeStageStarted.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recipes\Recipe_ExtractClone.cs" />
     <Compile Include="CloningMod\CloningSettings.cs" />
     <Compile Include="Utilities\CloneUtils.cs" />
     <Compile Include="AI\WorkGiver_CarryToCloneExtractor.cs" />

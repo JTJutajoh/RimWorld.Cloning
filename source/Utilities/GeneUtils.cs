@@ -127,7 +127,7 @@ namespace Dark.Cloning
             }
 
             
-            Genepack genepack = (Genepack)ThingMaker.MakeThing(ThingDefOf.Genepack); //HACK: Needs cleaning up?
+            Genepack genepack = (Genepack)ThingMaker.MakeThing(ThingDefOf.Genepack);
             List<GeneDef> genesToAdd = new List<GeneDef>();
 
             if (pawn.genes != null && pawn.genes.Xenogenes != null)
