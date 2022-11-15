@@ -28,7 +28,10 @@ namespace Dark.Cloning
             if (!__state)
                 return;
             // Clone has grown to 13 (adulthood) and had their body type changed from child. Override it to match their donor parent
-            CloneUtils.ApplyBodyTypeToClone(pawn);
+            if (pawn.IsClone(out CloneGene cloneGene))
+            {
+                cloneGene.cloneData.ApplyBodyType(pawn);
+            }
         }
     }
 }

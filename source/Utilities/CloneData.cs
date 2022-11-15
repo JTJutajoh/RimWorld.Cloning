@@ -108,6 +108,30 @@ namespace Dark.Cloning
                 request.ForcedXenotype = this.xenotype;
             }
         }
+        public void ApplyAppearance(Pawn pawn)
+        {
+            if (pawn == null)
+            {
+                Log.Error("Error applying clone appearance, pawn was null");
+                return;
+            }
+            //TODO: Add checks for ideology if necessary, like for beards
+            pawn.story.headType = this.headType;
+            pawn.story.skinColorOverride = this.skinColorOverride;
+            pawn.story.furDef = this.furDef;
+            if (CloningSettings.inheritHair)
+            {
+                pawn.story.hairDef = this.hairDef;
+                pawn.style.beardDef = this.beardDef;
+            }
+            pawn.style.Notify_StyleItemChanged();
+        }
+
+        public void ApplyBodyType(Pawn pawn)
+        {
+            pawn.story.bodyType = this.bodyType ?? pawn.story.bodyType; // Null coalesce in case the clonegene doesn't contain valid bodytype data for some reason
+            pawn.style.Notify_StyleItemChanged();
+        }
 
         public void ExposeData()
         {

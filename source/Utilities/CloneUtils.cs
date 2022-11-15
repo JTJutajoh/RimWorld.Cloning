@@ -161,38 +161,5 @@ namespace Dark.Cloning
                 Log.Warning($"Tried to add clone relation for new clone {clone.LabelCap}, but cloneData had null donor reference. Did the donor pawn get cleaned up?");
             }
         }
-
-        public static void ApplyAppearanceToClone(Pawn pawn, CloneData cloneData)
-        {
-            if (pawn == null)
-            {
-                Log.Error("Error applying clone appearance, pawn was null");
-                return;
-            }
-            if (cloneData == null)
-            {
-                Log.Error("Error applying clone appearance, cloneData was null");
-                return;
-            }
-            //TODO: Add checks for ideology if necessary, like for beards
-            pawn.story.headType = cloneData.headType;
-            pawn.story.skinColorOverride = cloneData.skinColorOverride;
-            pawn.story.furDef = cloneData.furDef;
-            if (CloningSettings.inheritHair)
-            {
-                pawn.story.hairDef = cloneData.hairDef;
-                pawn.style.beardDef = cloneData.beardDef;
-            }
-            pawn.style.Notify_StyleItemChanged();
-        }
-
-        public static void ApplyBodyTypeToClone(Pawn pawn)
-        {
-            if (pawn.IsClone(out CloneGene cloneGene))
-            {
-                pawn.story.bodyType = cloneGene.cloneData?.bodyType ?? pawn.story.bodyType; // Null coalesce in case the clonegene doesn't contain valid bodytype data for some reason
-                pawn.style.Notify_StyleItemChanged();
-            }
-        }
     }
 }

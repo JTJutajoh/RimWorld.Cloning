@@ -187,10 +187,10 @@ namespace Dark.Cloning
 
             cloneGene.cloneData = staticCloneData;
 
-            // Copy basic things from the parent.
+            cloneGene.cloneData.ApplyAppearance(pawn);
+
             Pawn donor = cloneGene.cloneData.donorPawn;
             CloneUtils.AddCloneRelation(pawn, donor);
-            CloneUtils.ApplyAppearanceToClone(pawn, cloneGene.cloneData);
 
             // Clear the static reference for the next time this patch is run
             staticCloneData = null;
