@@ -185,5 +185,14 @@ namespace Dark.Cloning
             }
             pawn.style.Notify_StyleItemChanged();
         }
+
+        public static void ApplyBodyTypeToClone(Pawn pawn)
+        {
+            if (pawn.IsClone(out CloneGene cloneGene))
+            {
+                pawn.story.bodyType = cloneGene.cloneData?.bodyType ?? pawn.story.bodyType; // Null coalesce in case the clonegene doesn't contain valid bodytype data for some reason
+                pawn.style.Notify_StyleItemChanged();
+            }
+        }
     }
 }

@@ -19,22 +19,16 @@ namespace Dark.Cloning
         /// <param name="__state">Bool storing whether or not the pawn was a baby/child, and should have its new body type overridden.</param>
         static void Prefix(Pawn pawn, ref bool __state)
         {
-            __state = ( pawn.story.bodyType == BodyTypeDefOf.Child || pawn.story.bodyType == BodyTypeDefOf.Baby );
+            // Check if the body type of the pawn before aging up is that of a child or baby, and store the result in a state variable to be checked in the postfix after vanilla ages them up normally
+            __state = ( pawn.story.bodyType == BodyTypeDefOf.Child || pawn.story.bodyType == BodyTypeDefOf.Baby ); //HACK: There's probably a better way to detect if they should get an adult body type
         }
 
         static void Postfix(Pawn pawn, bool __state)
         {
+            if (!__state)
+                return;
             // Clone has grown to 13 (adulthood) and had their body type changed from child. Override it to match their donor parent
-            if (__state && pawn.IsClone(out CloneGene cloneGene))
-            {
-                pawn.story.bodyType = cloneGene.cloneData?.bodyType ?? pawn.story.bodyType;
-                /*if (Settings.inheritHair)
-                {
-                    pawn.story.hairDef = donor.story.hairDef;
-                    pawn.style.beardDef = donor.style.beardDef;
-                }*/
-                pawn.style.Notify_StyleItemChanged();
-            }
+            CloneUtils.ApplyBodyTypeToClone(pawn);
         }
     }
 }

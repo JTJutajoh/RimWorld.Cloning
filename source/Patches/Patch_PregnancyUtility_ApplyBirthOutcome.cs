@@ -174,9 +174,8 @@ namespace Dark.Cloning
         /// </summary>
         static void Postfix(ref Thing __result, Pawn geneticMother, Pawn father)
         {
-            if (!( __result is Pawn pawn )) // If the clone was stillborn, just don't bother
-                return;
-            if (!pawn.IsClone(out var cloneGene)) // If not a clone, ignore
+            // If the clone was stillborn or the resulting pawn was not a clone
+            if (!( __result is Pawn pawn ) || !pawn.IsClone(out var cloneGene)) 
                 return;
 
             if (staticCloneData == null)
