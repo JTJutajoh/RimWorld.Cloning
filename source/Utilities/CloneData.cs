@@ -10,7 +10,8 @@ using UnityEngine;
 namespace Dark.Cloning
 {
     /// <summary>
-    /// Data class that stores all important data about clones
+    /// Data class that stores all important data about clones<br />
+    /// Has some helper methods for applying its data to pawns and requests
     /// </summary>
     public class CloneData : IExposable
     {

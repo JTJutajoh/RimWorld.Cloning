@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
-using RimWorld;
 
 namespace Dark.Cloning
 {
@@ -13,12 +8,6 @@ namespace Dark.Cloning
         HediffCompProperties_PregnantClone Props => (HediffCompProperties_PregnantClone)this.props;
 
         public CloneData cloneData;
-
-        public bool IsClone()
-        {
-            if (cloneData == null) return false;
-            else return true;
-        }
 
         public override void CompExposeData()
         {
