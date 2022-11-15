@@ -124,5 +124,66 @@ namespace Dark.Cloning
 
             return ProduceCloneEmbryo(donor, cloneData);
         }
+
+        public static CloneData GetCloneDataFromBirtherThing(Thing birtherThing)
+        {
+            CloneData cloneData = null;
+            // GrowthVats keep the embryo Thing in their innerContainer until birth
+            if (birtherThing is Building_GrowthVat growthVat)
+            {
+                HumanEmbryo embryo = growthVat.selectedEmbryo;
+                if (embryo.IsClone(out Comp_CloneEmbryo cloneComp))
+                    cloneData = cloneComp.cloneData;
+            }
+            // Pregnant pawns do not keep the embryo Thing and instead transfer its data to a series of hediffs
+            else if (birtherThing is Pawn birtherPawn)
+            {
+                Hediff hediff = birtherPawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnancyLaborPushing);
+                if (hediff.IsClonePregnancy(out HediffComp_Pregnant_Clone cloneComp))
+                    cloneData = cloneComp.cloneData;
+            }
+            return cloneData;
+        }
+
+        public static void AddCloneRelation(Pawn clone, Pawn donor)
+        {
+            if (clone == null)
+            {
+                Log.Error("Error applying clone relation, pawn was null");
+                return;
+            }
+            if (donor != null && CloningSettings.CloneRelationship != null && CloningSettings.CloneRelationship != PawnRelationDefOf.Child)
+            {
+                donor.relations.AddDirectRelation(CloningSettings.CloneRelationship, clone);
+            }
+            else if (donor == null)
+            {
+                Log.Warning($"Tried to add clone relation for new clone {clone.LabelCap}, but cloneData had null donor reference. Did the donor pawn get cleaned up?");
+            }
+        }
+
+        public static void ApplyAppearanceToClone(Pawn pawn, CloneData cloneData)
+        {
+            if (pawn == null)
+            {
+                Log.Error("Error applying clone appearance, pawn was null");
+                return;
+            }
+            if (cloneData == null)
+            {
+                Log.Error("Error applying clone appearance, cloneData was null");
+                return;
+            }
+            //TODO: Add checks for ideology if necessary, like for beards
+            pawn.story.headType = cloneData.headType;
+            pawn.story.skinColorOverride = cloneData.skinColorOverride;
+            pawn.story.furDef = cloneData.furDef;
+            if (CloningSettings.inheritHair)
+            {
+                pawn.story.hairDef = cloneData.hairDef;
+                pawn.style.beardDef = cloneData.beardDef;
+            }
+            pawn.style.Notify_StyleItemChanged();
+        }
     }
 }

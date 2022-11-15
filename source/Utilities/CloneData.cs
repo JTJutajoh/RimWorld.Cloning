@@ -83,6 +83,32 @@ namespace Dark.Cloning
             this.bodyType = this.donorPawn?.story?.bodyType;
         }
 
+        public void ApplyToRequest(ref PawnGenerationRequest request)
+        {
+            // First copy basic data from the donor 
+            request.FixedGender = this.fixedGender;
+
+            request.CanGeneratePawnRelations = false;
+
+            ApplyCloneXenotypeToRequest(ref request);
+        }
+
+        public void ApplyCloneXenotypeToRequest(ref PawnGenerationRequest request)
+        {
+            // Now, add the previously-chosen xenotype to the new pawn
+            //request.ForcedXenogenes = cloneData.forcedXenogenes.GenesListForReading;
+
+            //TODO: Overhaul xenotype application when the vanilla xenotype changes roll out
+            if (this.UniqueXenotype)
+            {
+                request.ForcedCustomXenotype = this.customXenotype;
+            }
+            else
+            {
+                request.ForcedXenotype = this.xenotype;
+            }
+        }
+
         public void ExposeData()
         {
             Scribe_Deep.Look(ref this.customXenotype, "customXenotype");

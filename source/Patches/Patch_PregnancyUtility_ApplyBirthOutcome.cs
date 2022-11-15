@@ -52,9 +52,9 @@ namespace Dark.Cloning
                 {
                     // First, load the additional argument(s) onto the stack
                     yield return new CodeInstruction(OpCodes.Ldarg, 5); // Thing birtherThing
-                    yield return new CodeInstruction(OpCodes.Ldarg, 3); // List<GeneDef> genes
-                    yield return new CodeInstruction(OpCodes.Ldarg, 4); // Pawn geneticMother
-                    yield return new CodeInstruction(OpCodes.Ldarg, 6); // Pawn father
+                    //yield return new CodeInstruction(OpCodes.Ldarg, 3); // List<GeneDef> genes
+                    //yield return new CodeInstruction(OpCodes.Ldarg, 4); // Pawn geneticMother
+                    //yield return new CodeInstruction(OpCodes.Ldarg, 6); // Pawn father
 
                     // Then call my custom method instead of the original one.
                     yield return CodeInstruction.Call(typeof(Patch_PregnancyUtility_ApplyBirthOutcome), "GeneratePawn");
@@ -151,55 +151,18 @@ namespace Dark.Cloning
         /// <param name="geneticMother">The mother</param>
         /// <param name="father">The father, which might always be null. But it is included here just in case.</param>
         /// <returns>The modified PawnGenerationRequest, ready to be pushed back onto the stack and sent to GeneratePawn</returns>
-        static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing, List<GeneDef> genes, Pawn geneticMother, Pawn father)
+        // The last three arguments are commented out because I no longer use them, but I might in the future. Note that the opcodes to load them from the stack must also be uncommented in the transpiler if you want to add them again in the future
+        static PawnGenerationRequest GeneratePawn(PawnGenerationRequest request, Thing birtherThing)//, List<GeneDef> genes, Pawn geneticMother, Pawn father)
         {
-            // Try to get a reference to the cloneData from the embryo or the pregnancy hediff, which is where the cloneData is stored if there is any
-            CloneData cloneData = null;
-
-            // GrowthVats keep the embryo Thing in their innerContainer until birth
-            if (birtherThing is Building_GrowthVat growthVat)
-            {
-                HumanEmbryo embryo = growthVat.selectedEmbryo;
-                if (!embryo.IsClone(out Comp_CloneEmbryo cloneComp))
-                    return request; // Not a clone
-                cloneData = cloneComp.cloneData;
-            }
-            // Pregnant pawns do not keep the embryo Thing and instead transfer its data to a series of hediffs
-            else if (birtherThing is Pawn birtherPawn)
-            {
-                Hediff hediff = birtherPawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PregnancyLaborPushing);
-                if (!hediff.IsClonePregnancy(out HediffComp_Pregnant_Clone cloneComp))
-                    return request; // Not a clone pregnancy
-                cloneData = cloneComp.cloneData;
-            }
-
-            // The above checks should ensure this never happens, but just to be safe
+            CloneData cloneData = CloneUtils.GetCloneDataFromBirtherThing(birtherThing);
             if (cloneData == null)
-            {
-                Log.Warning($"Embryo/pregnancy hediff looked like a clone, but had no cloneData");
                 return request;
-            }
 
             // Store the data in a static reference so that the postfix can pick it up and apply it to the clone Gene instance on the pawn after it is generated
             Patch_PregnancyUtility_ApplyBirthOutcome.staticCloneData = cloneData;
 
-            request.CanGeneratePawnRelations = false;
-
-            // First copy basic data from the donor 
-            request.FixedGender = cloneData.fixedGender;
-
-            // Now, add the previously-chosen xenotype to the new pawn
-            //request.ForcedXenogenes = cloneData.forcedXenogenes.GenesListForReading;
-
-            if (cloneData.UniqueXenotype)
-            {
-                request.ForcedCustomXenotype = cloneData.customXenotype;
-            }
-            else
-            {
-                request.ForcedXenotype = cloneData.xenotype;
-            }
-
+            cloneData.ApplyToRequest(ref request);
+            
             Mutations.TryAddMutationsToRequest(ref request);
 
             return request;
@@ -211,49 +174,24 @@ namespace Dark.Cloning
         /// </summary>
         static void Postfix(ref Thing __result, Pawn geneticMother, Pawn father)
         {
-            if (!( __result is Pawn pawn )) // If the clone was stillborn.
+            if (!( __result is Pawn pawn )) // If the clone was stillborn, just don't bother
                 return;
-            if (!pawn.IsClone(out var cloneGene)) // Not a clone, ignore
+            if (!pawn.IsClone(out var cloneGene)) // If not a clone, ignore
                 return;
 
             if (staticCloneData == null)
             {
+                // This shouldn't be possible, but log an error if it somehow happens
                 Log.Error($"Clone gene on pawn {pawn.LabelCap} but the statically-stored cloneData in {nameof(Patch_PregnancyUtility_ApplyBirthOutcome)} has no data.");
                 return;
             }
 
             cloneGene.cloneData = staticCloneData;
 
-            if (cloneGene.cloneData == null)
-            {
-                Log.Warning($"Tried to set cloneData on Clone gene on pawn {pawn.LabelCap}, but it was null.");
-                return;
-            }
-
             // Copy basic things from the parent.
             Pawn donor = cloneGene.cloneData.donorPawn;
-            if (donor != null && CloningSettings.CloneRelationship != null && CloningSettings.CloneRelationship != PawnRelationDefOf.Child)
-            {
-                donor.relations.AddDirectRelation(CloningSettings.CloneRelationship, pawn);
-            }
-            else if (donor == null)
-            {
-                Log.Warning($"Tried to add clone relation for new clone {pawn.LabelCap}, but cloneData had null donor reference. Did the donor pawn get cleaned up?");
-            }
-            
-
-            pawn.story.headType = cloneGene.cloneData.headType;
-            pawn.story.skinColorOverride = cloneGene.cloneData.skinColorOverride;
-            pawn.story.furDef = cloneGene.cloneData.furDef;
-            if (CloningSettings.inheritHair)
-            {
-                pawn.story.hairDef = cloneGene.cloneData.hairDef;
-                pawn.style.beardDef = cloneGene.cloneData.beardDef;
-            }
-            pawn.style.Notify_StyleItemChanged();
-
-            //FIXME: Disabled temporarily because it causes babies to die
-            //if (Settings.cloningCooldown) GeneUtility.ExtractXenogerm(pawn, Mathf.RoundToInt(60000f * Settings.CloneExtractorRegrowingDurationDaysRange.RandomInRange));
+            CloneUtils.AddCloneRelation(pawn, donor);
+            CloneUtils.ApplyAppearanceToClone(pawn, cloneGene.cloneData);
 
             // Clear the static reference for the next time this patch is run
             staticCloneData = null;
