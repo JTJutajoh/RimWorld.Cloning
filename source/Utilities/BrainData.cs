@@ -1,66 +1,99 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
 namespace Dark.Cloning
 {
-    public static class BrainUtil
+    public class BrainData : IExposable
     {
-        /*public static void ScanPawn(Pawn pawn, BrainScan brainScan)
+        public Pawn sourcePawn;
+
+        public string sourceLabel;
+        public Name sourceName;
+
+        public PawnKindDef kindDef;
+
+        public BackstoryDef backStoryChild;
+        public BackstoryDef backStoryAdult;
+
+        public Ideo ideology;
+
+        public List<TraitBackup> traits;
+        public List<SkillRecordBackup> skills;
+
+        //Animal stuff
+
+        //Hediffs?
+
+        public BrainData()
         {
-            brainScan.sourceLabel = pawn?.Name?.ToStringFull ?? null;
-            brainScan.sourceName = pawn?.Name ?? null;
-            brainScan.kindDef = pawn?.kindDef ?? null;
+            ClearData();
+        }
+
+        public void ClearData()
+        {
+            sourcePawn = null;
+            sourceLabel = null;
+            sourceName = null;
+            kindDef = null;
+            backStoryAdult = null;
+            backStoryChild = null;
+            ideology = null;
+            traits = null;
+            skills = null;
+        }
+
+        public void ScanFrom(Pawn pawn)
+        {
+            this.sourceLabel = pawn?.Name?.ToStringFull ?? null;
+            this.sourceName = pawn?.Name ?? null;
+            this.kindDef = pawn?.kindDef ?? null;
 
             if (pawn.story != null)
             {
-                brainScan.backStoryChild = pawn.story.Childhood;
-                brainScan.backStoryAdult = pawn.story.Adulthood;
+                this.backStoryChild = pawn.story.Childhood;
+                this.backStoryAdult = pawn.story.Adulthood;
             }
 
             if (pawn.Ideo != null)
             {
-                brainScan.scannedIdeology = pawn.Ideo;
+                this.ideology = pawn.Ideo;
             }
 
             // Backup skills
-            brainScan.skills = new List<SkillRecordBackup>();
+            this.skills = new List<SkillRecordBackup>();
             foreach (SkillRecord skill in pawn.skills.skills)
             {
-                brainScan.skills.Add(new SkillRecordBackup(skill));
+                this.skills.Add(new SkillRecordBackup(skill));
             }
 
             // Backup traits
-            brainScan.traits = new List<TraitBackup>();
+            this.traits = new List<TraitBackup>();
             foreach (Trait trait in pawn.story.traits.allTraits)
             {
                 if (trait.sourceGene != null) continue; // Don't add genetic traits
-                brainScan.traits.Add(new TraitBackup(trait));
+                this.traits.Add(new TraitBackup(trait));
             }
 
             // Backup social relations
             //TODO: Backup social relations in the brain scan
         }
 
-        public static void ApplyBrainScanToPawn(Pawn pawn, BrainScan brainScan)
+        public void ApplyTo(Pawn pawn)
         {
             // Name
-            pawn.Name = brainScan.sourceName;
+            pawn.Name = this.sourceName;
 
-            if (brainScan.scannedIdeology != null)
+            if (this.ideology != null)
             {
-                pawn.ideo.SetIdeo(brainScan.scannedIdeology);
+                pawn.ideo.SetIdeo(this.ideology);
             }
 
             // Backstories
             if (pawn.story != null)
             {
-                pawn.story.Childhood = brainScan.backStoryChild; //QEE Has this commented out for some reason
-                pawn.story.Adulthood = brainScan.backStoryAdult;
+                pawn.story.Childhood = this.backStoryChild; //QEE Has this commented out for some reason
+                pawn.story.Adulthood = this.backStoryAdult;
             }
 
             // Traits
@@ -72,15 +105,15 @@ namespace Dark.Cloning
                 pawn.story.traits.RemoveTrait(trait);
             }
             // Then add the new ones
-            foreach (TraitBackup trait in brainScan.traits)
+            foreach (TraitBackup trait in this.traits)
             {
                 pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
             }
 
             // Skills
-            for (int i = 0; i < brainScan.skills.Count; i++) // This will break if for some reason the skills in the game changed since the scan was made, such as if the player installed vanilla skills expanded. But that's their own fault
+            for (int i = 0; i < this.skills.Count; i++) // This will break if for some reason the skills in the game changed since the scan was made, such as if the player installed vanilla skills expanded. But that's their own fault
             {
-                var scannedSkill = brainScan.skills[i];
+                var scannedSkill = this.skills[i];
                 SkillRecord skill = pawn.skills.GetSkill(scannedSkill.def);
                 skill.Level = scannedSkill.level; //SOMEDAY: Maybe an efficiency setting for brain scan skill copying?
                 skill.passion = scannedSkill.passion;
@@ -90,7 +123,20 @@ namespace Dark.Cloning
 
             // Social relations
             //TODO: Copy social relations
-        }*/
+        }
+
+        public void ExposeData()
+        {
+            Scribe_References.Look(ref sourcePawn, "sourcePawn");
+            Scribe_Values.Look(ref sourceLabel, "sourceLabel");
+            Scribe_Values.Look(ref sourceName, "sourceName");
+            Scribe_Defs.Look(ref kindDef, "kindDef");
+            Scribe_Defs.Look(ref backStoryChild, "backStoryChild");
+            Scribe_Defs.Look(ref backStoryAdult, "backStoryAdult");
+            Scribe_References.Look(ref ideology, "ideology");
+            Scribe_Collections.Look(ref traits, "traits");
+            Scribe_Collections.Look(ref skills, "skills");
+        }
     }
 
     public class SkillRecordBackup : IExposable

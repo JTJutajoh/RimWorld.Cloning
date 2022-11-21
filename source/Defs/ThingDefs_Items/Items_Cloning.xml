@@ -40,10 +40,14 @@ Does not clone xenogenes.</description>
     </comps>
   </ThingDef>
 
-  <!--<ThingDef>
+  <ThingDef>
     <defName>BrainScan</defName>
     <label>brain scan</label>
     <description>A hard-copy backup of a person's entire consciousness, ready to be applied to a new host. This process essentially kills the personality that was there before application, completely overwriting it with the one stored on this backup.</description>
+    <thingClass>Dark.Cloning.BrainScan</thingClass>
+    <tickerType>Rare</tickerType>
+    <canDeteriorateUnspawned>true</canDeteriorateUnspawned>
+    <deteriorateFromEnvironmentalEffects>false</deteriorateFromEnvironmentalEffects>
     <graphicData>
       <texPath>Things/Item/Special/BrainScan</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -56,7 +60,6 @@ Does not clone xenogenes.</description>
     <rotatable>false</rotatable>
     <healthAffectsPrice>false</healthAffectsPrice>
     <pathCost>14</pathCost>
-    <thingClass>Dark.Cloning.BrainScan</thingClass>
     <stackLimit>1</stackLimit>
     <statBases>
       <MarketValue>500</MarketValue>
@@ -72,9 +75,6 @@ Does not clone xenogenes.</description>
     <comps>
       <li Class="CompProperties_Forbiddable"/>
     </comps>
-    <descriptionHyperlinks>
-      <ThingDef>CloneExtractor</ThingDef>
-    </descriptionHyperlinks>
-  </ThingDef>-->
+  </ThingDef>
   
 </Defs>
