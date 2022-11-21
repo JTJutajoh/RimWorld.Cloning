@@ -68,6 +68,181 @@
     <drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
   </ThingDef>
 
+  <ThingDef Name="BrainBuildingBase" ParentName="BuildingBase" Abstract="True">
+    <researchPrerequisites>
+      <li>AdvancedCloning</li>
+    </researchPrerequisites>
+    <altitudeLayer>Building</altitudeLayer>
+    <designationCategory>Biotech</designationCategory>
+    <uiOrder>2200</uiOrder>
+    <pathCost>42</pathCost>
+    <building>
+      <ai_chillDestination>false</ai_chillDestination>
+      <buildingTags>
+        <li>Biotech</li>
+      </buildingTags>
+    </building>
+    <placeWorkers>
+      <li>PlaceWorker_ShowFacilitiesConnections</li>
+    </placeWorkers>
+    <drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
+  </ThingDef>
+  
+  <ThingDef ParentName="BrainBuildingBase">
+    <defName>BrainScanner</defName>
+    <label>brain scanner</label>
+    <description>A building capable of scanning the entire consciousness of a sentient being to produce a backup brain scan.</description>
+    <thingClass>Dark.Cloning.Building_BrainScanner</thingClass>
+    <containedPawnsSelectable>true</containedPawnsSelectable>
+    <passability>Impassable</passability>
+    <fillPercent>0.4</fillPercent>
+    <castEdgeShadows>true</castEdgeShadows>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <tickerType>Normal</tickerType>
+    <graphicData>
+      <texPath>Things/Building/Misc/CloneExtractor/CloneExtractor</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(3, 2)</drawSize>
+      <shadowData>
+        <volume>(2.2, 0.8, 1.7)</volume>
+      </shadowData>
+    </graphicData>
+    <size>(3, 2)</size>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0, 0, 2)</interactionCellOffset>
+    <defaultPlacingRot>South</defaultPlacingRot>
+    <statBases>
+      <MaxHitPoints>350</MaxHitPoints>
+      <WorkToBuild>11000</WorkToBuild>
+      <Mass>115</Mass>
+      <Flammability>0.5</Flammability>
+      <AssemblySpeedFactor>0.3</AssemblySpeedFactor>
+    </statBases>
+    <costList>
+      <Steel>500</Steel>
+      <Plasteel>80</Plasteel>
+      <ComponentIndustrial>12</ComponentIndustrial>
+      <ComponentSpacer>4</ComponentSpacer>
+    </costList>
+    <constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+    <descriptionHyperlinks>
+      <ThingDef>BrainScan</ThingDef>
+      <ThingDef>BrainScanBank</ThingDef>
+      <ThingDef>BrainScanProcessor</ThingDef>
+    </descriptionHyperlinks>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>2000</basePowerConsumption>
+        <idlePowerDraw>100</idlePowerDraw>
+      </li>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>BrainScanBank</li>
+          <li>BrainScanProcessor</li>
+        </linkableFacilities>
+      </li>
+      <li Class="CompProperties_Flickable"/>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BrainBuildingBase">
+    <defName>BrainScanBank</defName>
+    <label>brain scan bank</label>
+    <description>This building can store brain scans and make them usable to be applied to pawns.\n\nWhen powered, brain scan banks prevent brain scans from deteriorating and will slowly repair deterioration.</description>
+    <graphicData>
+      <texPath>Things/Building/Misc/Genebank/Genebank</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(2, 1)</drawSize>
+      <shadowData>
+        <volume>(1.7, 0.3, 0.85)</volume>
+      </shadowData>
+    </graphicData>
+    <castEdgeShadows>true</castEdgeShadows>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <tickerType>Rare</tickerType>
+    <passability>PassThroughOnly</passability>
+    <size>(2, 1)</size>
+    <statBases>
+      <MaxHitPoints>200</MaxHitPoints>
+      <WorkToBuild>5000</WorkToBuild>
+      <Mass>20</Mass>
+      <Flammability>0.5</Flammability>
+    </statBases>
+    <thingCategories>
+      <li>BuildingsProduction</li>
+    </thingCategories>
+    <costList>
+      <Steel>50</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+    <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+    <descriptionHyperlinks>
+      <ThingDef>BrainScan</ThingDef>
+      <ThingDef>BrainScanner</ThingDef>
+    </descriptionHyperlinks>
+    <comps>
+      <li Class="CompProperties_BrainScanContainer">
+        <maxCapacity>4</maxCapacity>
+      </li>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>40</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Facility">
+        <maxSimultaneous>100</maxSimultaneous>
+        <maxDistance>12.9</maxDistance>
+      </li>
+      <li Class="CompProperties_Flickable"/>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BrainBuildingBase">
+    <defName>BrainScanProcessor</defName>
+    <label>brain scan processor</label>
+    <description>An array of parallel quantum computing processors. Placed near a brain scanner, it increases the complexity and accuracy of brain scans, reducing skills lost in the scanning process. Building multiple brain scan processors will increase the efficiency farther.</description>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.4</fillPercent>
+    <rotatable>false</rotatable>
+    <graphicData>
+      <texPath>Things/Building/Misc/GeneProcessor</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2, 2)</drawSize>
+      <shadowData>
+        <volume>(1.5, 0.4, 1.5)</volume>
+      </shadowData>
+    </graphicData>
+    <size>(2, 2)</size>
+    <defaultPlacingRot>North</defaultPlacingRot>
+    <descriptionHyperlinks>
+      <ThingDef>BrainScanner</ThingDef>
+      <ThingDef>BrainScan</ThingDef>
+      <ThingDef>BrainScanBank</ThingDef>
+    </descriptionHyperlinks>
+    <statBases>
+      <MaxHitPoints>350</MaxHitPoints>
+      <WorkToBuild>9000</WorkToBuild>
+      <Mass>85</Mass>
+      <Flammability>0.5</Flammability>
+      <BrainScanEfficiencyIncrease>0.1</BrainScanEfficiencyIncrease>
+    </statBases>
+  </ThingDef>
+
+  <!--Move this to its own file?-->
+  <StatDef>
+    <defName>BrainScanEfficiencyIncrease</defName>
+    <label>brain scan efficiency increase</label>
+    <description>When placed near a brain scanner, this building increases the maximum efficiency of brain scans.</description>
+    <category>Building</category>
+    <defaultBaseValue>0</defaultBaseValue>
+    <minValue>0</minValue>
+    <showOnDefaultValue>false</showOnDefaultValue>
+    <showIfUndefined>false</showIfUndefined>
+    <showOnPawns>false</showOnPawns>
+    <toStringStyle>PercentZero</toStringStyle>
+    <displayPriorityInCategory>4200</displayPriorityInCategory>
+  </StatDef>
+
   <!--<ThingDef ParentName="BuildingBase">
     <defName>CloneStorageVat</defName>
     <label>clone storage vat</label>

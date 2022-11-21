@@ -71,6 +71,7 @@
     <Compile Include="Patches\Patch_GeneUIUtility_DrawGeneSections.cs" />
     <Compile Include="PawnRelationsWorkers\PawnRelationWorker_CloneChild.cs" />
     <Compile Include="PawnRelationsWorkers\PawnRelationWorker_CloneDonor.cs" />
+    <Compile Include="ThingComps\Comp_BrainScanContainer.cs" />
     <Compile Include="ThingComps\Comp_CloneEmbryo.cs" />
     <Compile Include="Things\BrainScan.cs" />
     <Compile Include="Things\Building_CloneExtractor.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="ThingComps\CompTargetable_SingleHumanlikeCorpse.cs" />
     <Compile Include="ThingComps\CompTargetEffect_ScanCorpse.cs" />
     <Compile Include="UI\Dialog_CreateClone.cs" />
-    <Compile Include="Utilities\BrainUtil.cs" />
+    <Compile Include="Utilities\BrainData.cs" />
     <Compile Include="Utilities\CloneData.cs" />
     <Compile Include="Utilities\GeneUtils.cs" />
     <Compile Include="AI\JobDriver_ScanCorpse.cs" />
@@ -124,7 +125,13 @@ rmdir "$(SolutionDir)$(ProjectName)/Patches" /s /q
 rmdir "$(SolutionDir)$(ProjectName)/About" /s /q
 rmdir "$(SolutionDir)$(ProjectName)/Assemblies" /s /q
 rmdir "$(SolutionDir)$(ProjectName)/Textures" /s /q
-robocopy "$(SolutionDir)$(ProjectName)/source" "$(SolutionDir)$(ProjectName)/" /E /XD "bin" "obj" "Properties" "Source Images"  /XF "*.csproj*" "*.psd" "*.cs" "packages.config" "To Do.txt" "LICENSE.md" "README.md" || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/About" "$(SolutionDir)$(ProjectName)/About" /E /XD "Source Images" /XF "*.psd" || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/1.4" "$(SolutionDir)$(ProjectName)/1.4" /E /XD "ref" || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/Defs" "$(SolutionDir)$(ProjectName)/Defs" /E || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/Languages" "$(SolutionDir)$(ProjectName)/Languages" /E || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/News" "$(SolutionDir)$(ProjectName)/News" /E /XF "*.psd" || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/Patches" "$(SolutionDir)$(ProjectName)/Patches" /E /XF "*.cs" || SET ERRORLEVEL=0
+robocopy "$(SolutionDir)$(ProjectName)/source/Textures" "$(SolutionDir)$(ProjectName)/Textures" /E /XF "*.psd" "*BSRGAN*" || SET ERRORLEVEL=0
 robocopy "$(SolutionDir)$(ProjectName)/" "C:/Program Files (x86)/Steam/steamapps/common/RimWorld/Mods/$(ProjectName)/" /MIR /XD "source" ".git" /XF ".git*"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

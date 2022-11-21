@@ -5,4 +5,3 @@ E:\GameDev\Modding\Dark.RimWorldMods\Cloning\source\1.4\Assemblies\Cloning.pdb
 E:\GameDev\Modding\Dark.RimWorldMods\Cloning\source\obj\Debug\Cloning.csproj.CoreCompileInputs.cache
 E:\GameDev\Modding\Dark.RimWorldMods\Cloning\source\obj\Debug\Cloning.dll
 E:\GameDev\Modding\Dark.RimWorldMods\Cloning\source\obj\Debug\Cloning.pdb
-E:\GameDev\Modding\Dark.RimWorldMods\Cloning\source\obj\Debug\Cloning.csproj.AssemblyReference.cache
