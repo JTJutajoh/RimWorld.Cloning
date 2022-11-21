@@ -15,6 +15,22 @@ namespace Dark.Cloning
     {
         private static readonly Texture2D CancelIcon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
 
+        public BrainData brainData = null;
+
+
+        public void Scan(Pawn pawn)
+        {
+            if (brainData == null)
+                brainData = new BrainData();
+            brainData.ScanFrom(pawn);
+        }
+
+        public void Apply(Pawn pawn)
+        {
+            if (brainData == null)
+                return;
+            brainData.ApplyTo(pawn);
+        }
 
         // Code mostly copied from HumanEmbryo in vanilla
         public override IEnumerable<Gizmo> GetGizmos()
@@ -31,12 +47,14 @@ namespace Dark.Cloning
         {
             base.ExposeData();
 
-
+            Scribe_Deep.Look(ref brainData, "brainData");
         }
 
         public override string GetInspectString()
         {
-            StringBuilder result = new StringBuilder(); ;
+            StringBuilder result = new StringBuilder();
+
+            result.AppendLine("Cloning_BrainScanOf".Translate() + brainData.sourceLabel);
 
             return result.ToString();
         }

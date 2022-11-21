@@ -37,7 +37,6 @@
   <Cloning_CloneExtractionComplete>Clone embryo extraction complete for {PAWN_nameDef}.</Cloning_CloneExtractionComplete>
   <Cloning_ExtractingCloneFrom>Extracting clone embryo from {PAWN_nameDef}.</Cloning_ExtractingCloneFrom>
   <Cloning_InsertPersonBrainScanDesc>Insert a pawn to extract a brain scan that can be applied to another pawn to overwrite their consciousness.</Cloning_InsertPersonBrainScanDesc>
-  <Cloning_CloneExtractorModeSwitch>Mode</Cloning_CloneExtractorModeSwitch>
   <Cloning_EmbryoMode>Clone Embryo</Cloning_EmbryoMode>
   <Cloning_BrainScanMode>Scan Brain</Cloning_BrainScanMode>
   <Cloning_ExtractorWorking>Extraction process is already running. Cancel to change modes.</Cloning_ExtractorWorking>
@@ -90,4 +89,7 @@ Germline gene from donor.</IsEndogeneTooltip>
 Gene is set to Forced in mod settings, so all clones automatically inherit it. Can be changed in mod settings</GeneForcedInSettings>
   <CloneGeneTooltipOverride>Cannot be removed.
 All clones must have the Clone gene, this is what enables them to actually be clones.</CloneGeneTooltipOverride>
+  <InsertPersonBrainScannerDesc>Insert a pawn into the brain scanner and scan their brain.</InsertPersonBrainScannerDesc>
+  <Cloning_ScanningBrainOf>Scanning brain of {PAWN_nameDef}.</Cloning_ScanningBrainOf>
+  <Cloning_BrainScanOf>Brain scan of </Cloning_BrainScanOf>
 </LanguageData>
