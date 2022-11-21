@@ -182,7 +182,7 @@
       <ThingDef>BrainScanner</ThingDef>
     </descriptionHyperlinks>
     <comps>
-      <li Class="CompProperties_BrainScanContainer">
+      <li Class="Dark.Cloning.CompProperties_BrainScanContainer">
         <maxCapacity>4</maxCapacity>
       </li>
       <li Class="CompProperties_Power">
@@ -226,6 +226,17 @@
       <Flammability>0.5</Flammability>
       <BrainScanEfficiencyIncrease>0.1</BrainScanEfficiencyIncrease>
     </statBases>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>40</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Facility">
+        <maxSimultaneous>100</maxSimultaneous>
+        <maxDistance>12.9</maxDistance>
+      </li>
+      <li Class="CompProperties_Flickable"/>
+    </comps>
   </ThingDef>
 
   <!--Move this to its own file?-->

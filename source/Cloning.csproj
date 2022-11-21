@@ -74,6 +74,7 @@
     <Compile Include="ThingComps\Comp_BrainScanContainer.cs" />
     <Compile Include="ThingComps\Comp_CloneEmbryo.cs" />
     <Compile Include="Things\BrainScan.cs" />
+    <Compile Include="Things\Building_BrainScanner.cs" />
     <Compile Include="Things\Building_CloneExtractor.cs" />
     <Compile Include="Things\Building_CloneStorageVat.cs" />
     <Compile Include="ThingComps\CompTargetable_SingleHumanlikeCorpse.cs" />
